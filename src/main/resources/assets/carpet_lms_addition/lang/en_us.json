@@ -1,0 +1,5 @@
+{
+  "carpet.rule.pearlIgnoreEntityCollision.name": "Pearls ignore entity collisions",
+  "carpet.rule.pearlIgnoreEntityCollision.desc": "Ender pearls ignore entity collisions (no teleport, fly through like air).",
+  "carpet.category.lms": "LMS"
+}

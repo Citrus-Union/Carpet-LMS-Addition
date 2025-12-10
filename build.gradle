@@ -1,0 +1,178 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+    id 'maven-publish'
+    id 'com.diffplug.spotless' version '6.25.0'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+def toolsDir = layout.buildDirectory.dir("tools")
+def googleJavaFormatVersion = "1.33.0"
+def prettierVersion = "3.7.4"
+
+repositories {
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        "carpet_lms_addition" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation "maven.modrinth:carpet:${project.carpet_version}"
+}
+
+spotless {
+    groovyGradle {
+        target("**/*.gradle")
+        greclipse().configFile(rootProject.file("spotless/greclipse.properties"))
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": inputs.properties.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+java {
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.named("remapJar") {
+    archiveFileName.set("carpet-lms-addition-v${project.mod_version}-mc${project.minecraft_version}.jar")
+}
+
+tasks.named("remapSourcesJar") {
+    archiveFileName.set("carpet-lms-addition-v${project.mod_version}-mc${project.minecraft_version}-sources.jar")
+}
+
+def downloadToFile = { String url, File target ->
+    target.parentFile.mkdirs()
+    new URL(url).withInputStream { input ->
+        target.withOutputStream { out -> out << input }
+    }
+}
+
+def googleJavaFormatUrl = "https://github.com/google/google-java-format/releases/download/v${googleJavaFormatVersion}/google-java-format-${googleJavaFormatVersion}-all-deps.jar"
+def googleJavaFormatJar = toolsDir.map { it.file("google-java-format-${googleJavaFormatVersion}.jar") }
+
+tasks.register("downloadGoogleJavaFormat") {
+    outputs.file(googleJavaFormatJar)
+    doLast {
+        File jarFile = googleJavaFormatJar.get().asFile
+        if (!jarFile.exists()) {
+            logger.lifecycle("Downloading google-java-format from ${googleJavaFormatUrl}")
+            downloadToFile(googleJavaFormatUrl, jarFile)
+        }
+    }
+}
+
+def prettierTargetsProvider = providers.provider {
+    fileTree(projectDir) {
+        include("**/*.md", "**/*.json", "**/*.yml", "**/*.yaml")
+        exclude("**/build/**", "**/.gradle/**")
+    }.files
+}
+
+tasks.register("fmtPrettier", Exec) {
+    onlyIf {
+        def prettierTargets = prettierTargetsProvider.get()
+        if (prettierTargets.empty) {
+            logger.lifecycle("No Markdown/JSON/YAML files to format.")
+        }
+        !prettierTargets.empty
+    }
+    doFirst {
+        def prettierTargets = prettierTargetsProvider.get()
+        // npx will download prettier automatically if not already present.
+        commandLine("npx", "--yes", "prettier@${prettierVersion}", "--write", *prettierTargets.collect { it.absolutePath })
+    }
+}
+
+def javaFilesProvider = providers.provider {
+    fileTree("src") {
+        include("**/*.java")
+    }.files
+}
+
+tasks.register("fmtGoogleJavaFormat", Exec) {
+    dependsOn("downloadGoogleJavaFormat")
+    onlyIf {
+        def javaFiles = javaFilesProvider.get()
+        if (javaFiles.empty) {
+            logger.lifecycle("No Java files to format.")
+        }
+        !javaFiles.empty
+    }
+    doFirst {
+        def javaFiles = javaFilesProvider.get()
+        commandLine("java", "-jar", googleJavaFormatJar.get().asFile.absolutePath, "--replace", *javaFiles.collect { it.absolutePath })
+    }
+}
+
+tasks.register("fmt") {
+    group = "formatting"
+    description = "Format codebase (Greclipse for *.gradle, Prettier, google-java-format)."
+    dependsOn("spotlessApply", "fmtPrettier", "fmtGoogleJavaFormat")
+}
+
+jar {
+    inputs.property "archivesName", project.base.archivesName
+
+    from("LICENSE") {
+        rename { "${it}_${inputs.properties.archivesName}" }
+    }
+}
+
+// configure the maven publication
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
+    }
+}

@@ -1,0 +1,12 @@
+package com.lms.carpetlmsaddition;
+
+import static carpet.api.settings.RuleCategory.SURVIVAL;
+
+import carpet.api.settings.Rule;
+
+public class CarpetLmsSettings {
+  public static final String LMS = "lms";
+
+  @Rule(categories = {LMS, SURVIVAL})
+  public static boolean pearlIgnoreEntityCollision = false;
+}

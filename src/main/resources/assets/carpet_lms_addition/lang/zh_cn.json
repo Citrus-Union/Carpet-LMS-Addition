@@ -1,0 +1,5 @@
+{
+  "carpet.rule.pearlIgnoreEntityCollision.name": "末影珍珠忽略实体碰撞",
+  "carpet.rule.pearlIgnoreEntityCollision.desc": "末影珍珠忽略实体碰撞（不传送，像空气一样穿过去）。",
+  "carpet.category.lms": "LMS"
+}

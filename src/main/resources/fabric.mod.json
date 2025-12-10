@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "carpet_lms_addition",
+  "version": "${version}",
+  "name": "Carpet LMS Addition",
+  "description": "A set of Carpet rules and tweaks (currently: ender pearl entity-collision toggle).",
+  "authors": ["jasonxue"],
+  "contact": {},
+  "license": "CC0-1.0",
+  "icon": "assets/carpet_lms_addition/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.lms.carpetlmsaddition.CarpetLmsAddition"]
+  },
+  "mixins": ["carpet_lms_addition.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.17.3",
+    "minecraft": "~1.21.10",
+    "java": ">=21",
+    "fabric-api": "*",
+    "carpet": ">=1.4.188"
+  }
+}
