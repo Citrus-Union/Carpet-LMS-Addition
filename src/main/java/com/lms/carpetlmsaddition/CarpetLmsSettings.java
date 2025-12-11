@@ -9,4 +9,9 @@ public class CarpetLmsSettings {
 
   @Rule(categories = {LMS, SURVIVAL})
   public static boolean pearlIgnoreEntityCollision = false;
+
+  @Rule(
+      categories = {LMS, SURVIVAL},
+      validators = DropAllRuleValidator.class)
+  public static boolean fakePlayerDropAll = false;
 }

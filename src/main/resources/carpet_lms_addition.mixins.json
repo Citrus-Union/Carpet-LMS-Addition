@@ -3,7 +3,12 @@
   "package": "com.lms.carpetlmsaddition.mixin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "carpet_lms_addition.refmap.json",
-  "mixins": ["ProjectileUtilMixin"],
+  "mixins": [
+    "ProjectileUtilMixin",
+    "EntityPlayerActionPackActionMixin",
+    "DropStackActionTypeMixin",
+    "PlayerCommandMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

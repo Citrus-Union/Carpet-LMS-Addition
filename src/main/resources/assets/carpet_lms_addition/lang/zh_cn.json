@@ -1,5 +1,7 @@
 {
   "carpet.rule.pearlIgnoreEntityCollision.name": "末影珍珠忽略实体碰撞",
   "carpet.rule.pearlIgnoreEntityCollision.desc": "末影珍珠忽略实体碰撞（不传送，像空气一样穿过去）。",
+  "carpet.rule.fakePlayerDropAll.name": "假人 dropall 指令",
+  "carpet.rule.fakePlayerDropAll.desc": "开启 /player <name> dropall（等同 dropstack all）",
   "carpet.category.lms": "LMS"
 }
