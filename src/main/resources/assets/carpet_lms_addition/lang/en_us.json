@@ -7,5 +7,7 @@
   "carpet.rule.fragileVaults.desc": "Vaults match beacon blast resistance (TNT can break them).",
   "carpet.rule.fragileTrialSpawners.name": "Fragile trial spawners",
   "carpet.rule.fragileTrialSpawners.desc": "Trial spawners match normal spawner blast resistance.",
+  "carpet.rule.allayHealInterval.name": "Allay heal interval",
+  "carpet.rule.allayHealInterval.desc": "Ticks between Allay passive heals (vanilla 10; minimum 1).",
   "carpet.category.lms": "LMS"
 }

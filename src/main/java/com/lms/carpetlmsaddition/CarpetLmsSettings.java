@@ -20,4 +20,9 @@ public class CarpetLmsSettings {
 
   @Rule(categories = {LMS, SURVIVAL})
   public static boolean fragileTrialSpawners = false;
+
+  @Rule(
+      categories = {LMS, SURVIVAL},
+      validators = PositiveIntValidator.class)
+  public static int allayHealInterval = 10;
 }

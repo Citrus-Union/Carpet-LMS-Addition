@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "carpet_lms_addition.refmap.json",
   "mixins": [
+    "AllayMixin",
     "ProjectileUtilMixin",
     "EntityPlayerActionPackActionMixin",
     "DropStackActionTypeMixin",
