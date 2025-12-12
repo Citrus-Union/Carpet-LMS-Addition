@@ -17,4 +17,7 @@ public class CarpetLmsSettings {
 
   @Rule(categories = {LMS, SURVIVAL})
   public static boolean fragileVaults = false;
+
+  @Rule(categories = {LMS, SURVIVAL})
+  public static boolean fragileTrialSpawners = false;
 }

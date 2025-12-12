@@ -5,5 +5,7 @@
   "carpet.rule.fakePlayerDropAll.desc": "开启 /player <name> dropall（等同 dropstack all）",
   "carpet.rule.fragileVaults.name": "脆弱宝库",
   "carpet.rule.fragileVaults.desc": "把宝库的爆炸抗性降到信标水平（TNT 可炸掉）。",
+  "carpet.rule.fragileTrialSpawners.name": "脆弱试炼刷怪笼",
+  "carpet.rule.fragileTrialSpawners.desc": "让试炼刷怪笼的爆炸抗性与普通刷怪笼一致。",
   "carpet.category.lms": "LMS"
 }

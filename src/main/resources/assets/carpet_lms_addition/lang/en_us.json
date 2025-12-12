@@ -5,5 +5,7 @@
   "carpet.rule.fakePlayerDropAll.desc": "Enables /player <name> dropall (same as dropstack all).",
   "carpet.rule.fragileVaults.name": "Fragile vaults",
   "carpet.rule.fragileVaults.desc": "Vaults match beacon blast resistance (TNT can break them).",
+  "carpet.rule.fragileTrialSpawners.name": "Fragile trial spawners",
+  "carpet.rule.fragileTrialSpawners.desc": "Trial spawners match normal spawner blast resistance.",
   "carpet.category.lms": "LMS"
 }
