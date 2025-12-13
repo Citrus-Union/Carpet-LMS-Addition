@@ -145,10 +145,45 @@ tasks.register("fmtGoogleJavaFormat", Exec) {
     }
 }
 
+tasks.register("checkPrettier", Exec) {
+    onlyIf {
+        def prettierTargets = prettierTargetsProvider.get()
+        if (prettierTargets.empty) {
+            logger.lifecycle("No Markdown/JSON/YAML files to check.")
+        }
+        !prettierTargets.empty
+    }
+    doFirst {
+        def prettierTargets = prettierTargetsProvider.get()
+        commandLine("npx", "--yes", "prettier@${prettierVersion}", "--check", *prettierTargets.collect { it.absolutePath })
+    }
+}
+
+tasks.register("checkGoogleJavaFormat", Exec) {
+    dependsOn("downloadGoogleJavaFormat")
+    onlyIf {
+        def javaFiles = javaFilesProvider.get()
+        if (javaFiles.empty) {
+            logger.lifecycle("No Java files to check.")
+        }
+        !javaFiles.empty
+    }
+    doFirst {
+        def javaFiles = javaFilesProvider.get()
+        commandLine("java", "-jar", googleJavaFormatJar.get().asFile.absolutePath, "--dry-run", "--set-exit-if-changed", *javaFiles.collect { it.absolutePath })
+    }
+}
+
 tasks.register("fmt") {
     group = "formatting"
     description = "Format codebase (Greclipse for *.gradle, Prettier, google-java-format)."
     dependsOn("spotlessApply", "fmtPrettier", "fmtGoogleJavaFormat")
+}
+
+tasks.register("fmtCheck") {
+    group = "verification"
+    description = "Verify formatting (Greclipse for *.gradle, Prettier, google-java-format)."
+    dependsOn("spotlessCheck", "checkPrettier", "checkGoogleJavaFormat")
 }
 
 jar {
