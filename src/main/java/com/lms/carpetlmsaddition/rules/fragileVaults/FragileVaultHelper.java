@@ -1,4 +1,4 @@
-package com.lms.carpetlmsaddition;
+package com.lms.carpetlmsaddition.rules.fragileVaults;
 
 import net.minecraft.world.level.block.Block;
 

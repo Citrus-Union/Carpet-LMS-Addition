@@ -1,7 +1,7 @@
-package com.lms.carpetlmsaddition.mixin;
+package com.lms.carpetlmsaddition.mixin.fakePlayerDropAll;
 
 import carpet.helpers.EntityPlayerActionPack;
-import com.lms.carpetlmsaddition.DropAllActionExtension;
+import com.lms.carpetlmsaddition.rules.fakePlayerDropAll.DropAllActionExtension;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 

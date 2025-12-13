@@ -1,9 +1,9 @@
-package com.lms.carpetlmsaddition.mixin;
+package com.lms.carpetlmsaddition.mixin.fakePlayerDropAll;
 
 import carpet.fakes.ServerPlayerInterface;
 import carpet.helpers.EntityPlayerActionPack;
-import com.lms.carpetlmsaddition.CarpetLmsSettings;
-import com.lms.carpetlmsaddition.DropAllActionExtension;
+import com.lms.carpetlmsaddition.rules.fakePlayerDropAll.DropAllActionExtension;
+import com.lms.carpetlmsaddition.rules.fakePlayerDropAll.DropAllRuleSettings;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,7 +22,7 @@ public abstract class DropStackActionTypeMixin {
       return;
     }
 
-    if (!CarpetLmsSettings.fakePlayerDropAll) {
+    if (!DropAllRuleSettings.fakePlayerDropAll) {
       cir.setReturnValue(false);
       return;
     }

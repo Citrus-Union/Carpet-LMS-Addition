@@ -1,4 +1,4 @@
-package com.lms.carpetlmsaddition;
+package com.lms.carpetlmsaddition.rules.fragileTrialSpawners;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.TrialSpawnerBlock;

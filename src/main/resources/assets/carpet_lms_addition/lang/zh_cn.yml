@@ -1,0 +1,20 @@
+carpet:
+  rule:
+    pearlIgnoreEntityCollision:
+      name: "末影珍珠忽略实体"
+      desc: "末影珍珠忽略实体碰撞。"
+    fakePlayerDropAll:
+      name: "假人全丢物品"
+      desc: "允许假人使用 /player dropall 一次性丢出背包物品。"
+    fragileVaults:
+      name: "脆弱宝库"
+      desc: "将宝库的抗爆降低到信标等级。"
+    fragileTrialSpawners:
+      name: "脆弱试炼刷怪笼"
+      desc: "降低试炼刷怪笼的抗爆。"
+    allayHealInterval:
+      name: "悦灵回血间隔"
+      desc: "悦灵被动治疗的间隔（刻）。"
+  validator:
+    positiveInt: "数值至少为 1。"
+    dropAllRefresh: "切换 fakePlayerDropAll 后刷新命令。"

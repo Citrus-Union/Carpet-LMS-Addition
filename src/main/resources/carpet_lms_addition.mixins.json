@@ -4,12 +4,13 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "carpet_lms_addition.refmap.json",
   "mixins": [
-    "AllayMixin",
-    "ProjectileUtilMixin",
-    "EntityPlayerActionPackActionMixin",
-    "DropStackActionTypeMixin",
-    "PlayerCommandMixin",
-    "BlockMixin"
+    "allayHealInterval.AllayMixin",
+    "pearlIgnoreEntityCollision.ProjectileUtilMixin",
+    "fakePlayerDropAll.EntityPlayerActionPackActionMixin",
+    "fakePlayerDropAll.DropStackActionTypeMixin",
+    "fakePlayerDropAll.PlayerCommandMixin",
+    "fragileVaults.FragileVaultMixin",
+    "fragileTrialSpawners.FragileTrialSpawnerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

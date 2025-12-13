@@ -1,11 +1,12 @@
-package com.lms.carpetlmsaddition.mixin;
+package com.lms.carpetlmsaddition.mixin.fakePlayerDropAll;
 
 import carpet.CarpetServer;
 import carpet.commands.PlayerCommand;
 import carpet.helpers.EntityPlayerActionPack;
 import carpet.utils.CommandHelper;
-import com.lms.carpetlmsaddition.CarpetLmsSettings;
-import com.lms.carpetlmsaddition.DropAllActionExtension;
+import com.lms.carpetlmsaddition.lib.RuleSupport;
+import com.lms.carpetlmsaddition.rules.fakePlayerDropAll.DropAllActionExtension;
+import com.lms.carpetlmsaddition.rules.fakePlayerDropAll.DropAllRuleSettings;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -65,7 +66,8 @@ public abstract class PlayerCommandMixin {
   @Unique
   private static LiteralArgumentBuilder<CommandSourceStack> lms$dropAllCommand() {
     return Commands.literal("dropall")
-        .requires(source -> CarpetLmsSettings.fakePlayerDropAll)
+        .requires(
+            source -> RuleSupport.canUseCommand(source, DropAllRuleSettings.fakePlayerDropAll))
         .executes(PlayerCommandMixin::lms$dropAllOnce)
         .then(Commands.literal("once").executes(PlayerCommandMixin::lms$dropAllOnce))
         .then(Commands.literal("continuous").executes(PlayerCommandMixin::lms$dropAllContinuous))

@@ -1,0 +1,20 @@
+carpet:
+  rule:
+    pearlIgnoreEntityCollision:
+      name: "Pearls Ignore Entities"
+      desc: "Ender pearls ignore entity collision checks."
+    fakePlayerDropAll:
+      name: "Fake Player Drop All"
+      desc: "Allow fake players to use /player dropall to dump their inventory."
+    fragileVaults:
+      name: "Fragile Vaults"
+      desc: "Lower vault blast resistance to beacon level."
+    fragileTrialSpawners:
+      name: "Fragile Trial Spawners"
+      desc: "Lower trial spawner blast resistance."
+    allayHealInterval:
+      name: "Allay Heal Interval"
+      desc: "Ticks between passive healing for allays."
+  validator:
+    positiveInt: "Value must be at least 1."
+    dropAllRefresh: "Refreshing commands after fakePlayerDropAll changes."

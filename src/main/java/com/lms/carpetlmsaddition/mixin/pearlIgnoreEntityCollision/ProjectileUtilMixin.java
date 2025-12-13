@@ -1,6 +1,6 @@
-package com.lms.carpetlmsaddition.mixin;
+package com.lms.carpetlmsaddition.mixin.pearlIgnoreEntityCollision;
 
-import com.lms.carpetlmsaddition.CarpetLmsSettings;
+import com.lms.carpetlmsaddition.rules.pearlIgnoreEntityCollision.PearlRuleSettings;
 import java.util.function.Predicate;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -30,7 +30,7 @@ public abstract class ProjectileUtilMixin {
       Predicate<Entity> predicate,
       float margin,
       CallbackInfoReturnable<EntityHitResult> cir) {
-    if (CarpetLmsSettings.pearlIgnoreEntityCollision && projectile instanceof ThrownEnderpearl) {
+    if (PearlRuleSettings.pearlIgnoreEntityCollision && projectile instanceof ThrownEnderpearl) {
       cir.setReturnValue(null);
     }
   }
@@ -48,7 +48,7 @@ public abstract class ProjectileUtilMixin {
       AABB bounds,
       Predicate<Entity> predicate,
       CallbackInfoReturnable<EntityHitResult> cir) {
-    if (CarpetLmsSettings.pearlIgnoreEntityCollision && projectile instanceof ThrownEnderpearl) {
+    if (PearlRuleSettings.pearlIgnoreEntityCollision && projectile instanceof ThrownEnderpearl) {
       cir.setReturnValue(null);
     }
   }

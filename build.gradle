@@ -20,10 +20,20 @@ repositories {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
     }
+    maven {
+        name = "Fabric"
+        url = "https://maven.fabricmc.net/"
+    }
+    mavenCentral()
 }
 
 loom {
     splitEnvironmentSourceSets()
+
+    mixin {
+        defaultRefmapName = "carpet_lms_addition.refmap.json"
+        useLegacyMixinAp = true
+    }
 
     mods {
         "carpet_lms_addition" {
@@ -42,6 +52,8 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "maven.modrinth:carpet:${project.carpet_version}"
+    implementation "org.yaml:snakeyaml:2.2"
+    include "org.yaml:snakeyaml:2.2"
 }
 
 spotless {
