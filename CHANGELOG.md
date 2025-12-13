@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+- Fix typos in Chinese docs: From `阅灵` to `悦灵`
+
 ## 1.2.0
 
 - Added `fragileVaults` rule to lower vault blast resistance to beacon level (TNT can break them).

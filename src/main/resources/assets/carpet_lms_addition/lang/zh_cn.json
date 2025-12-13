@@ -7,7 +7,7 @@
   "carpet.rule.fragileVaults.desc": "把宝库的爆炸抗性降到信标水平（TNT 可炸掉）。",
   "carpet.rule.fragileTrialSpawners.name": "脆弱试炼刷怪笼",
   "carpet.rule.fragileTrialSpawners.desc": "让试炼刷怪笼的爆炸抗性与普通刷怪笼一致。",
-  "carpet.rule.allayHealInterval.name": "阅灵回血间隔",
-  "carpet.rule.allayHealInterval.desc": "阅灵被动回血的 tick 间隔（原版 10，至少 1）。",
+  "carpet.rule.allayHealInterval.name": "悦灵回血间隔",
+  "carpet.rule.allayHealInterval.desc": "悦灵被动回血的 tick 间隔（原版 10，至少 1）。",
   "carpet.category.lms": "LMS"
 }
