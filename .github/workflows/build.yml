@@ -45,4 +45,5 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          name: Carpet-LMS-Addition ${{ github.ref_name }}
           files: build/release/*.jar
