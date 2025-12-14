@@ -14,9 +14,9 @@ Categories: `lms`, `survival`.
 
 Default: `false`.
 
-### fakePlayerDropAll
+### playerCommandDropall
 
-Enables /player <name> dropall (same as dropstack all).
+Permission gate for /player <name> dropall (true/false/ops/0-4).
 
 Categories: `lms`, `survival`.
 
@@ -46,10 +46,10 @@ Categories: `lms`, `survival`.
 
 Default: `10`.
 
-### banOpPlaceCommand
+### commandPlace
 
-Blocks operator players from running /place.
+Permission gate for /place (uses Carpet permissions: `true`, `false`, `ops`, `0-4`).
 
 Categories: `lms`, `survival`.
 
-Default: `false`.
+Default: `ops`.

@@ -7,8 +7,8 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(value = CommandNode.class, remap = false)
-public interface PlaceRequirementMutable<S> {
+public interface PlaceRequirementMutable {
   @Accessor("requirement")
   @Mutable
-  void lms$setRequirement(Predicate<S> requirement);
+  void lms$setRequirement(Predicate<?> requirement);
 }

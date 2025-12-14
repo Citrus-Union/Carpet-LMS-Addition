@@ -1,4 +1,4 @@
-package com.lms.carpetlmsaddition.rules.fakePlayerDropAll;
+package com.lms.carpetlmsaddition.rules.playerCommandDropall;
 
 public interface DropAllActionExtension {
   void lms$setDropAll(boolean dropAll);

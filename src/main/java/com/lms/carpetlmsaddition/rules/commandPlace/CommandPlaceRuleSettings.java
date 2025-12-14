@@ -1,4 +1,4 @@
-package com.lms.carpetlmsaddition.rules.fakePlayerDropAll;
+package com.lms.carpetlmsaddition.rules.commandPlace;
 
 import static carpet.api.settings.RuleCategory.SURVIVAL;
 
@@ -11,18 +11,19 @@ import com.lms.carpetlmsaddition.lib.CarpetLmsTranslations;
 import com.lms.carpetlmsaddition.lib.RuleSupport;
 import net.minecraft.commands.CommandSourceStack;
 
-public final class DropAllRuleSettings {
-  private DropAllRuleSettings() {}
+public final class CommandPlaceRuleSettings {
+  private CommandPlaceRuleSettings() {}
 
   @Rule(
       categories = {RuleSupport.LMS, SURVIVAL},
-      validators = DropAllRuleValidator.class)
-  public static boolean fakePlayerDropAll = false;
+      options = {"true", "false", "ops", "0", "1", "2", "3", "4"},
+      validators = CommandsRefreshValidator.class)
+  public static String commandPlace = "ops";
 
-  public static final class DropAllRuleValidator extends Validator<Boolean> {
+  public static final class CommandsRefreshValidator extends Validator<String> {
     @Override
-    public Boolean validate(
-        CommandSourceStack source, CarpetRule<Boolean> rule, Boolean newValue, String userInput) {
+    public String validate(
+        CommandSourceStack source, CarpetRule<String> rule, String newValue, String userInput) {
       if (CarpetServer.minecraft_server != null) {
         CommandHelper.notifyPlayersCommandsChanged(CarpetServer.minecraft_server);
       }
@@ -31,7 +32,7 @@ public final class DropAllRuleSettings {
 
     @Override
     public String description() {
-      return CarpetLmsTranslations.translate("carpet.validator.dropAllRefresh");
+      return CarpetLmsTranslations.translate("carpet.validator.commandsRefresh");
     }
   }
 }

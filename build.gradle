@@ -15,6 +15,10 @@ def toolsDir = layout.buildDirectory.dir("tools")
 def googleJavaFormatVersion = "1.33.0"
 def prettierVersion = "3.7.4"
 
+configurations {
+    snakeyaml
+}
+
 repositories {
     maven {
         name = "Modrinth"
@@ -52,8 +56,10 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "maven.modrinth:carpet:${project.carpet_version}"
-    implementation "org.yaml:snakeyaml:2.2"
-    include "org.yaml:snakeyaml:2.2"
+    // Bundle SnakeYAML into the mod jar
+    def snakeYamlVersion = "2.5"
+    implementation "org.yaml:snakeyaml:${snakeYamlVersion}"
+    snakeyaml "org.yaml:snakeyaml:${snakeYamlVersion}"
 }
 
 spotless {
@@ -201,6 +207,11 @@ tasks.register("fmtCheck") {
 
 jar {
     inputs.property "archivesName", project.base.archivesName
+
+    from {
+        configurations.snakeyaml.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
 
     from("LICENSE") {
         rename { "${it}_${inputs.properties.archivesName}" }

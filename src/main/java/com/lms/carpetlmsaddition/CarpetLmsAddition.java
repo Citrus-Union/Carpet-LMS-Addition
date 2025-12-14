@@ -4,11 +4,11 @@ import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import com.lms.carpetlmsaddition.lib.CarpetLmsTranslations;
 import com.lms.carpetlmsaddition.rules.allayHealInterval.AllayHealRuleSettings;
-import com.lms.carpetlmsaddition.rules.banOpPlaceCommand.BanOpPlaceRuleSettings;
-import com.lms.carpetlmsaddition.rules.fakePlayerDropAll.DropAllRuleSettings;
+import com.lms.carpetlmsaddition.rules.commandPlace.CommandPlaceRuleSettings;
 import com.lms.carpetlmsaddition.rules.fragileTrialSpawners.FragileTrialSpawnerRuleSettings;
 import com.lms.carpetlmsaddition.rules.fragileVaults.FragileVaultRuleSettings;
 import com.lms.carpetlmsaddition.rules.pearlIgnoreEntityCollision.PearlRuleSettings;
+import com.lms.carpetlmsaddition.rules.playerCommandDropall.PlayerCommandDropallRuleSettings;
 import java.util.Map;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
@@ -28,12 +28,12 @@ public class CarpetLmsAddition implements ModInitializer, CarpetExtension {
 
   @Override
   public void onGameStarted() {
-    CarpetServer.settingsManager.parseSettingsClass(DropAllRuleSettings.class);
+    CarpetServer.settingsManager.parseSettingsClass(PlayerCommandDropallRuleSettings.class);
     CarpetServer.settingsManager.parseSettingsClass(PearlRuleSettings.class);
     CarpetServer.settingsManager.parseSettingsClass(AllayHealRuleSettings.class);
     CarpetServer.settingsManager.parseSettingsClass(FragileVaultRuleSettings.class);
     CarpetServer.settingsManager.parseSettingsClass(FragileTrialSpawnerRuleSettings.class);
-    CarpetServer.settingsManager.parseSettingsClass(BanOpPlaceRuleSettings.class);
+    CarpetServer.settingsManager.parseSettingsClass(CommandPlaceRuleSettings.class);
     LOGGER.info("Loaded {}", MOD_NAME);
   }
 

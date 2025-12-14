@@ -14,9 +14,9 @@ Carpet LMS Addition 是一个小型 Carpet 扩展，待完善。
 
 默认：`false`。
 
-### fakePlayerDropAll
+### playerCommandDropall
 
-开启 /player <name> dropall（等同 dropstack all）
+/player <name> dropall 权限控制（true/false/ops/0-4）。
 
 分类：`lms`、`survival`。
 
@@ -46,10 +46,10 @@ Carpet LMS Addition 是一个小型 Carpet 扩展，待完善。
 
 默认：`10`。
 
-### banOpPlaceCommand
+### commandPlace
 
-禁止OP玩家执行/place。
+/place 权限控制（遵循 Carpet 权限：`true`、`false`、`ops`、`0-4`）。
 
 分类：`lms`、`survival`。
 
-默认：`false`。
+默认：`ops`。

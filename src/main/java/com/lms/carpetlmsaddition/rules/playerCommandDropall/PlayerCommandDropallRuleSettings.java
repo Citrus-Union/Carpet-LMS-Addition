@@ -1,4 +1,4 @@
-package com.lms.carpetlmsaddition.rules.banOpPlaceCommand;
+package com.lms.carpetlmsaddition.rules.playerCommandDropall;
 
 import static carpet.api.settings.RuleCategory.SURVIVAL;
 
@@ -11,18 +11,19 @@ import com.lms.carpetlmsaddition.lib.CarpetLmsTranslations;
 import com.lms.carpetlmsaddition.lib.RuleSupport;
 import net.minecraft.commands.CommandSourceStack;
 
-public final class BanOpPlaceRuleSettings {
-  private BanOpPlaceRuleSettings() {}
+public final class PlayerCommandDropallRuleSettings {
+  private PlayerCommandDropallRuleSettings() {}
 
   @Rule(
       categories = {RuleSupport.LMS, SURVIVAL},
-      validators = CommandsRefreshValidator.class)
-  public static boolean banOpPlaceCommand = false;
+      options = {"true", "false", "ops", "0", "1", "2", "3", "4"},
+      validators = DropAllRuleValidator.class)
+  public static String playerCommandDropall = "false";
 
-  public static final class CommandsRefreshValidator extends Validator<Boolean> {
+  public static final class DropAllRuleValidator extends Validator<String> {
     @Override
-    public Boolean validate(
-        CommandSourceStack source, CarpetRule<Boolean> rule, Boolean newValue, String userInput) {
+    public String validate(
+        CommandSourceStack source, CarpetRule<String> rule, String newValue, String userInput) {
       if (CarpetServer.minecraft_server != null) {
         CommandHelper.notifyPlayersCommandsChanged(CarpetServer.minecraft_server);
       }
@@ -31,7 +32,7 @@ public final class BanOpPlaceRuleSettings {
 
     @Override
     public String description() {
-      return CarpetLmsTranslations.translate("carpet.validator.commandsRefresh");
+      return CarpetLmsTranslations.translate("carpet.validator.dropAllRefresh");
     }
   }
 }

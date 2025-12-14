@@ -1,6 +1,7 @@
 package com.lms.carpetlmsaddition.mixin.banOpPlaceCommand;
 
-import com.lms.carpetlmsaddition.rules.banOpPlaceCommand.BanOpPlaceRuleSettings;
+import carpet.utils.CommandHelper;
+import com.lms.carpetlmsaddition.rules.commandPlace.CommandPlaceRuleSettings;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import java.util.function.Predicate;
@@ -21,12 +22,9 @@ public abstract class PlaceCommandMixin {
       return;
     }
 
-    Predicate<CommandSourceStack> original = placeNode.getRequirement();
     Predicate<CommandSourceStack> restricted =
-        source ->
-            original.test(source)
-                && !(BanOpPlaceRuleSettings.banOpPlaceCommand && source.isPlayer());
+        source -> CommandHelper.canUseCommand(source, CommandPlaceRuleSettings.commandPlace);
 
-    ((PlaceRequirementMutable<CommandSourceStack>) placeNode).lms$setRequirement(restricted);
+    ((PlaceRequirementMutable) placeNode).lms$setRequirement(restricted);
   }
 }

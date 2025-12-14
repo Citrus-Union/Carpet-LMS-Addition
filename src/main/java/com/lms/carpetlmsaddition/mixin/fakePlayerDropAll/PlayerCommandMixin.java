@@ -4,9 +4,8 @@ import carpet.CarpetServer;
 import carpet.commands.PlayerCommand;
 import carpet.helpers.EntityPlayerActionPack;
 import carpet.utils.CommandHelper;
-import com.lms.carpetlmsaddition.lib.RuleSupport;
-import com.lms.carpetlmsaddition.rules.fakePlayerDropAll.DropAllActionExtension;
-import com.lms.carpetlmsaddition.rules.fakePlayerDropAll.DropAllRuleSettings;
+import com.lms.carpetlmsaddition.rules.playerCommandDropall.DropAllActionExtension;
+import com.lms.carpetlmsaddition.rules.playerCommandDropall.PlayerCommandDropallRuleSettings;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -46,19 +45,19 @@ public abstract class PlayerCommandMixin {
     }
   }
 
-  @Invoker("manipulation")
+  @Invoker(value = "manipulation", remap = false)
   private static Command<CommandSourceStack> lms$manipulation(
       Consumer<EntityPlayerActionPack> manipulation) {
     throw new AssertionError();
   }
 
-  @Invoker("manipulate")
+  @Invoker(value = "manipulate", remap = false)
   private static int lms$manipulate(
       CommandContext<CommandSourceStack> context, Consumer<EntityPlayerActionPack> manipulation) {
     throw new AssertionError();
   }
 
-  @Invoker("getPlayerSuggestions")
+  @Invoker(value = "getPlayerSuggestions", remap = false)
   private static Collection<String> lms$getPlayerSuggestions(CommandSourceStack source) {
     throw new AssertionError();
   }
@@ -67,7 +66,9 @@ public abstract class PlayerCommandMixin {
   private static LiteralArgumentBuilder<CommandSourceStack> lms$dropAllCommand() {
     return Commands.literal("dropall")
         .requires(
-            source -> RuleSupport.canUseCommand(source, DropAllRuleSettings.fakePlayerDropAll))
+            source ->
+                CommandHelper.canUseCommand(
+                    source, PlayerCommandDropallRuleSettings.playerCommandDropall))
         .executes(PlayerCommandMixin::lms$dropAllOnce)
         .then(Commands.literal("once").executes(PlayerCommandMixin::lms$dropAllOnce))
         .then(Commands.literal("continuous").executes(PlayerCommandMixin::lms$dropAllContinuous))

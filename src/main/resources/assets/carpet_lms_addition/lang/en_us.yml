@@ -1,11 +1,13 @@
 carpet:
+  category:
+    lms: "LMS"
   rule:
     pearlIgnoreEntityCollision:
       name: "Pearls Ignore Entities"
       desc: "Ender pearls ignore entity collision checks."
-    fakePlayerDropAll:
+    playerCommandDropall:
       name: "Fake Player Drop All"
-      desc: "Allow fake players to use /player dropall to dump their inventory."
+      desc: "Permission gate for /player dropall (true/false/ops/0-4)."
     fragileVaults:
       name: "Fragile Vaults"
       desc: "Lower vault blast resistance to beacon level."
@@ -15,10 +17,10 @@ carpet:
     allayHealInterval:
       name: "Allay Heal Interval"
       desc: "Ticks between passive healing for allays."
-    banOpPlaceCommand:
-      name: "Ban Ops From /place"
-      desc: "Blocks operator players from running /place."
+    commandPlace:
+      name: "/place Permission"
+      desc: "Permission gate for /place (true/false/ops/0-4)."
   validator:
     positiveInt: "Value must be at least 1."
-    dropAllRefresh: "Refreshing commands after fakePlayerDropAll changes."
+    dropAllRefresh: "Refreshing commands after playerCommandDropall changes."
     commandsRefresh: "Refreshing commands after rule change."
