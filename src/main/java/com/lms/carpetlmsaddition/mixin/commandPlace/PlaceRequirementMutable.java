@@ -1,4 +1,4 @@
-package com.lms.carpetlmsaddition.mixin.banOpPlaceCommand;
+package com.lms.carpetlmsaddition.mixin.commandPlace;
 
 import com.mojang.brigadier.tree.CommandNode;
 import java.util.function.Predicate;

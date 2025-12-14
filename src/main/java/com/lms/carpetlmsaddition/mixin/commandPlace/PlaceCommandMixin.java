@@ -1,4 +1,4 @@
-package com.lms.carpetlmsaddition.mixin.banOpPlaceCommand;
+package com.lms.carpetlmsaddition.mixin.commandPlace;
 
 import carpet.utils.CommandHelper;
 import com.lms.carpetlmsaddition.rules.commandPlace.CommandPlaceRuleSettings;

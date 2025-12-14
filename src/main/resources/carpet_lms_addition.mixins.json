@@ -11,8 +11,8 @@
     "fakePlayerDropAll.PlayerCommandMixin",
     "fragileVaults.FragileVaultMixin",
     "fragileTrialSpawners.FragileTrialSpawnerMixin",
-    "banOpPlaceCommand.PlaceCommandMixin",
-    "banOpPlaceCommand.PlaceRequirementMutable"
+    "commandPlace.PlaceCommandMixin",
+    "commandPlace.PlaceRequirementMutable"
   ],
   "injectors": {
     "defaultRequire": 1
