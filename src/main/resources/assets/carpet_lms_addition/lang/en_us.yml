@@ -15,6 +15,10 @@ carpet:
     allayHealInterval:
       name: "Allay Heal Interval"
       desc: "Ticks between passive healing for allays."
+    banOpPlaceCommand:
+      name: "Ban Ops From /place"
+      desc: "Blocks operator players from running /place."
   validator:
     positiveInt: "Value must be at least 1."
     dropAllRefresh: "Refreshing commands after fakePlayerDropAll changes."
+    commandsRefresh: "Refreshing commands after rule change."

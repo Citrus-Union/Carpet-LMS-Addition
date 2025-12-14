@@ -10,7 +10,9 @@
     "fakePlayerDropAll.DropStackActionTypeMixin",
     "fakePlayerDropAll.PlayerCommandMixin",
     "fragileVaults.FragileVaultMixin",
-    "fragileTrialSpawners.FragileTrialSpawnerMixin"
+    "fragileTrialSpawners.FragileTrialSpawnerMixin",
+    "banOpPlaceCommand.PlaceCommandMixin",
+    "banOpPlaceCommand.PlaceRequirementMutable"
   ],
   "injectors": {
     "defaultRequire": 1

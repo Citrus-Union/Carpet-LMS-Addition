@@ -4,6 +4,7 @@ import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import com.lms.carpetlmsaddition.lib.CarpetLmsTranslations;
 import com.lms.carpetlmsaddition.rules.allayHealInterval.AllayHealRuleSettings;
+import com.lms.carpetlmsaddition.rules.banOpPlaceCommand.BanOpPlaceRuleSettings;
 import com.lms.carpetlmsaddition.rules.fakePlayerDropAll.DropAllRuleSettings;
 import com.lms.carpetlmsaddition.rules.fragileTrialSpawners.FragileTrialSpawnerRuleSettings;
 import com.lms.carpetlmsaddition.rules.fragileVaults.FragileVaultRuleSettings;
@@ -32,6 +33,7 @@ public class CarpetLmsAddition implements ModInitializer, CarpetExtension {
     CarpetServer.settingsManager.parseSettingsClass(AllayHealRuleSettings.class);
     CarpetServer.settingsManager.parseSettingsClass(FragileVaultRuleSettings.class);
     CarpetServer.settingsManager.parseSettingsClass(FragileTrialSpawnerRuleSettings.class);
+    CarpetServer.settingsManager.parseSettingsClass(BanOpPlaceRuleSettings.class);
     LOGGER.info("Loaded {}", MOD_NAME);
   }
 

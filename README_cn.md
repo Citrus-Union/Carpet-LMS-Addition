@@ -45,3 +45,11 @@ Carpet LMS Addition 是一个小型 Carpet 扩展，待完善。
 分类：`lms`、`survival`。
 
 默认：`10`。
+
+### banOpPlaceCommand
+
+禁止OP玩家执行/place。
+
+分类：`lms`、`survival`。
+
+默认：`false`。

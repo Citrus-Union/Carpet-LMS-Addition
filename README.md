@@ -45,3 +45,11 @@ Ticks between Allay passive heals (vanilla 10; minimum 1).
 Categories: `lms`, `survival`.
 
 Default: `10`.
+
+### banOpPlaceCommand
+
+Blocks operator players from running /place.
+
+Categories: `lms`, `survival`.
+
+Default: `false`.

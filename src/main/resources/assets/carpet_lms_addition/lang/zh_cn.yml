@@ -15,6 +15,10 @@ carpet:
     allayHealInterval:
       name: "悦灵回血间隔"
       desc: "悦灵被动治疗的间隔（刻）。"
+    banOpPlaceCommand:
+      name: "OP禁用/place"
+      desc: "禁止OP玩家执行/place。"
   validator:
     positiveInt: "数值至少为 1。"
     dropAllRefresh: "切换 fakePlayerDropAll 后刷新命令。"
+    commandsRefresh: "规则更改后刷新命令。"
