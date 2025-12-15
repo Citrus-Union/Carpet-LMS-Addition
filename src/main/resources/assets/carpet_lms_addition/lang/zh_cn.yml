@@ -23,6 +23,9 @@ carpet:
     commandPlace:
       name: "/place 权限"
       desc: "/place 权限控制（true/false/ops/0-4）。"
+    softVault:
+      name: "宝库硬度修改"
+      desc: "宝库硬度改为末地石"
   validator:
     positiveInt: "数值至少为 1。"
     dropAllRefresh: "切换 playerCommandDropall 后刷新命令。"

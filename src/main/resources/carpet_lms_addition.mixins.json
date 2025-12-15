@@ -13,7 +13,7 @@
     "fragileTrialSpawners.FragileTrialSpawnerMixin",
     "fragileVaults.FragileVaultMixin",
     "pearlIgnoreEntityCollision.ProjectileUtilMixin",
-    "vaultPickaxeMineable.VaultPickaxeMineableMixin"
+    "softVault.SoftVaultMixin"
   ],
   "injectors": {
     "defaultRequire": 1

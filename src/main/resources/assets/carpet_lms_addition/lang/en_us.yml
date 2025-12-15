@@ -23,6 +23,9 @@ carpet:
     commandPlace:
       name: "/place Permission"
       desc: "Permission gate for /place (true/false/ops/0-4)."
+    softVault:
+      name: "softVaultRuleSettings"
+      desc: ""
   validator:
     positiveInt: "Value must be at least 1."
     dropAllRefresh: "Refreshing commands after playerCommandDropall changes."
