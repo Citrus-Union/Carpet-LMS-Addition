@@ -6,6 +6,7 @@ object RulesBootstrap {
     fun registerAll() {
         listOf(
             AllayHealInterval::class.java,
+            FragileVault::class.java,
             PearlIgnoreEntityCollision::class.java,
             PlayerCommandDropall::class.java,
             SoftVault::class.java,

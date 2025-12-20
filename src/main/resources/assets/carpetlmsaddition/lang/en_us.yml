@@ -2,17 +2,20 @@ carpet:
   category:
     LMS: LMS
   rule:
-    softVault:
-      name: softVault
-      desc: Set the hardness of vault to be the same as beacon
     allayHealInterval:
       name: allayHealInterval
       desc: "Control the interval of allay healing (unit: gt)"
       extra:
         "0": 0 represents no healing
+    fragileVault:
+      name: fragileVault
+      desc: Set the blast resistance of vault to be the same as beacon
     pearlIgnoreEntityCollision:
       name: pearlIgnoreEntityCollision
       desc: Ender pearls ignore collisions with entities
     playerCommandDropall:
       name: playerCommandDropall
       desc: Use "dropall" instead of "dropstack all"
+    softVault:
+      name: softVault
+      desc: Set the hardness of vault to be the same as beacon
