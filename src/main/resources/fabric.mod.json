@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "${name}",
   "description": "${description}",
-  "authors": ["jasonxue"],
+  "authors": ["jasonxue", "小柠檬lemon酱"],
   "contact": {
     "homepage": "https://fabricmc.net/",
     "sources": "https://github.com/FabricMC/fabric-example-mod"

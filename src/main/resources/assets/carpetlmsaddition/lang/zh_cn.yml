@@ -1,0 +1,21 @@
+carpet:
+  category:
+    LMS: LMS
+  rule:
+    allayHealInterval:
+      name: 悦灵回血间隔
+      desc: 控制悦灵的回血间隔(单位：gt)
+      extra:
+        "0": 设置为0时不回血
+    fragileVault:
+      name: 脆弱宝库
+      desc: 将宝库的爆炸抗性设置为与信标相同
+    pearlIgnoreEntityCollision:
+      name: 珍珠忽略实体碰撞
+      desc: 末影珍珠忽略与实体的碰撞
+    playerCommandDropall:
+      name: 玩家丢出全部物品
+      desc: 用“dropall”替代“dropstack all”
+    softVault:
+      name: 易碎宝库
+      desc: 将宝库的硬度设置为与信标相同
