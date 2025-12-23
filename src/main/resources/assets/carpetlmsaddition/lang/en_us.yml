@@ -16,6 +16,9 @@ carpet:
     playerCommandDropall:
       name: playerCommandDropall
       desc: Use "dropall" instead of "dropstack all"
+    renewableElytra:
+      name: renewableElytra
+      desc: Add a crafting recipe to make elytra renewable
     softVault:
       name: softVault
       desc: Set the hardness of vault to be the same as beacon
