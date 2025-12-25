@@ -1,6 +1,7 @@
 package cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator
 
 import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionMod
+import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig
 import cn.nm.lms.carpetlmsaddition.lib.check.CheckMod
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.minecraft.server.network.ServerPlayerEntity
@@ -18,11 +19,12 @@ object LowHealthSpectatorController {
                 val player = entity as? ServerPlayerEntity ?: return@AfterDamage
                 val world = entity.entityWorld
                 val now = world.time
-                val last = cooldownMap[player.uuid] ?: (now - LowHealthSpectatorCooldown.lowHealthSpectatorCooldown)
+                val playerUUID = player.uuid
+                val last = cooldownMap[playerUUID] ?: (now - LowHealthSpectatorCooldown.lowHealthSpectatorCooldown)
                 val hp = player.health
 
                 if (
-                    LowHealthSpectator.lowHealthSpectator == "true" &&
+                    isEnabled(playerUUID) &&
                     now - last >= LowHealthSpectatorCooldown.lowHealthSpectatorCooldown &&
                     !player.isSpectator &&
                     hp > 0f &&
@@ -71,4 +73,12 @@ object LowHealthSpectatorController {
             },
         )
     }
+
+    private fun isEnabled(playerUUID: UUID): Boolean =
+        when (LowHealthSpectator.lowHealthSpectator) {
+            "true" -> true
+            "false" -> false
+            "custom" -> PlayerConfig.get(playerUUID, "lowHealthSpectator")?.toBoolean() ?: false
+            else -> false
+        }
 }

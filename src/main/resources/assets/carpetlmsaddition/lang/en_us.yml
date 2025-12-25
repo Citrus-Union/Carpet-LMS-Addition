@@ -7,6 +7,12 @@ carpet:
       desc: "Control the interval of allay healing (unit: gt)"
       extra:
         "0": 0 represents no healing
+    commandLMSOthers:
+      name: commandLMSOthers
+      desc: View or modify your own /lms settings
+    commandLMSSelf:
+      name: commandLMSSelf
+      desc: View or modify other players' /lms settings
     craftableSponges:
       name: craftableSponges
       desc: Add a crafting recipe to make sponges renewable

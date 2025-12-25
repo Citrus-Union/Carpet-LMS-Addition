@@ -1,6 +1,8 @@
 package cn.nm.lms.carpetlmsaddition.rules
 
 import carpet.CarpetServer
+import cn.nm.lms.carpetlmsaddition.rules.commandLMS.CommandLMSOthers
+import cn.nm.lms.carpetlmsaddition.rules.commandLMS.CommandLMSSelf
 import cn.nm.lms.carpetlmsaddition.rules.craftableSponges.CraftableSponges
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectator
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorCooldown
@@ -14,6 +16,8 @@ object RulesBootstrap {
     fun registerAll() {
         listOf(
             AllayHealInterval::class.java,
+            CommandLMSOthers::class.java,
+            CommandLMSSelf::class.java,
             CraftableSponges::class.java,
             FragileVault::class.java,
             LowHealthSpectator::class.java,

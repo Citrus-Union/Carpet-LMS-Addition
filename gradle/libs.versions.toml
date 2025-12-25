@@ -5,6 +5,7 @@ kotlin = "2.2.21"
 yarn = "1.21.10+build.3"
 loom = "1.14-SNAPSHOT"
 snakeyaml = "2.5"
+gson = "2.13.2"
 spotless = "8.1.0"
 prettier = "3.7.4"
 prettierPluginToml = "2.0.6"
@@ -28,3 +29,4 @@ fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fab
 fabric-kotlin = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "fabric-kotlin" }
 carpet = { module = "maven.modrinth:carpet", version.ref = "carpet" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }

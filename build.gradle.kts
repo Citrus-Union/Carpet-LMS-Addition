@@ -34,7 +34,9 @@ dependencies {
     modImplementation(libs.fabric.kotlin)
     modImplementation(libs.carpet)
     implementation(libs.snakeyaml)
+    implementation(libs.gson)
     embeddedLibs(libs.snakeyaml)
+    embeddedLibs(libs.gson)
 }
 
 tasks.named<ProcessResources>("processResources") {
