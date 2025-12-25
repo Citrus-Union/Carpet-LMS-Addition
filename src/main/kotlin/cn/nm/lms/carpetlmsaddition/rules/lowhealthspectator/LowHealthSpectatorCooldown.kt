@@ -2,13 +2,14 @@ package cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator
 
 import carpet.api.settings.Rule
 import carpet.api.settings.RuleCategory
+import carpet.api.settings.Validators
 import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory
 
-object LowHealthSpectator {
+object LowHealthSpectatorCooldown {
     @Rule(
         categories = [LMSRuleCategory.LMS, RuleCategory.SURVIVAL],
-        options = ["true", "false", "custom"],
+        validators = [Validators.NonNegativeNumber::class],
     )
     @JvmField
-    var lowHealthSpectator: String = "false"
+    var lowHealthSpectatorCooldown: Int = 200
 }

@@ -32,7 +32,7 @@ object CarpetLMSAdditionMod : ModInitializer, CarpetExtension {
     override fun onInitialize() {
         LOGGER.info("$MOD_NAME version $version")
         CarpetServer.manageExtension(this)
-        CarpetLMSAdditionInit.initall()
+        CarpetLMSAdditionInit.initAll()
     }
 
     override fun version(): String = version

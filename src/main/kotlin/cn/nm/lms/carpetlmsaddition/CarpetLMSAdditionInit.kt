@@ -1,10 +1,10 @@
 package cn.nm.lms.carpetlmsaddition
 
-import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorListener
+import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorController
 
 object CarpetLMSAdditionInit {
-    fun initall() {
+    fun initAll() {
         CarpetLMSAdditionRecipes.register()
-        LowHealthSpectatorListener.init()
+        LowHealthSpectatorController.init()
     }
 }

@@ -15,9 +15,18 @@ carpet:
       desc: Set the blast resistance of vault to be the same as beacon
     lowHealthSpectator:
       name: lowHealthSpectator
-      desc: |
-        When a player's health drops below the setting value after taking damage, 
-        the player will be switched to spectator mode
+      desc: >-
+        Switches the player to spectator mode
+        when their health falls below the configured threshold after taking damage
+    lowHealthSpectatorCooldown:
+      name: lowHealthSpectatorCooldown
+      desc: Sets a cooldown before the player can be switched to spectator mode again
+    lowHealthSpectatorMethod:
+      name: lowHealthSpectatorMethod
+      desc: Defines the method used to switch the player into spectator mode
+    lowHealthSpectatorThreshold:
+      name: lowHealthSpectatorThreshold
+      desc: The health threshold below which the player will be switched to spectator mode
     pearlIgnoreEntityCollision:
       name: pearlIgnoreEntityCollision
       desc: Ender pearls ignore collisions with entities

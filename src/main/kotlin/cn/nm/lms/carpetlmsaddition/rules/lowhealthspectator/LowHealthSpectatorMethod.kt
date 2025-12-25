@@ -4,11 +4,11 @@ import carpet.api.settings.Rule
 import carpet.api.settings.RuleCategory
 import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory
 
-object LowHealthSpectator {
+object LowHealthSpectatorMethod {
     @Rule(
         categories = [LMSRuleCategory.LMS, RuleCategory.SURVIVAL],
-        options = ["true", "false", "custom"],
+        options = ["vanilla", "mcdreforged", "carpet"],
     )
     @JvmField
-    var lowHealthSpectator: String = "false"
+    var lowHealthSpectatorMethod: String = "vanilla"
 }
