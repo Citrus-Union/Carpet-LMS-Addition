@@ -1,5 +1,4 @@
 import net.fabricmc.loom.task.RemapJarTask
-import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -24,8 +23,6 @@ repositories {
     // for more information about repositories.
 }
 
-val embeddedLibs: Configuration by configurations.creating
-
 dependencies {
     minecraft(libs.minecraft)
     mappings(libs.yarn)
@@ -35,8 +32,8 @@ dependencies {
     modImplementation(libs.carpet)
     implementation(libs.snakeyaml)
     implementation(libs.gson)
-    embeddedLibs(libs.snakeyaml)
-    embeddedLibs(libs.gson)
+    include(libs.snakeyaml)
+    include(libs.gson)
 }
 
 tasks.named<ProcessResources>("processResources") {
@@ -72,15 +69,6 @@ tasks.named<RemapJarTask>("remapJar") {
     val baseName = providers.gradleProperty("archives_base_name").get()
     val fileName = "$baseName-v$version-mc$mcVersion.jar"
     archiveFileName.set(fileName)
-}
-
-tasks.named<Jar>("jar") {
-    from(
-        embeddedLibs.files.map { file ->
-            if (file.isDirectory) file else zipTree(file)
-        },
-    )
-    exclude("META-INF/**")
 }
 
 java {
