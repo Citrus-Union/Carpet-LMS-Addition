@@ -84,7 +84,7 @@ kotlin {
 
 sourceSets {
     named("main") {
-        java.srcDir(rootProject.file("VersionSrc/1.21.10/src/main/java"))
+        java.srcDir(rootProject.file("versionSrc/1.21.10/src/main/java"))
         kotlin.srcDir(rootProject.file("versionSrc/1.21.10/src/main/kotlin"))
         java.srcDir(rootProject.file("src/main/java"))
         kotlin.srcDir(rootProject.file("src/main/kotlin"))
