@@ -56,3 +56,20 @@ spotless {
         )
     }
 }
+
+tasks.register<Copy>("mergeLibs") {
+    group = "build"
+    subprojects.forEach { sub ->
+        dependsOn(
+            sub.tasks.matching {
+                it.name == "jar" || it.name == "remapJar"
+            },
+        )
+        from(sub.layout.buildDirectory.dir("libs"))
+    }
+    into(layout.buildDirectory.dir("libs"))
+}
+
+tasks.build {
+    finalizedBy("mergeLibs")
+}
