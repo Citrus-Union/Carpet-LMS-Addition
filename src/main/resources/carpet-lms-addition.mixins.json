@@ -8,6 +8,8 @@
     "PearlIgnoreEntityCollisionMixin",
     "SoftVaultMixin",
     "ZombifiedPiglinSpawnFixMixin",
+    "minimallootinglevel.MinimalLootingLevelChanceMixin",
+    "minimallootinglevel.MinimalLootingLevelCountMixin",
     "playercommanddropall.EntityPlayerActionPackActionMixin",
     "playercommanddropall.PlayerCommandDropAllMixin"
   ],

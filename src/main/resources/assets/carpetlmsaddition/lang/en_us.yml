@@ -26,6 +26,8 @@ carpet:
       desc: Defines the method used to switch the player into spectator mode
     lowHealthSpectatorThreshold:
       desc: The health threshold below which the player will be switched to spectator mode
+    minimalLootingLevel:
+      desc: Sets the minimum looting level applied to mob drops
     pearlIgnoreEntityCollision:
       desc: Ender pearls ignore collisions with entities
     playerCommandDropall:

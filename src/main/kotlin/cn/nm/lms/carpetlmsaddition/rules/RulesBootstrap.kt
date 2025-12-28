@@ -9,6 +9,7 @@ import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectator
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorCooldown
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorMethod
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorThreshold
+import cn.nm.lms.carpetlmsaddition.rules.minimallootinglevel.MinimalLootingLevel
 import cn.nm.lms.carpetlmsaddition.rules.playercommanddropall.PlayerCommandDropall
 import cn.nm.lms.carpetlmsaddition.rules.spongerecipe.SpongeRecipe
 
@@ -25,6 +26,7 @@ object RulesBootstrap {
             LowHealthSpectatorCooldown::class.java,
             LowHealthSpectatorMethod::class.java,
             LowHealthSpectatorThreshold::class.java,
+            MinimalLootingLevel::class.java,
             PearlIgnoreEntityCollision::class.java,
             PlayerCommandDropall::class.java,
             SoftVault::class.java,
