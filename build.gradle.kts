@@ -80,8 +80,16 @@ subprojects {
 
     plugins.withId("java") {
         tasks.withType<JavaCompile>().configureEach {
-            options.release.set(25)
             options.encoding = "UTF-8"
+            when {
+                name.startsWith("mc1_21") -> {
+                    options.release.set(21)
+                }
+
+                else -> {
+                    options.release.set(25)
+                }
+            }
         }
     }
 
