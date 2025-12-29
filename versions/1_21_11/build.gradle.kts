@@ -32,10 +32,18 @@ dependencies {
 
 sourceSets {
     named("main") {
-        java.srcDir(rootProject.file("versionSrc/1.21.11+/src/main/java"))
-        kotlin.srcDir(rootProject.file("versionSrc/1.21.11+/src/main/kotlin"))
-        java.srcDir(rootProject.file("src/main/java"))
-        kotlin.srcDir(rootProject.file("src/main/kotlin"))
-        resources.srcDir(rootProject.file("src/main/resources"))
+        java.setSrcDirs(
+            listOf(
+                rootProject.file("src/main/java"),
+                rootProject.file("versionSrc/1.21.11+/src/main/java"),
+            ),
+        )
+        kotlin.setSrcDirs(
+            listOf(
+                rootProject.file("src/main/kotlin"),
+                rootProject.file("versionSrc/1.21.11+/src/main/kotlin"),
+            ),
+        )
+        resources.setSrcDirs(listOf(rootProject.file("src/main/resources")))
     }
 }

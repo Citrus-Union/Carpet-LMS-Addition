@@ -22,23 +22,9 @@ allprojects {
         maven("https://api.modrinth.com/maven")
         mavenCentral()
     }
-
-    plugins.withId("java") {
-        extensions.configure<JavaPluginExtension>("java") {
-            toolchain {
-                languageVersion.set(JavaLanguageVersion.of(25))
-                vendor.set(JvmVendorSpec.AZUL)
-            }
-        }
-    }
 }
 
 subprojects {
-
-    if (!tasks.names.contains("prepareKotlinBuildScriptModel")) {
-        tasks.register("prepareKotlinBuildScriptModel")
-    }
-
     val cfgFile = file("version.toml")
 
     val cfg = Toml.parse(cfgFile.readText())!!
@@ -82,7 +68,7 @@ subprojects {
         tasks.withType<JavaCompile>().configureEach {
             options.encoding = "UTF-8"
             when {
-                name.startsWith("mc1_21") -> {
+                project.name.startsWith("mc1_21") -> {
                     options.release.set(21)
                 }
 
@@ -91,12 +77,26 @@ subprojects {
                 }
             }
         }
+        extensions.configure<JavaPluginExtension>("java") {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(25))
+                vendor.set(JvmVendorSpec.AZUL)
+            }
+        }
     }
 
     plugins.withId("org.jetbrains.kotlin.jvm") {
         tasks.withType<KotlinCompile>().configureEach {
             compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_25)
+                when {
+                    project.name.startsWith("mc1_21") -> {
+                        jvmTarget.set(JvmTarget.JVM_21)
+                    }
+
+                    else -> {
+                        jvmTarget.set(JvmTarget.JVM_25)
+                    }
+                }
             }
         }
         extensions.configure<KotlinJvmProjectExtension>("kotlin") {
