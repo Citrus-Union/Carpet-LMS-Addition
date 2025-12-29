@@ -6,8 +6,7 @@
   "description": "${description}",
   "authors": ["jasonxue", "小柠檬lemon酱"],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "${source}"
   },
   "license": "GPL-3.0-only",
   "icon": "assets/carpetlmsaddition/icon.png",

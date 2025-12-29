@@ -40,6 +40,7 @@ subprojects {
     tasks.withType<ProcessResources>().configureEach {
         val name = providers.gradleProperty("mod_name").get()
         val description = providers.gradleProperty("mod_description").get()
+        val source = providers.gradleProperty("mod_source").get()
         val fabricloaderDependency = providers.gradleProperty("fabricloader_dependency").get()
         val minecraftDependency = cfg.getString("dependency.minecraft")
         val fabricApiDependency = cfg.getString("dependency.fabric-api")
@@ -56,6 +57,7 @@ subprojects {
                 "fabric_api" to fabricApiDependency,
                 "fabric_language_kotlin" to fabricLanguageKotlinDependency,
                 "carpet" to carpetDependency,
+                "source" to source,
             )
         inputs.properties(replaceMap)
         filesMatching("fabric.mod.json") {
