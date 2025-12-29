@@ -3,6 +3,7 @@ kotlin = "2.3.0"
 loom = "1.14-SNAPSHOT"
 snakeyaml = "2.5"
 gson = "2.13.2"
+tomlj = "1.1.1"
 spotless = "8.1.0"
 prettier = "3.7.4"
 prettierPluginToml = "2.0.6"
@@ -25,3 +26,4 @@ fabricKotlin = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "
 carpet = { module = "maven.modrinth:carpet" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+tomlj = { module = "org.tomlj:tomlj", version.ref = "tomlj" }

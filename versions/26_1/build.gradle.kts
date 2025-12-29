@@ -1,3 +1,5 @@
+import org.tomlj.Toml
+
 plugins {
     alias(libs.plugins.loom)
     alias(libs.plugins.kotlin.jvm)
@@ -6,7 +8,7 @@ plugins {
 }
 
 val cfgFile = file("version.toml")
-val cfg = readToml(cfgFile)!!
+val cfg = Toml.parse(cfgFile.readText())!!
 
 val fabricApiModule = libs.fabricApi.get().module!!
 val fabricApiVersion = cfg.getString("versions.fabric-api")

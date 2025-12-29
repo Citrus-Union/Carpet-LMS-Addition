@@ -1,6 +1,13 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.tomlj.Toml
+
+buildscript {
+    dependencies {
+        classpath(libs.tomlj)
+    }
+}
 
 plugins {
     alias(libs.plugins.kotlin.jvm) apply false
@@ -34,7 +41,7 @@ subprojects {
 
     val cfgFile = file("version.toml")
 
-    val cfg = readToml(cfgFile)!!
+    val cfg = Toml.parse(cfgFile.readText())!!
     val minecraftVersion = cfg.getString("versions.minecraft")
 
     tasks.withType<ProcessResources>().configureEach {
