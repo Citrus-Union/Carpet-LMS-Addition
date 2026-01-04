@@ -28,6 +28,17 @@ carpet:
       desc: The health threshold below which the player will be switched to spectator mode
     minimalLootingLevel:
       desc: Sets the minimum looting level applied to mob drops
+    opPlayerNoCheatExtra:
+      desc: Disable some more command to prevent cheating
+      extra:
+        "0": >-
+          Affects command list:
+          /clear
+          /damage
+          /fillbiome
+          /forceload
+          /place
+          /spawnpoint
     pearlIgnoreEntityCollision:
       desc: Ender pearls ignore collisions with entities
     playerCommandDropall:
