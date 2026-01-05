@@ -25,10 +25,6 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class CraftableSponge extends ShapedRecipe {
-  public CraftableSponge() {
-    this(CraftingBookCategory.MISC);
-  }
-
   public CraftableSponge(CraftingBookCategory category) {
     super(
         category,

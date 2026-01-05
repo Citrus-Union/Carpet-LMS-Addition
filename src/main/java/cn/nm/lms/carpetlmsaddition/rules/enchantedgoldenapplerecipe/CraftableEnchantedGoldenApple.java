@@ -25,10 +25,6 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class CraftableEnchantedGoldenApple extends ShapedRecipe {
-  public CraftableEnchantedGoldenApple() {
-    this(CraftingBookCategory.MISC);
-  }
-
   public CraftableEnchantedGoldenApple(CraftingBookCategory category) {
     super(
         category,

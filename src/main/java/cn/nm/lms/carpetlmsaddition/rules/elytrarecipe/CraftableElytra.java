@@ -28,10 +28,6 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class CraftableElytra extends ShapedRecipe {
-  public CraftableElytra() {
-    this(CraftingBookCategory.EQUIPMENT);
-  }
-
   public CraftableElytra(CraftingBookCategory category) {
     super(
         category,
