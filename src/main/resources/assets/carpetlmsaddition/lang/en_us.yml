@@ -47,6 +47,8 @@ carpet:
       desc: Set the hardness of vault to be the same as beacon
     spongeRecipe:
       desc: Add a crafting recipe to make sponges renewable
+    vaultMaxBlacklistSize:
+      desc: Set the maximum number of players stored in the vault's blacklist
     zombifiedPiglinSpawnFix:
       desc: >-
         When spawning zombified piglins in nether gates during random ticks,

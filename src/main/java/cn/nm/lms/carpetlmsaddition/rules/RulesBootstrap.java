@@ -52,6 +52,7 @@ public final class RulesBootstrap {
           PlayerCommandDropall.class,
           SoftVault.class,
           SpongeRecipe.class,
+          VaultMaxBlacklistSize.class,
           ZombifiedPiglinSpawnFix.class
         };
 
