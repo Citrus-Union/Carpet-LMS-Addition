@@ -4,7 +4,7 @@ import java.nio.file.Path
 
 plugins {
     `maven-publish`
-    `signing`
+    signing
     id("net.fabricmc.fabric-loom") version "1.14-SNAPSHOT" apply false
     id("net.fabricmc.fabric-loom-remap") version "1.14-SNAPSHOT" apply false
 
@@ -61,7 +61,7 @@ tasks.register("buildAndGather") {
             project.copy {
                 from(buildLibs(subproject)) {
                     include("*.jar")
-                    exclude("*-dev.jar", "*-sources.jar", "*-shadow.jar")
+                    exclude("*-dev.jar", "*-sources.jar", "*-shadow.jar", "*-javadoc.jar")
                 }
                 into(buildLibs(rootProject))
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
