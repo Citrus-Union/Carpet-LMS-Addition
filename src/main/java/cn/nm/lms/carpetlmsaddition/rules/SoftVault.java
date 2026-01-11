@@ -21,7 +21,9 @@ import carpet.api.settings.RuleCategory;
 
 public final class SoftVault
 {
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    @Rule(
+            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}
+    )
     public static boolean softVault = false;
 
     private SoftVault()

@@ -16,22 +16,38 @@
  */
 package cn.nm.lms.carpetlmsaddition.rules.enchantedgoldenapplerecipe;
 
-import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionRecipes;
-import cn.nm.lms.carpetlmsaddition.lib.recipe.ShapedRecipe;
+import java.util.Arrays;
+
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
-import java.util.Arrays;
+import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionRecipes;
+import cn.nm.lms.carpetlmsaddition.lib.recipe.ShapedRecipe;
 
 public class CraftableEnchantedGoldenApple extends ShapedRecipe
 {
     public CraftableEnchantedGoldenApple(CraftingBookCategory category)
     {
         super(
-                category, () -> EnchantedGoldenAppleRecipe.enchantedGoldenAppleRecipe, 3, 3, Arrays.asList(
-                        Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLDEN_APPLE, Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLD_BLOCK), Items.ENCHANTED_GOLDEN_APPLE);
+                category,
+                () -> EnchantedGoldenAppleRecipe.enchantedGoldenAppleRecipe,
+                3,
+                3,
+                Arrays.asList(
+                        Items.GOLD_BLOCK,
+                        Items.GOLD_BLOCK,
+                        Items.GOLD_BLOCK,
+                        Items.GOLD_BLOCK,
+                        Items.GOLDEN_APPLE,
+                        Items.GOLD_BLOCK,
+                        Items.GOLD_BLOCK,
+                        Items.GOLD_BLOCK,
+                        Items.GOLD_BLOCK
+                ),
+                Items.ENCHANTED_GOLDEN_APPLE
+        );
     }
 
     @Override

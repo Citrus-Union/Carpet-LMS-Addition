@@ -16,18 +16,26 @@
  */
 package cn.nm.lms.carpetlmsaddition.mixin;
 
+import net.minecraft.world.entity.monster.Shulker;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import cn.nm.lms.carpetlmsaddition.rules.ShulkerDuplicateNearbyLimit;
-import net.minecraft.world.entity.monster.Shulker;
 
-@Mixin(Shulker.class)
+@Mixin(
+    Shulker.class
+)
 public abstract class ShulkerDuplicateNearbyLimitMixin
 {
     @ModifyConstant(
-            method = "hitByShulkerBullet", constant = @Constant(floatValue = 5.0F, ordinal = 0))
+            method = "hitByShulkerBullet",
+            constant = @Constant(
+                    floatValue = 5.0F,
+                    ordinal = 0
+            )
+    )
     private float changeBlacklistLimit(float original)
     {
         return (float) ShulkerDuplicateNearbyLimit.shulkerDuplicateNearbyLimit;

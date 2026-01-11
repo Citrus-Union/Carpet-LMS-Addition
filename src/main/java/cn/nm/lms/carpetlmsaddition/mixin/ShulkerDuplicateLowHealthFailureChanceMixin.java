@@ -16,17 +16,26 @@
  */
 package cn.nm.lms.carpetlmsaddition.mixin;
 
+import net.minecraft.world.entity.monster.Shulker;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import cn.nm.lms.carpetlmsaddition.rules.ShulkerDuplicateLowHealthFailureChance;
-import net.minecraft.world.entity.monster.Shulker;
 
-@Mixin(Shulker.class)
+@Mixin(
+    Shulker.class
+)
 public abstract class ShulkerDuplicateLowHealthFailureChanceMixin
 {
-    @ModifyConstant(method = "hurtServer", constant = @Constant(intValue = 4, ordinal = 0))
+    @ModifyConstant(
+            method = "hurtServer",
+            constant = @Constant(
+                    intValue = 4,
+                    ordinal = 0
+            )
+    )
     private int changeBlacklistLimit(int original)
     {
         int chance = ShulkerDuplicateLowHealthFailureChance.shulkerDuplicateLowHealthFailureChance;

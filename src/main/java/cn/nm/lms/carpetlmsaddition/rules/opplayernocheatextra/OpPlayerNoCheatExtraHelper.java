@@ -16,10 +16,10 @@
  */
 package cn.nm.lms.carpetlmsaddition.rules.opplayernocheatextra;
 
+import java.util.function.Predicate;
+
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
-
-import java.util.function.Predicate;
 
 public final class OpPlayerNoCheatExtraHelper
 {
@@ -28,7 +28,8 @@ public final class OpPlayerNoCheatExtraHelper
     }
 
     public static Predicate<CommandSourceStack> wrapPredicate(
-                                                              Predicate<CommandSourceStack> predicate)
+            Predicate<CommandSourceStack> predicate
+    )
     {
         return source -> predicate.test(source) && canCheat(source);
     }

@@ -21,7 +21,9 @@ import carpet.api.settings.RuleCategory;
 
 public final class PearlIgnoreEntityCollision
 {
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    @Rule(
+            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}
+    )
     public static boolean pearlIgnoreEntityCollision = false;
 
     private PearlIgnoreEntityCollision()

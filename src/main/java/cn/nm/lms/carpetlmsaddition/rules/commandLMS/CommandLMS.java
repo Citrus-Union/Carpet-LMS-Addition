@@ -16,24 +16,30 @@
  */
 package cn.nm.lms.carpetlmsaddition.rules.commandLMS;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
-import carpet.utils.CommandHelper;
-import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import com.mojang.brigadier.arguments.StringArgumentType;
+
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+
+import carpet.utils.CommandHelper;
+
+import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
 
 public final class CommandLMS
 {
-    public static final Map<String, Set<String>> ALL_CONFIG = Map.of("lowHealthSpectator", Set.of("true", "false"));
+    public static final Map<String, Set<String>> ALL_CONFIG = Map.of(
+            "lowHealthSpectator",
+            Set.of("true", "false")
+    );
 
     private CommandLMS()
     {
@@ -71,67 +77,129 @@ public final class CommandLMS
     {
         CommandRegistrationCallback.EVENT.register(
                 (dispatcher, registryAccess, environment) -> dispatcher.register(
-                        Commands.literal("lms").then(
-                                Commands.argument("player", EntityArgument.player()).then(
-                                        Commands.argument("config", StringArgumentType.word()).suggests(
-                                                (context, builder) ->
-                                                {
-                                                    configList().forEach(builder::suggest);
-                                                    return builder.buildFuture();
-                                                }).executes(
-                                                        ctx ->
+                        Commands.literal("lms")
+                                .then(
+                                        Commands.argument("player", EntityArgument.player())
+                                                .then(
+                                                        Commands.argument(
+                                                                "config",
+                                                                StringArgumentType.word()
+                                                        ).suggests((context, builder) ->
+                                                        {
+                                                            configList().forEach(builder::suggest);
+                                                            return builder.buildFuture();
+                                                        }).executes(ctx ->
                                                         {
                                                             CommandSourceStack src = ctx.getSource();
-                                                            ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
-                                                            String config = StringArgumentType.getString(ctx, "config");
+                                                            ServerPlayer target = EntityArgument.getPlayer(
+                                                                    ctx,
+                                                                    "player"
+                                                            );
+                                                            String config = StringArgumentType.getString(
+                                                                    ctx,
+                                                                    "config"
+                                                            );
                                                             if (!hasConfig(config))
                                                             {
                                                                 src.sendFailure(
-                                                                        Component.literal("Unknown config: " + config));
+                                                                        Component.literal(
+                                                                                "Unknown config: " + config
+                                                                        )
+                                                                );
                                                                 return 0;
                                                             }
                                                             if (!canUse(src, target))
                                                             {
-                                                                src.sendFailure(Component.literal("No permission"));
+                                                                src.sendFailure(
+                                                                        Component.literal(
+                                                                                "No permission"
+                                                                        )
+                                                                );
                                                                 return 0;
                                                             }
-                                                            String raw = PlayerConfig.get(target.getUUID(), config);
+                                                            String raw = PlayerConfig.get(
+                                                                    target.getUUID(),
+                                                                    config
+                                                            );
                                                             src.sendSuccess(
                                                                     () -> Component.literal(
-                                                                            "[Carpet LMS Addition] " + config + " = " + (raw == null ? "null" : raw)), false);
+                                                                            "[Carpet LMS " + "Addition] " + config + " = " + (raw == null ? "null" : raw)
+                                                                    ),
+                                                                    false
+                                                            );
                                                             return 1;
-                                                        }).then(
-                                                                Commands.argument("value", StringArgumentType.word()).suggests(
-                                                                        (ctx, builder) ->
+                                                        })
+                                                                .then(
+                                                                        Commands.argument(
+                                                                                "value",
+                                                                                StringArgumentType.word()
+                                                                        ).suggests((ctx, builder) ->
                                                                         {
-                                                                            String config = StringArgumentType.getString(ctx, "config");
-                                                                            valuesOf(config).forEach(builder::suggest);
+                                                                            String config = StringArgumentType.getString(
+                                                                                    ctx,
+                                                                                    "config"
+                                                                            );
+                                                                            valuesOf(config)
+                                                                                            .forEach(
+                                                                                                    builder::suggest
+                                                                                            );
                                                                             return builder.buildFuture();
-                                                                        }).executes(
-                                                                                ctx ->
-                                                                                {
-                                                                                    CommandSourceStack src = ctx.getSource();
-                                                                                    ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
-                                                                                    String config = StringArgumentType.getString(ctx, "config");
-                                                                                    String value = StringArgumentType.getString(ctx, "value");
-                                                                                    if (!hasValue(config, value))
-                                                                                    {
-                                                                                        src.sendFailure(
-                                                                                                Component.literal(
-                                                                                                        "Unknown config or value: " + config + " " + value));
-                                                                                        return 0;
-                                                                                    }
-                                                                                    if (!canUse(src, target))
-                                                                                    {
-                                                                                        src.sendFailure(
-                                                                                                Component.literal("No permission"));
-                                                                                        return 0;
-                                                                                    }
-                                                                                    PlayerConfig.set(target.getUUID(), config, value);
-                                                                                    src.sendSuccess(
-                                                                                            () -> Component.literal(
-                                                                                                    "[Carpet LMS Addition] " + config + " = " + value), false);
-                                                                                    return 1;
-                                                                                }))))));
+                                                                        }).executes(ctx ->
+                                                                        {
+                                                                            CommandSourceStack src = ctx.getSource();
+                                                                            ServerPlayer target = EntityArgument.getPlayer(
+                                                                                    ctx,
+                                                                                    "player"
+                                                                            );
+                                                                            String config = StringArgumentType.getString(
+                                                                                    ctx,
+                                                                                    "config"
+                                                                            );
+                                                                            String value = StringArgumentType.getString(
+                                                                                    ctx,
+                                                                                    "value"
+                                                                            );
+                                                                            if (!hasValue(
+                                                                                    config,
+                                                                                    value
+                                                                            ))
+                                                                            {
+                                                                                src.sendFailure(
+                                                                                        Component.literal(
+                                                                                                "Unknown config or value: " + config + " " + value
+                                                                                        )
+                                                                                );
+                                                                                return 0;
+                                                                            }
+                                                                            if (!canUse(
+                                                                                    src,
+                                                                                    target
+                                                                            ))
+                                                                            {
+                                                                                src.sendFailure(
+                                                                                        Component.literal(
+                                                                                                "No permission"
+                                                                                        )
+                                                                                );
+                                                                                return 0;
+                                                                            }
+                                                                            PlayerConfig.set(
+                                                                                    target.getUUID(),
+                                                                                    config,
+                                                                                    value
+                                                                            );
+                                                                            src.sendSuccess(
+                                                                                    () -> Component.literal(
+                                                                                            "[Carpet LMS Addition] " + config + " = " + value
+                                                                                    ),
+                                                                                    false
+                                                                            );
+                                                                            return 1;
+                                                                        })
+                                                                )
+                                                )
+                                )
+                )
+        );
     }
 }

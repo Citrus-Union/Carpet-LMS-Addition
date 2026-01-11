@@ -81,7 +81,21 @@ spotless {
         removeUnusedImports()
         forbidWildcardImports()
         forbidModuleImports()
-        importOrder("org", "com", "", "java", "javax")
+        importOrder(
+            "java",
+            "javax",
+            "net.minecraft",
+            "com.mojang",
+            "net.fabricmc",
+            "org.spongepowered",
+            "com.llamalad7",
+            "carpet",
+            "org",
+            "com",
+            "net",
+            "cn.nm.lms",
+            "",
+        )
         cleanthat()
         eclipse(libs.versions.eclipse.get()).configFile(rootProject.file("eclipse-formatter.xml"))
         licenseHeaderFile(licenseHeaderFile)

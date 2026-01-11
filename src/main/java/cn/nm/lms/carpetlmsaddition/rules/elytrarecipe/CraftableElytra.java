@@ -16,8 +16,8 @@
  */
 package cn.nm.lms.carpetlmsaddition.rules.elytrarecipe;
 
-import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionRecipes;
-import cn.nm.lms.carpetlmsaddition.lib.recipe.ShapedRecipe;
+import java.util.Arrays;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,29 +26,54 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
-import java.util.Arrays;
+import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionRecipes;
+import cn.nm.lms.carpetlmsaddition.lib.recipe.ShapedRecipe;
 
 public class CraftableElytra extends ShapedRecipe
 {
     public CraftableElytra(CraftingBookCategory category)
     {
         super(
-                category, () -> ElytraRecipe.elytraRecipe, 3, 3, Arrays.asList(
-                        Items.PHANTOM_MEMBRANE, Items.END_CRYSTAL, Items.PHANTOM_MEMBRANE, Items.PHANTOM_MEMBRANE, Items.ELYTRA, Items.PHANTOM_MEMBRANE, Items.PHANTOM_MEMBRANE, Items.END_CRYSTAL, Items.PHANTOM_MEMBRANE), Items.ELYTRA, 1, (CraftingInput input) ->
+                category,
+                () -> ElytraRecipe.elytraRecipe,
+                3,
+                3,
+                Arrays.asList(
+                        Items.PHANTOM_MEMBRANE,
+                        Items.END_CRYSTAL,
+                        Items.PHANTOM_MEMBRANE,
+                        Items.PHANTOM_MEMBRANE,
+                        Items.ELYTRA,
+                        Items.PHANTOM_MEMBRANE,
+                        Items.PHANTOM_MEMBRANE,
+                        Items.END_CRYSTAL,
+                        Items.PHANTOM_MEMBRANE
+                ),
+                Items.ELYTRA,
+                1,
+                (CraftingInput input) ->
+                {
+                    NonNullList<ItemStack> rem = NonNullList.withSize(
+                            input.size(),
+                            ItemStack.EMPTY
+                    );
+                    for (
+                            int i = 0;
+                            i < input.size();
+                            i++
+                    )
+                    {
+                        ItemStack stack = input.getItem(i);
+                        if (stack.is(Items.ELYTRA))
                         {
-                            NonNullList<ItemStack> rem = NonNullList.withSize(input.size(), ItemStack.EMPTY);
-                            for (int i = 0; i < input.size(); i++)
-                            {
-                                ItemStack stack = input.getItem(i);
-                                if (stack.is(Items.ELYTRA))
-                                {
-                                    ItemStack copy = stack.copy();
-                                    copy.setCount(1);
-                                    rem.set(i, copy);
-                                }
-                            }
-                            return rem;
-                        });
+                            ItemStack copy = stack.copy();
+                            copy.setCount(1);
+                            rem.set(i, copy);
+                        }
+                    }
+                    return rem;
+                }
+        );
     }
 
     @Override

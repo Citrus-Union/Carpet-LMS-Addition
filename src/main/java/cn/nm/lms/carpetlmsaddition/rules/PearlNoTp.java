@@ -22,7 +22,10 @@ import carpet.api.settings.RuleCategory;
 public final class PearlNoTp
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.CREATIVE}, options = {"true", "false"}, strict = false)
+            categories = {LMSRuleCategory.LMS, RuleCategory.CREATIVE},
+            options = {"true", "false"},
+            strict = false
+    )
     public static String pearlNoTp = "false";
 
     private PearlNoTp()

@@ -34,12 +34,12 @@ public final class CheckMod
         {
             return false;
         }
-
         try
         {
             VersionPredicate predicate = VersionPredicate.parse(version);
             return predicate.test(container.getMetadata().getVersion());
-        } catch (VersionParsingException e)
+        }
+        catch (VersionParsingException e)
         {
             return false;
         }

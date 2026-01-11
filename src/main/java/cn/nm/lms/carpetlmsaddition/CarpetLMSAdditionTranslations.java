@@ -16,11 +16,6 @@
  */
 package cn.nm.lms.carpetlmsaddition;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import net.fabricmc.loader.api.FabricLoader;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -31,10 +26,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.fabricmc.loader.api.FabricLoader;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 public final class CarpetLMSAdditionTranslations
 {
     private static final Map<String, Map<String, String>> TRANSLATION_STORAGE = new LinkedHashMap<>();
-
     private static final String DEFAULT_LANG = "en_us";
     private static final String RESOURCE_DIR = "assets/carpetlmsaddition/lang";
     private static final Gson GSON = new Gson();
@@ -49,18 +48,25 @@ public final class CarpetLMSAdditionTranslations
         try
         {
             languages = readJson(
-                    RESOURCE_DIR + "/meta/languages.json", new TypeToken<List<String>>()
+                    RESOURCE_DIR + "/meta/languages.json",
+                    new TypeToken<List<String>>()
                     {
-                    }.getType());
-        } catch (Exception e)
+                    }.getType()
+            );
+        }
+        catch (Exception e)
         {
             CarpetLMSAdditionMod.LOGGER.error("Failed to read language list", e);
             return;
         }
-
-        for (String lang : languages)
+        for (
+            String lang : languages
+        )
         {
-            TRANSLATION_STORAGE.computeIfAbsent(lang, key -> new HashMap<>(loadTranslationFile(key)));
+            TRANSLATION_STORAGE.computeIfAbsent(
+                    lang,
+                    key -> new HashMap<>(loadTranslationFile(key))
+            );
         }
     }
 
@@ -69,10 +75,13 @@ public final class CarpetLMSAdditionTranslations
         try
         {
             return readJson(
-                    RESOURCE_DIR + "/" + lang + ".json", new TypeToken<Map<String, String>>()
+                    RESOURCE_DIR + "/" + lang + ".json",
+                    new TypeToken<Map<String, String>>()
                     {
-                    }.getType());
-        } catch (Exception e)
+                    }.getType()
+            );
+        }
+        catch (Exception e)
         {
             String msg = "Failed to load translation of language " + lang;
             CarpetLMSAdditionMod.LOGGER.error(msg, e);
@@ -93,12 +102,10 @@ public final class CarpetLMSAdditionTranslations
     public static Map<String, String> translations(String lang)
     {
         Map<String, String> result = new HashMap<>(getTranslations(DEFAULT_LANG));
-
         if (!DEFAULT_LANG.equals(lang))
         {
             result.putAll(getTranslations(lang));
         }
-
         return result;
     }
 
@@ -110,10 +117,14 @@ public final class CarpetLMSAdditionTranslations
         {
             throw new IllegalStateException("Missing resource: " + path);
         }
-        try (InputStream input = stream; InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8))
+        try (
+                InputStream input = stream;
+                InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8)
+        )
         {
             return GSON.fromJson(reader, type);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }

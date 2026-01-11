@@ -23,7 +23,9 @@ import carpet.api.settings.Validators;
 public final class ShulkerDuplicateNearbyLimit
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, validators = {Validators.NonNegativeNumber.class})
+            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
+            validators = {Validators.NonNegativeNumber.class}
+    )
     public static int shulkerDuplicateNearbyLimit = 5;
 
     private ShulkerDuplicateNearbyLimit()

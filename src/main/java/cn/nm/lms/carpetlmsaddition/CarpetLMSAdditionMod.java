@@ -16,22 +16,22 @@
  */
 package cn.nm.lms.carpetlmsaddition;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import carpet.CarpetExtension;
-import carpet.CarpetServer;
-import cn.nm.lms.carpetlmsaddition.rules.RulesBootstrap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 
+import carpet.CarpetExtension;
+import carpet.CarpetServer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import cn.nm.lms.carpetlmsaddition.rules.RulesBootstrap;
+
 public class CarpetLMSAdditionMod implements ModInitializer, CarpetExtension
 {
     public static final String MOD_ID = "carpet-lms-addition";
-
     private static volatile ModContainer modContainer;
-
     public static final Logger LOGGER = LogManager.getLogger(getModName());
 
     private static ModContainer getModContainer()
@@ -42,7 +42,13 @@ public class CarpetLMSAdditionMod implements ModInitializer, CarpetExtension
             {
                 if (modContainer == null)
                 {
-                    modContainer = FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow(() -> new RuntimeException("Mod not found: " + MOD_ID));
+                    modContainer = FabricLoader.getInstance()
+                                               .getModContainer(MOD_ID)
+                                               .orElseThrow(
+                                                       () -> new RuntimeException(
+                                                               "Mod not found: " + MOD_ID
+                                                       )
+                                               );
                 }
             }
         }

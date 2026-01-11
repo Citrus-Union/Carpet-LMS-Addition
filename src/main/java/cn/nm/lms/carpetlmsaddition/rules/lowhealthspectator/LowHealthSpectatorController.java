@@ -16,19 +16,21 @@
  */
 package cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator;
 
-import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionMod;
-import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
-import cn.nm.lms.carpetlmsaddition.lib.check.CheckMod;
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+
+import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionMod;
+import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
+import cn.nm.lms.carpetlmsaddition.lib.check.CheckMod;
 
 public final class LowHealthSpectatorController
 {
@@ -41,7 +43,13 @@ public final class LowHealthSpectatorController
     public static void init()
     {
         ServerLivingEntityEvents.AFTER_DAMAGE.register(
-                (entity, ignoreSource, ignoreBaseDamageTaken, ignoreDamageTaken, ignoreBlockedDamage) ->
+                (
+                        entity,
+                        ignoreSource,
+                        ignoreBaseDamageTaken,
+                        ignoreDamageTaken,
+                        ignoreBlockedDamage
+                ) ->
                 {
                     if (!(entity instanceof ServerPlayer player))
                     {
@@ -50,16 +58,21 @@ public final class LowHealthSpectatorController
                     long now = player.level().getGameTime();
                     UUID playerUUID = player.getUUID();
                     long last = COOLDOWN_MAP.getOrDefault(
-                            playerUUID, now - LowHealthSpectatorCooldown.lowHealthSpectatorCooldown);
+                            playerUUID,
+                            now - LowHealthSpectatorCooldown.lowHealthSpectatorCooldown
+                    );
                     float hp = player.getHealth();
-
-                    if (isEnabled(playerUUID) && now - last >= LowHealthSpectatorCooldown.lowHealthSpectatorCooldown && player.gameMode() == GameType.SURVIVAL && hp > 0f && hp <= (float) LowHealthSpectatorThreshold.lowHealthSpectatorThreshold)
+                    if (isEnabled(
+                            playerUUID
+                    ) && now - last >= LowHealthSpectatorCooldown.lowHealthSpectatorCooldown && player.gameMode() == GameType.SURVIVAL && hp > 0f && hp <= (float) LowHealthSpectatorThreshold.lowHealthSpectatorThreshold)
                     {
                         switch (LowHealthSpectatorMethod.lowHealthSpectatorMethod)
                         {
                             case "vanilla" -> player.setGameMode(GameType.SPECTATOR);
-                            case "mcdreforged" ->
-                                CarpetLMSAdditionMod.LOGGER.info("<{}> !!spec", player.getName().getString());
+                            case "mcdreforged" -> CarpetLMSAdditionMod.LOGGER.info(
+                                    "<{}> !!spec",
+                                    player.getName().getString()
+                            );
                             case "carpet-org-addition" -> {
                                 if (CheckMod.checkMod("carpet-org-addition", ">=1.38.0"))
                                 {
@@ -67,20 +80,30 @@ public final class LowHealthSpectatorController
                                     Commands commandManager = server.getCommands();
                                     server.execute(
                                             () -> commandManager.performPrefixedCommand(
-                                                    player.createCommandSourceStack(), "spectator"));
-                                } else
+                                                    player.createCommandSourceStack(),
+                                                    "spectator"
+                                            )
+                                    );
+                                }
+                                else
                                 {
-                                    CarpetLMSAdditionMod.LOGGER.warn("Carpet Org Addition (>=1.38.0) not installed");
+                                    CarpetLMSAdditionMod.LOGGER.warn(
+                                            "Carpet Org Addition (>=1.38.0) not installed"
+                                    );
                                 }
                             }
                             case "kick" -> player.connection.disconnect(
-                                    Component.nullToEmpty("Kicked by Carpet LMS Addition"));
+                                    Component.nullToEmpty("Kicked by Carpet LMS Addition")
+                            );
                             default -> CarpetLMSAdditionMod.LOGGER.warn(
-                                    "Unknown lowHealthSpectatorMethod: {}", LowHealthSpectatorMethod.lowHealthSpectatorMethod);
+                                    "Unknown lowHealthSpectatorMethod: {}",
+                                    LowHealthSpectatorMethod.lowHealthSpectatorMethod
+                            );
                         }
                         COOLDOWN_MAP.put(playerUUID, now);
                     }
-                });
+                }
+        );
     }
 
     private static boolean isEnabled(UUID playerUUID)

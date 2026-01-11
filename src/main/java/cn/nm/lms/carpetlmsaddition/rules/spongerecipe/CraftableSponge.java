@@ -16,22 +16,38 @@
  */
 package cn.nm.lms.carpetlmsaddition.rules.spongerecipe;
 
-import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionRecipes;
-import cn.nm.lms.carpetlmsaddition.lib.recipe.ShapedRecipe;
+import java.util.Arrays;
+
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
-import java.util.Arrays;
+import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionRecipes;
+import cn.nm.lms.carpetlmsaddition.lib.recipe.ShapedRecipe;
 
 public class CraftableSponge extends ShapedRecipe
 {
     public CraftableSponge(CraftingBookCategory category)
     {
         super(
-                category, () -> SpongeRecipe.spongeRecipe, 3, 3, Arrays.asList(
-                        Items.SLIME_BLOCK, Items.HAY_BLOCK, Items.SLIME_BLOCK, Items.HAY_BLOCK, Items.SLIME_BLOCK, Items.HAY_BLOCK, Items.SLIME_BLOCK, Items.HAY_BLOCK, Items.SLIME_BLOCK), Items.SPONGE);
+                category,
+                () -> SpongeRecipe.spongeRecipe,
+                3,
+                3,
+                Arrays.asList(
+                        Items.SLIME_BLOCK,
+                        Items.HAY_BLOCK,
+                        Items.SLIME_BLOCK,
+                        Items.HAY_BLOCK,
+                        Items.SLIME_BLOCK,
+                        Items.HAY_BLOCK,
+                        Items.SLIME_BLOCK,
+                        Items.HAY_BLOCK,
+                        Items.SLIME_BLOCK
+                ),
+                Items.SPONGE
+        );
     }
 
     @Override
