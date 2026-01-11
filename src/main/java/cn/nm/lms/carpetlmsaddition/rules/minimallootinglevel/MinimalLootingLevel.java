@@ -21,11 +21,13 @@ import carpet.api.settings.RuleCategory;
 import carpet.api.settings.Validators;
 import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 
-public final class MinimalLootingLevel {
-  @Rule(
-      categories = {LMSRuleCategory.LMS, RuleCategory.CREATIVE},
-      validators = {Validators.NonNegativeNumber.class})
-  public static int minimalLootingLevel = 0;
+public final class MinimalLootingLevel
+{
+    @Rule(
+            categories = {LMSRuleCategory.LMS, RuleCategory.CREATIVE}, validators = {Validators.NonNegativeNumber.class})
+    public static int minimalLootingLevel = 0;
 
-  private MinimalLootingLevel() {}
+    private MinimalLootingLevel()
+    {
+    }
 }

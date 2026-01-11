@@ -16,18 +16,20 @@
  */
 package cn.nm.lms.carpetlmsaddition.mixin;
 
-import cn.nm.lms.carpetlmsaddition.rules.VaultMaxBlacklistSize;
-import net.minecraft.world.level.block.entity.vault.VaultServerData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
+import cn.nm.lms.carpetlmsaddition.rules.VaultMaxBlacklistSize;
+import net.minecraft.world.level.block.entity.vault.VaultServerData;
+
 @Mixin(VaultServerData.class)
-public abstract class VaultMaxBlacklistSizeMixin {
-  @ModifyConstant(
-      method = "addToRewardedPlayers",
-      constant = @Constant(intValue = 128, ordinal = 0))
-  private int changeBlacklistLimit(int original) {
-    return VaultMaxBlacklistSize.vaultMaxBlacklistSize;
-  }
+public abstract class VaultMaxBlacklistSizeMixin
+{
+    @ModifyConstant(
+            method = "addToRewardedPlayers", constant = @Constant(intValue = 128, ordinal = 0))
+    private int changeBlacklistLimit(int original)
+    {
+        return VaultMaxBlacklistSize.vaultMaxBlacklistSize;
+    }
 }

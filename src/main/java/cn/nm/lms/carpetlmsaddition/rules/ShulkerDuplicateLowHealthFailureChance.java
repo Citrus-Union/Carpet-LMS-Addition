@@ -20,11 +20,13 @@ import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 import carpet.api.settings.Validators;
 
-public final class ShulkerDuplicateLowHealthFailureChance {
-  @Rule(
-      categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-      validators = {Validators.NonNegativeNumber.class})
-  public static int shulkerDuplicateLowHealthFailureChance = 4;
+public final class ShulkerDuplicateLowHealthFailureChance
+{
+    @Rule(
+            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, validators = {Validators.NonNegativeNumber.class})
+    public static int shulkerDuplicateLowHealthFailureChance = 4;
 
-  private ShulkerDuplicateLowHealthFailureChance() {}
+    private ShulkerDuplicateLowHealthFailureChance()
+    {
+    }
 }

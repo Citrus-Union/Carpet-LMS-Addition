@@ -1,5 +1,3 @@
-import org.gradle.api.Project
-import org.gradle.api.file.DuplicatesStrategy
 import java.nio.file.Path
 
 plugins {
@@ -74,39 +72,42 @@ spotless {
     val licenseHeaderFile = rootProject.file("copyright.txt")
     kotlinGradle {
         target("**/*.gradle.kts")
-        targetExclude("**/build/**", "**/.gradle/**")
+        targetExclude("**/build/**", "**/.gradle/**", "**/run/**", "**/.idea/**")
         ktlint(libs.versions.ktlint.get())
     }
     java {
         target("**/*.java")
-        targetExclude("**/build/**", "**/.gradle/**")
+        targetExclude("**/build/**", "**/.gradle/**", "**/run/**", "**/.idea/**")
         removeUnusedImports()
         forbidWildcardImports()
         forbidModuleImports()
+        importOrder("org", "com", "", "java", "javax")
         cleanthat()
-        googleJavaFormat(libs.versions.googleJavaFormat.get())
-            .reflowLongStrings()
-            .formatJavadoc(true)
-            .reorderImports(true)
+        eclipse(libs.versions.eclipse.get()).configFile(rootProject.file("eclipse-formatter.xml"))
         licenseHeaderFile(licenseHeaderFile)
     }
     format("styling") {
-        target("**/*.md", "**/*.json", "**/*.yaml", "**/*.yml", "**/*.toml")
-        targetExclude("**/build/**", "**/.gradle/**", "**/run/**")
+        target("**/*.md", "**/*.json", "**/*.yaml", "**/*.yml", "**/*.toml", "**/*.xml")
+        targetExclude("**/build/**", "**/.gradle/**", "**/run/**", "**/.idea/**")
         prettier(
             mapOf(
                 "prettier" to libs.versions.prettier.get(),
-                "prettier-plugin-toml" to libs.versions.prettierPluginToml.get(),
+                "prettier-plugin-toml" to
+                    libs.versions.prettierPlugin.toml
+                        .get(),
+                "@prettier/plugin-xml" to
+                    libs.versions.prettierPlugin.xml
+                        .get(),
             ),
         ).config(
             mapOf(
-                "plugins" to listOf("prettier-plugin-toml"),
+                "plugins" to listOf("prettier-plugin-toml", "@prettier/plugin-xml"),
             ),
         )
     }
     format("text") {
         target("**/*.properties", "**/*.txt")
-        targetExclude("**/build/**", "**/.gradle/**", "**/run/**")
+        targetExclude("**/build/**", "**/.gradle/**", "**/run/**", "**/.idea/**")
         trimTrailingWhitespace()
         endWithNewline()
     }

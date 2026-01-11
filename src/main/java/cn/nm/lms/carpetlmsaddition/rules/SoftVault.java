@@ -19,9 +19,12 @@ package cn.nm.lms.carpetlmsaddition.rules;
 import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 
-public final class SoftVault {
-  @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
-  public static boolean softVault = false;
+public final class SoftVault
+{
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    public static boolean softVault = false;
 
-  private SoftVault() {}
+    private SoftVault()
+    {
+    }
 }

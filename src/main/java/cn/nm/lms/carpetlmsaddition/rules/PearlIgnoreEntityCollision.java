@@ -19,9 +19,12 @@ package cn.nm.lms.carpetlmsaddition.rules;
 import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 
-public final class PearlIgnoreEntityCollision {
-  @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
-  public static boolean pearlIgnoreEntityCollision = false;
+public final class PearlIgnoreEntityCollision
+{
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    public static boolean pearlIgnoreEntityCollision = false;
 
-  private PearlIgnoreEntityCollision() {}
+    private PearlIgnoreEntityCollision()
+    {
+    }
 }

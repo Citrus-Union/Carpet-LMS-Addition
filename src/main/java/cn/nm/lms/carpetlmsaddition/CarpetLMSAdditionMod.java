@@ -16,63 +16,72 @@
  */
 package cn.nm.lms.carpetlmsaddition;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import cn.nm.lms.carpetlmsaddition.rules.RulesBootstrap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-public class CarpetLMSAdditionMod implements ModInitializer, CarpetExtension {
-  public static final String MOD_ID = "carpet-lms-addition";
+public class CarpetLMSAdditionMod implements ModInitializer, CarpetExtension
+{
+    public static final String MOD_ID = "carpet-lms-addition";
 
-  private static volatile ModContainer modContainer;
+    private static volatile ModContainer modContainer;
 
-  public static final Logger LOGGER = LogManager.getLogger(getModName());
+    public static final Logger LOGGER = LogManager.getLogger(getModName());
 
-  private static ModContainer getModContainer() {
-    if (modContainer == null) {
-      synchronized (CarpetLMSAdditionMod.class) {
-        if (modContainer == null) {
-          modContainer =
-              FabricLoader.getInstance()
-                  .getModContainer(MOD_ID)
-                  .orElseThrow(() -> new RuntimeException("Mod not found: " + MOD_ID));
+    private static ModContainer getModContainer()
+    {
+        if (modContainer == null)
+        {
+            synchronized (CarpetLMSAdditionMod.class)
+            {
+                if (modContainer == null)
+                {
+                    modContainer = FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow(() -> new RuntimeException("Mod not found: " + MOD_ID));
+                }
+            }
         }
-      }
+        return modContainer;
     }
-    return modContainer;
-  }
 
-  public static String getVersion() {
-    return getModContainer().getMetadata().getVersion().getFriendlyString();
-  }
+    public static String getVersion()
+    {
+        return getModContainer().getMetadata().getVersion().getFriendlyString();
+    }
 
-  public static String getModName() {
-    return getModContainer().getMetadata().getName();
-  }
+    public static String getModName()
+    {
+        return getModContainer().getMetadata().getName();
+    }
 
-  @Override
-  public void onInitialize() {
-    LOGGER.info("{} version {}", getModName(), getVersion());
-    CarpetServer.manageExtension(this);
-    CarpetLMSAdditionInit.initAll();
-  }
+    @Override
+    public void onInitialize()
+    {
+        LOGGER.info("{} version {}", getModName(), getVersion());
+        CarpetServer.manageExtension(this);
+        CarpetLMSAdditionInit.initAll();
+    }
 
-  @Override
-  public String version() {
-    return getVersion();
-  }
+    @Override
+    public String version()
+    {
+        return getVersion();
+    }
 
-  @Override
-  public void onGameStarted() {
-    RulesBootstrap.registerAll();
-  }
+    @Override
+    public void onGameStarted()
+    {
+        RulesBootstrap.registerAll();
+    }
 
-  @Override
-  public java.util.Map<String, String> canHasTranslations(String lang) {
-    return CarpetLMSAdditionTranslations.translations(lang);
-  }
+    @Override
+    public java.util.Map<String, String> canHasTranslations(String lang)
+    {
+        return CarpetLMSAdditionTranslations.translations(lang);
+    }
 }

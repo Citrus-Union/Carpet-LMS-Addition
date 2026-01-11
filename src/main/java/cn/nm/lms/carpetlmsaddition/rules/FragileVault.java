@@ -19,9 +19,12 @@ package cn.nm.lms.carpetlmsaddition.rules;
 import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 
-public final class FragileVault {
-  @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
-  public static boolean fragileVault = false;
+public final class FragileVault
+{
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    public static boolean fragileVault = false;
 
-  private FragileVault() {}
+    private FragileVault()
+    {
+    }
 }

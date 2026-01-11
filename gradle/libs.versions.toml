@@ -1,5 +1,6 @@
 [versions]
 prettier = "3.7.4"
-prettierPluginToml = "2.0.6"
-googleJavaFormat = "1.33.0"
+prettierPlugin-toml = "2.0.6"
+prettierPlugin-xml = "3.4.2"
+eclipse = "4.38"
 ktlint = "1.8.0"

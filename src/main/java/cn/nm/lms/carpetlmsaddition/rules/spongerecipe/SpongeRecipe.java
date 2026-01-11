@@ -20,9 +20,12 @@ import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 
-public final class SpongeRecipe {
-  @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
-  public static boolean spongeRecipe = false;
+public final class SpongeRecipe
+{
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    public static boolean spongeRecipe = false;
 
-  private SpongeRecipe() {}
+    private SpongeRecipe()
+    {
+    }
 }

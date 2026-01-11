@@ -16,84 +16,101 @@
  */
 package cn.nm.lms.carpetlmsaddition.lib;
 
-import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionMod;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionMod;
+import net.fabricmc.loader.api.FabricLoader;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
-import net.fabricmc.loader.api.FabricLoader;
 
-public final class PlayerConfig {
-  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-  private static final Path FILE =
-      FabricLoader.getInstance().getConfigDir().resolve(CarpetLMSAdditionMod.MOD_ID + ".json");
-  private static final String PLAYER_CONFIG_KEY = "playerConfig";
-  private static JsonObject root;
+public final class PlayerConfig
+{
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve(CarpetLMSAdditionMod.MOD_ID + ".json");
+    private static final String PLAYER_CONFIG_KEY = "playerConfig";
+    private static JsonObject root;
 
-  private PlayerConfig() {}
-
-  public static String get(UUID playerUUID, String configName) {
-    JsonObject data = ensureLoaded();
-
-    JsonObject allConfig = data.getAsJsonObject(PLAYER_CONFIG_KEY);
-    if (allConfig == null) {
-      return null;
-    }
-    JsonObject perConfig = allConfig.getAsJsonObject(configName);
-    if (perConfig == null) {
-      return null;
+    private PlayerConfig()
+    {
     }
 
-    return perConfig.get(playerUUID.toString()) != null
-        ? perConfig.get(playerUUID.toString()).getAsString()
-        : null;
-  }
+    public static String get(UUID playerUUID, String configName)
+    {
+        JsonObject data = ensureLoaded();
 
-  public static void set(UUID playerUUID, String configName, String value) {
-    JsonObject data = ensureLoaded();
+        JsonObject allConfig = data.getAsJsonObject(PLAYER_CONFIG_KEY);
+        if (allConfig == null)
+        {
+            return null;
+        }
+        JsonObject perConfig = allConfig.getAsJsonObject(configName);
+        if (perConfig == null)
+        {
+            return null;
+        }
 
-    JsonObject allConfig = data.getAsJsonObject(PLAYER_CONFIG_KEY);
-    if (allConfig == null) {
-      allConfig = new JsonObject();
-    }
-    JsonObject perConfig = allConfig.getAsJsonObject(configName);
-    if (perConfig == null) {
-      perConfig = new JsonObject();
+        return perConfig.get(playerUUID.toString()) != null ? perConfig.get(playerUUID.toString()).getAsString() : null;
     }
 
-    perConfig.addProperty(playerUUID.toString(), value);
-    allConfig.add(configName, perConfig);
-    data.add(PLAYER_CONFIG_KEY, allConfig);
+    public static void set(UUID playerUUID, String configName, String value)
+    {
+        JsonObject data = ensureLoaded();
 
-    try {
-      Files.createDirectories(FILE.getParent());
-      try (BufferedWriter writer = Files.newBufferedWriter(FILE)) {
-        GSON.toJson(data, writer);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
+        JsonObject allConfig = data.getAsJsonObject(PLAYER_CONFIG_KEY);
+        if (allConfig == null)
+        {
+            allConfig = new JsonObject();
+        }
+        JsonObject perConfig = allConfig.getAsJsonObject(configName);
+        if (perConfig == null)
+        {
+            perConfig = new JsonObject();
+        }
 
-  private static JsonObject ensureLoaded() {
-    if (root != null) {
-      return root;
+        perConfig.addProperty(playerUUID.toString(), value);
+        allConfig.add(configName, perConfig);
+        data.add(PLAYER_CONFIG_KEY, allConfig);
+
+        try
+        {
+            Files.createDirectories(FILE.getParent());
+            try (BufferedWriter writer = Files.newBufferedWriter(FILE))
+            {
+                GSON.toJson(data, writer);
+            }
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
-    if (Files.exists(FILE)) {
-      try (BufferedReader reader = Files.newBufferedReader(FILE)) {
-        root = JsonParser.parseReader(reader).getAsJsonObject();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    } else {
-      root = new JsonObject();
+
+    private static JsonObject ensureLoaded()
+    {
+        if (root != null)
+        {
+            return root;
+        }
+        if (Files.exists(FILE))
+        {
+            try (BufferedReader reader = Files.newBufferedReader(FILE))
+            {
+                root = JsonParser.parseReader(reader).getAsJsonObject();
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        } else
+        {
+            root = new JsonObject();
+        }
+        return root;
     }
-    return root;
-  }
 }

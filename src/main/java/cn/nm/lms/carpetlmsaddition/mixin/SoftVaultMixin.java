@@ -16,28 +16,32 @@
  */
 package cn.nm.lms.carpetlmsaddition.mixin;
 
-import cn.nm.lms.carpetlmsaddition.rules.SoftVault;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour.BlockStateBase;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(BlockStateBase.class)
-public abstract class SoftVaultMixin {
-  @Shadow
-  public abstract Block getBlock();
+import cn.nm.lms.carpetlmsaddition.rules.SoftVault;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour.BlockStateBase;
 
-  @Inject(method = "getDestroySpeed", at = @At("RETURN"), cancellable = true)
-  private void vaultHardnessTo3(
-      BlockGetter world, BlockPos pos, CallbackInfoReturnable<Float> cir) {
-    if (SoftVault.softVault && this.getBlock() == Blocks.VAULT) {
-      cir.setReturnValue(3.0F);
+@Mixin(BlockStateBase.class)
+public abstract class SoftVaultMixin
+{
+    @Shadow
+    public abstract Block getBlock();
+
+    @Inject(method = "getDestroySpeed", at = @At("RETURN"), cancellable = true)
+    private void vaultHardnessTo3(
+                                  BlockGetter world, BlockPos pos, CallbackInfoReturnable<Float> cir)
+    {
+        if (SoftVault.softVault && this.getBlock() == Blocks.VAULT)
+        {
+            cir.setReturnValue(3.0F);
+        }
     }
-  }
 }

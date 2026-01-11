@@ -20,11 +20,13 @@ import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 import carpet.api.settings.Validators;
 
-public final class ShulkerDuplicateNearbyLimit {
-  @Rule(
-      categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-      validators = {Validators.NonNegativeNumber.class})
-  public static int shulkerDuplicateNearbyLimit = 5;
+public final class ShulkerDuplicateNearbyLimit
+{
+    @Rule(
+            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, validators = {Validators.NonNegativeNumber.class})
+    public static int shulkerDuplicateNearbyLimit = 5;
 
-  private ShulkerDuplicateNearbyLimit() {}
+    private ShulkerDuplicateNearbyLimit()
+    {
+    }
 }

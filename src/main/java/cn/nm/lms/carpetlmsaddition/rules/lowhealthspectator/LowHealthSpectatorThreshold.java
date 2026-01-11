@@ -21,11 +21,13 @@ import carpet.api.settings.RuleCategory;
 import carpet.api.settings.Validators;
 import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 
-public final class LowHealthSpectatorThreshold {
-  @Rule(
-      categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-      validators = {Validators.NonNegativeNumber.class})
-  public static int lowHealthSpectatorThreshold = 5;
+public final class LowHealthSpectatorThreshold
+{
+    @Rule(
+            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, validators = {Validators.NonNegativeNumber.class}, options = {"5", "10", "15", "20"}, strict = false)
+    public static int lowHealthSpectatorThreshold = 5;
 
-  private LowHealthSpectatorThreshold() {}
+    private LowHealthSpectatorThreshold()
+    {
+    }
 }

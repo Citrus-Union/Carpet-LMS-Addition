@@ -20,11 +20,13 @@ import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 
-public final class LowHealthSpectatorMethod {
-  @Rule(
-      categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-      options = {"vanilla", "mcdreforged", "carpet-org-addition", "kick"})
-  public static String lowHealthSpectatorMethod = "vanilla";
+public final class LowHealthSpectatorMethod
+{
+    @Rule(
+            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, options = {"vanilla", "mcdreforged", "carpet-org-addition", "kick"})
+    public static String lowHealthSpectatorMethod = "vanilla";
 
-  private LowHealthSpectatorMethod() {}
+    private LowHealthSpectatorMethod()
+    {
+    }
 }

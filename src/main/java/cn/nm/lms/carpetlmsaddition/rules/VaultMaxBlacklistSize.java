@@ -20,11 +20,13 @@ import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 import carpet.api.settings.Validators;
 
-public final class VaultMaxBlacklistSize {
-  @Rule(
-      categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-      validators = {Validators.NonNegativeNumber.class})
-  public static int vaultMaxBlacklistSize = 128;
+public final class VaultMaxBlacklistSize
+{
+    @Rule(
+            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, validators = {Validators.NonNegativeNumber.class})
+    public static int vaultMaxBlacklistSize = 128;
 
-  private VaultMaxBlacklistSize() {}
+    private VaultMaxBlacklistSize()
+    {
+    }
 }

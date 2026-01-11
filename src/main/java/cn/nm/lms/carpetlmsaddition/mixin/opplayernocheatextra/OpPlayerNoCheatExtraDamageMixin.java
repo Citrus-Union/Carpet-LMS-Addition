@@ -16,33 +16,29 @@
  */
 package cn.nm.lms.carpetlmsaddition.mixin.opplayernocheatextra;
 
-import cn.nm.lms.carpetlmsaddition.rules.opplayernocheatextra.OpPlayerNoCheatExtraHelper;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import java.util.function.Predicate;
+
+import cn.nm.lms.carpetlmsaddition.rules.opplayernocheatextra.OpPlayerNoCheatExtraHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.commands.DamageCommand;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
+
+import java.util.function.Predicate;
 
 @Mixin(DamageCommand.class)
-public abstract class OpPlayerNoCheatExtraDamageMixin {
-  @WrapOperation(
-      method = "register",
-      at =
-          @At(
-              value = "INVOKE",
-              target =
-                  "Lcom/mojang/brigadier/builder/LiteralArgumentBuilder;requires(Ljava/util/function/Predicate;)Lcom/mojang/brigadier/builder/ArgumentBuilder;",
-              remap = false),
-      require = 1,
-      allow = 1)
-  private static ArgumentBuilder<CommandSourceStack, ?> opPlayerNoCheatExtra$wrapRequires(
-      LiteralArgumentBuilder<CommandSourceStack> instance,
-      Predicate<CommandSourceStack> predicate,
-      Operation<ArgumentBuilder<CommandSourceStack, ?>> original) {
-    return original.call(instance, OpPlayerNoCheatExtraHelper.wrapPredicate(predicate));
-  }
+public abstract class OpPlayerNoCheatExtraDamageMixin
+{
+    @WrapOperation(
+            method = "register", at = @At(
+                    value = "INVOKE", target = "Lcom/mojang/brigadier/builder/LiteralArgumentBuilder;requires(Ljava/util/function/Predicate;)Lcom/mojang/brigadier/builder/ArgumentBuilder;", remap = false), require = 1, allow = 1)
+    private static ArgumentBuilder<CommandSourceStack, ?> opPlayerNoCheatExtra$wrapRequires(
+                                                                                            LiteralArgumentBuilder<CommandSourceStack> instance, Predicate<CommandSourceStack> predicate, Operation<ArgumentBuilder<CommandSourceStack, ?>> original)
+    {
+        return original.call(instance, OpPlayerNoCheatExtraHelper.wrapPredicate(predicate));
+    }
 }

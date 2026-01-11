@@ -23,18 +23,24 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
-public final class MinimalLootingLevelLib {
-  private MinimalLootingLevelLib() {}
-
-  public static int getLootingLevel(LootContext context, Holder<Enchantment> enchantment) {
-    Object attacker = context.getOptionalParameter(LootContextParams.ATTACKING_ENTITY);
-    if (attacker instanceof LivingEntity) {
-      return EnchantmentHelper.getEnchantmentLevel(enchantment, (LivingEntity) attacker);
+public final class MinimalLootingLevelLib
+{
+    private MinimalLootingLevelLib()
+    {
     }
-    return 0;
-  }
 
-  public static int effectiveLootingLevel(int currentLevel) {
-    return Math.max(currentLevel, MinimalLootingLevel.minimalLootingLevel);
-  }
+    public static int getLootingLevel(LootContext context, Holder<Enchantment> enchantment)
+    {
+        Object attacker = context.getOptionalParameter(LootContextParams.ATTACKING_ENTITY);
+        if (attacker instanceof LivingEntity)
+        {
+            return EnchantmentHelper.getEnchantmentLevel(enchantment, (LivingEntity) attacker);
+        }
+        return 0;
+    }
+
+    public static int effectiveLootingLevel(int currentLevel)
+    {
+        return Math.max(currentLevel, MinimalLootingLevel.minimalLootingLevel);
+    }
 }

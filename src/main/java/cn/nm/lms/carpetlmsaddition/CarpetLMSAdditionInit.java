@@ -19,13 +19,17 @@ package cn.nm.lms.carpetlmsaddition;
 import cn.nm.lms.carpetlmsaddition.rules.commandLMS.CommandLMS;
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorController;
 
-public final class CarpetLMSAdditionInit {
-  private CarpetLMSAdditionInit() {}
+public final class CarpetLMSAdditionInit
+{
+    private CarpetLMSAdditionInit()
+    {
+    }
 
-  public static void initAll() {
-    CarpetLMSAdditionTranslations.loadTranslations();
-    CarpetLMSAdditionRecipes.register();
-    CommandLMS.register();
-    LowHealthSpectatorController.init();
-  }
+    public static void initAll()
+    {
+        CarpetLMSAdditionTranslations.loadTranslations();
+        CarpetLMSAdditionRecipes.register();
+        CommandLMS.register();
+        LowHealthSpectatorController.init();
+    }
 }

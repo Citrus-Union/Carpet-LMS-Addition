@@ -20,11 +20,13 @@ import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 import carpet.api.settings.Validators;
 
-public final class AllayHealInterval {
-  @Rule(
-      categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-      validators = {Validators.NonNegativeNumber.class})
-  public static int allayHealInterval = 10;
+public final class AllayHealInterval
+{
+    @Rule(
+            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, validators = {Validators.NonNegativeNumber.class})
+    public static int allayHealInterval = 10;
 
-  private AllayHealInterval() {}
+    private AllayHealInterval()
+    {
+    }
 }
