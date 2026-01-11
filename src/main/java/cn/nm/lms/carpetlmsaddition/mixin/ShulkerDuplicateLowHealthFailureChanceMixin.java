@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(Shulker.class)
 public abstract class ShulkerDuplicateLowHealthFailureChanceMixin {
-  @ModifyConstant(method = "hurtServer", constant = @Constant(intValue = 4))
+  @ModifyConstant(method = "hurtServer", constant = @Constant(intValue = 4, ordinal = 0))
   private int changeBlacklistLimit(int original) {
     int chance = ShulkerDuplicateLowHealthFailureChance.shulkerDuplicateLowHealthFailureChance;
     return chance == 0 ? Integer.MAX_VALUE : chance;

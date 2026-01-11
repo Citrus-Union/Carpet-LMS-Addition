@@ -24,7 +24,9 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(VaultServerData.class)
 public abstract class VaultMaxBlacklistSizeMixin {
-  @ModifyConstant(method = "addToRewardedPlayers", constant = @Constant(intValue = 128))
+  @ModifyConstant(
+      method = "addToRewardedPlayers",
+      constant = @Constant(intValue = 128, ordinal = 0))
   private int changeBlacklistLimit(int original) {
     return VaultMaxBlacklistSize.vaultMaxBlacklistSize;
   }

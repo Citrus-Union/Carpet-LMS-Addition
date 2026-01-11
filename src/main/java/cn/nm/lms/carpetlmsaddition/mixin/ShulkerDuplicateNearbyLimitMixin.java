@@ -24,7 +24,9 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(Shulker.class)
 public abstract class ShulkerDuplicateNearbyLimitMixin {
-  @ModifyConstant(method = "hitByShulkerBullet", constant = @Constant(floatValue = 5.0F))
+  @ModifyConstant(
+      method = "hitByShulkerBullet",
+      constant = @Constant(floatValue = 5.0F, ordinal = 0))
   private float changeBlacklistLimit(float original) {
     return (float) ShulkerDuplicateNearbyLimit.shulkerDuplicateNearbyLimit;
   }

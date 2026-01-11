@@ -17,14 +17,14 @@
 package cn.nm.lms.carpetlmsaddition.mixin;
 
 import cn.nm.lms.carpetlmsaddition.rules.AllayHealInterval;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.world.entity.animal.allay.Allay;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(Allay.class)
 public abstract class AllayHealIntervalMixin {
-  @ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "intValue=10"))
+  @ModifyConstant(method = "aiStep", constant = @Constant(intValue = 10, ordinal = 0))
   private int changeAllayHealInterval(int original) {
     int interval = AllayHealInterval.allayHealInterval;
     return interval == 0 ? Integer.MAX_VALUE : interval;
