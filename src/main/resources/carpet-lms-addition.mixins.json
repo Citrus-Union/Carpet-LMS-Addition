@@ -18,6 +18,7 @@
     "opplayernocheatextra.OpPlayerNoCheatExtraDamageMixin",
     "opplayernocheatextra.OpPlayerNoCheatExtraFillBiomeMixin",
     "opplayernocheatextra.OpPlayerNoCheatExtraForceLoadMixin",
+    "opplayernocheatextra.OpPlayerNoCheatExtraItemMixin",
     "opplayernocheatextra.OpPlayerNoCheatExtraPlaceMixin",
     "opplayernocheatextra.OpPlayerNoCheatExtraSpawnpointMixin",
     "playercommanddropall.EntityPlayerActionPackActionMixin",

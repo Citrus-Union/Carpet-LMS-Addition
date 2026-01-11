@@ -31,12 +31,13 @@ carpet:
     opPlayerNoCheatExtra:
       desc: Disable some more command to prevent cheating
       extra:
-        "0": >-
-          Affects command list:
+        "0": "Affects command list:"
+        "1": >-
           /clear
           /damage
           /fillbiome
           /forceload
+          /item
           /place
           /spawnpoint
     pearlIgnoreEntityCollision:
