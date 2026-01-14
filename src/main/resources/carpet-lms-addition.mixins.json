@@ -4,6 +4,7 @@
   "compatibilityLevel": "{{COMPATIBILITY_LEVEL}}",
   "mixins": [
     "AllayHealIntervalMixin",
+    "ExplosionProofBuddingAmethystMixin",
     "FragileVaultMixin",
     "PearlIgnoreEntityCollisionMixin",
     "PearlNoTpMixin",

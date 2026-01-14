@@ -45,6 +45,7 @@ public final class RulesBootstrap
                 CommandLMSSelf.class,
                 ElytraRecipe.class,
                 EnchantedGoldenAppleRecipe.class,
+                ExplosionProofBuddingAmethyst.class,
                 FragileVault.class,
                 LowHealthSpectator.class,
                 LowHealthSpectatorCooldown.class,
