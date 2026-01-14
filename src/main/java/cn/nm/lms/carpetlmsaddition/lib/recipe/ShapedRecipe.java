@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -135,12 +134,25 @@ public abstract class ShapedRecipe extends CustomRecipe
     }
 
     @Override
-    public ItemStack assemble(CraftingInput recipeInput, HolderLookup.Provider registries)
+    //#if MC>=260100
+    public ItemStack assemble(CraftingInput recipeInput)
     {
         ItemStack stack = new ItemStack(resultItem, resultCount);
         stack.setDamageValue(0);
         return stack;
     }
+
+    //#else
+    public ItemStack assemble(
+            CraftingInput recipeInput,
+            net.minecraft.core.HolderLookup.Provider registries
+    )
+    {
+        ItemStack stack = new ItemStack(resultItem, resultCount);
+        stack.setDamageValue(0);
+        return stack;
+    }
+    //#endif
 
     @Override
     public NonNullList<ItemStack> getRemainingItems(CraftingInput input)
