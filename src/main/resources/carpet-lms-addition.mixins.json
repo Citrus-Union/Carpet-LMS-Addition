@@ -10,6 +10,7 @@
     "ShulkerDuplicateLowHealthFailureChanceMixin",
     "ShulkerDuplicateNearbyLimitMixin",
     "SoftVaultMixin",
+    "UnbreakableBuddingAmethystMixin",
     "VaultMaxBlacklistSizeMixin",
     "ZombifiedPiglinSpawnFixMixin",
     "minimallootinglevel.MinimalLootingLevelChanceMixin",

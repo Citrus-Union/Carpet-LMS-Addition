@@ -59,6 +59,7 @@ public final class RulesBootstrap
                 ShulkerDuplicateNearbyLimit.class,
                 SoftVault.class,
                 SpongeRecipe.class,
+                UnbreakableBuddingAmethyst.class,
                 VaultMaxBlacklistSize.class,
                 ZombifiedPiglinSpawnFix.class
         };

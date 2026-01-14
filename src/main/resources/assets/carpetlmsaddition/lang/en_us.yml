@@ -67,6 +67,8 @@ carpet:
       desc: Set the hardness of vault to be the same as beacon
     spongeRecipe:
       desc: Add a crafting recipe to make sponges renewable
+    unbreakableBuddingAmethyst:
+      desc: Set the hardness of budding amethyst to -1
     vaultMaxBlacklistSize:
       desc: Set the maximum number of players stored in the vault's blacklist
     zombifiedPiglinSpawnFix:
