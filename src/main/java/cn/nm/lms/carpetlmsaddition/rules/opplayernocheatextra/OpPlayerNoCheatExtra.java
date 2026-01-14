@@ -24,7 +24,9 @@ import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 public final class OpPlayerNoCheatExtra
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.COMMAND}
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.COMMAND
+            }
     )
     public static boolean opPlayerNoCheatExtra = false;
 

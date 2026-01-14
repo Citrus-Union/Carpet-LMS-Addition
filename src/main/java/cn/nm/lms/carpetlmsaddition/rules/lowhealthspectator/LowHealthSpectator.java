@@ -24,8 +24,12 @@ import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 public final class LowHealthSpectator
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-            options = {"true", "false", "custom"}
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            },
+            options = {
+                    "true", "false", "custom"
+            }
     )
     public static String lowHealthSpectator = "false";
 

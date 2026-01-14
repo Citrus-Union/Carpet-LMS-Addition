@@ -25,8 +25,12 @@ import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 public final class LowHealthSpectatorCooldown
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-            validators = {Validators.NonNegativeNumber.class}
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            },
+            validators = {
+                    Validators.NonNegativeNumber.class
+            }
     )
     public static int lowHealthSpectatorCooldown = 200;
 

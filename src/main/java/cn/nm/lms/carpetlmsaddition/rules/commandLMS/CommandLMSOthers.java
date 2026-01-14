@@ -25,8 +25,12 @@ import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 public final class CommandLMSOthers
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.COMMAND},
-            validators = {Validators.CommandLevel.class}
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.COMMAND
+            },
+            validators = {
+                    Validators.CommandLevel.class
+            }
     )
     public static String commandLMSOthers = "ops";
 

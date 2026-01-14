@@ -39,7 +39,29 @@ public final class RulesBootstrap
 
     public static void registerAll()
     {
-        Class<?>[] settingsClasses = new Class<?>[]{AllayHealInterval.class, CommandLMSOthers.class, CommandLMSSelf.class, ElytraRecipe.class, EnchantedGoldenAppleRecipe.class, FragileVault.class, LowHealthSpectator.class, LowHealthSpectatorCooldown.class, LowHealthSpectatorMethod.class, LowHealthSpectatorThreshold.class, MinimalLootingLevel.class, OpPlayerNoCheatExtra.class, PearlIgnoreEntityCollision.class, PearlNoTp.class, PlayerCommandDropall.class, ShulkerDuplicateLowHealthFailureChance.class, ShulkerDuplicateNearbyLimit.class, SoftVault.class, SpongeRecipe.class, VaultMaxBlacklistSize.class, ZombifiedPiglinSpawnFix.class};
+        Class<?>[] settingsClasses = new Class<?>[]{
+                AllayHealInterval.class,
+                CommandLMSOthers.class,
+                CommandLMSSelf.class,
+                ElytraRecipe.class,
+                EnchantedGoldenAppleRecipe.class,
+                FragileVault.class,
+                LowHealthSpectator.class,
+                LowHealthSpectatorCooldown.class,
+                LowHealthSpectatorMethod.class,
+                LowHealthSpectatorThreshold.class,
+                MinimalLootingLevel.class,
+                OpPlayerNoCheatExtra.class,
+                PearlIgnoreEntityCollision.class,
+                PearlNoTp.class,
+                PlayerCommandDropall.class,
+                ShulkerDuplicateLowHealthFailureChance.class,
+                ShulkerDuplicateNearbyLimit.class,
+                SoftVault.class,
+                SpongeRecipe.class,
+                VaultMaxBlacklistSize.class,
+                ZombifiedPiglinSpawnFix.class
+        };
         for (
             Class<?> settingsClass : settingsClasses
         )

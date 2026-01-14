@@ -33,7 +33,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import cn.nm.lms.carpetlmsaddition.rules.opplayernocheatextra.OpPlayerNoCheatExtraHelper;
 
 @Mixin(
-        value = {ClearInventoryCommands.class}
+        value = {
+                ClearInventoryCommands.class
+        }
 )
 public abstract class OpPlayerNoCheatExtraClearMixin
 {

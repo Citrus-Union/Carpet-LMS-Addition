@@ -25,9 +25,15 @@ import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 public final class LowHealthSpectatorThreshold
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-            validators = {Validators.NonNegativeNumber.class},
-            options = {"5", "10", "15", "20"},
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            },
+            validators = {
+                    Validators.NonNegativeNumber.class
+            },
+            options = {
+                    "5", "10", "15", "20"
+            },
             strict = false
     )
     public static int lowHealthSpectatorThreshold = 5;

@@ -23,8 +23,12 @@ import carpet.api.settings.Validators;
 public final class ShulkerDuplicateLowHealthFailureChance
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-            validators = {Validators.NonNegativeNumber.class}
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            },
+            validators = {
+                    Validators.NonNegativeNumber.class
+            }
     )
     public static int shulkerDuplicateLowHealthFailureChance = 4;
 

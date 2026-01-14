@@ -22,7 +22,9 @@ import carpet.api.settings.RuleCategory;
 public final class FragileVault
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            }
     )
     public static boolean fragileVault = false;
 

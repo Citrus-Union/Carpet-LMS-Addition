@@ -24,8 +24,12 @@ import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 public final class LowHealthSpectatorMethod
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-            options = {"vanilla", "mcdreforged", "carpet-org-addition", "kick"}
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            },
+            options = {
+                    "vanilla", "mcdreforged", "carpet-org-addition", "kick"
+            }
     )
     public static String lowHealthSpectatorMethod = "vanilla";
 

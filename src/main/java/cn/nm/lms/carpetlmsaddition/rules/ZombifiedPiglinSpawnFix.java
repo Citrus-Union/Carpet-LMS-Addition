@@ -22,7 +22,9 @@ import carpet.api.settings.RuleCategory;
 public final class ZombifiedPiglinSpawnFix
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.BUGFIX}
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.BUGFIX
+            }
     )
     public static boolean zombifiedPiglinSpawnFix = false;
 

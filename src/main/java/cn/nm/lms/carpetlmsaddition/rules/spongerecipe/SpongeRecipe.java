@@ -24,7 +24,9 @@ import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
 public final class SpongeRecipe
 {
     @Rule(
-            categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            }
     )
     public static boolean spongeRecipe = false;
 
