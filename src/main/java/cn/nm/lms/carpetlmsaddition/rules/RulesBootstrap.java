@@ -47,6 +47,7 @@ public final class RulesBootstrap
                 EnchantedGoldenAppleRecipe.class,
                 ExplosionProofBuddingAmethyst.class,
                 FragileVault.class,
+                HelmetControlsPlayerDistance.class,
                 LowHealthSpectator.class,
                 LowHealthSpectatorCooldown.class,
                 LowHealthSpectatorMethod.class,
