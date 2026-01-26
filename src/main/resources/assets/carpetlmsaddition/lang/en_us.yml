@@ -24,9 +24,8 @@ carpet:
         simulation and view distance to the specified number
       extra:
         "0": "Valid range: [1,31]"
-        "1": >-
-          Values above the default view distance clamp view distance to default,
-          while the simulation distance remains unaffected
+        "1": View distance is clamped to the server's default view distance
+        "2": simulation distance is clamped to the server's default simulation distance
     lowHealthSpectator:
       desc: >-
         Switches the player to spectator mode

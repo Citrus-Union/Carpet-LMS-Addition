@@ -37,6 +37,7 @@ public final class HelmetLoadValue
     public static int helmetLoadValue(ServerPlayer player)
     {
         if (!HelmetControlsPlayerDistance.helmetControlsPlayerDistance) return 0;
+        if (player.isSpectator()) return 0;
 
         ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
         if (helmet.isEmpty() || helmet.getItem() != Items.LEATHER_HELMET) return 0;
