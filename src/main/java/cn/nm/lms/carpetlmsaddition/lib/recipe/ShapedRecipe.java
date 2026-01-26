@@ -143,15 +143,15 @@ public abstract class ShapedRecipe extends CustomRecipe
     }
 
     //#else
-    public ItemStack assemble(
-            CraftingInput recipeInput,
-            net.minecraft.core.HolderLookup.Provider registries
-    )
-    {
-        ItemStack stack = new ItemStack(resultItem, resultCount);
-        stack.setDamageValue(0);
-        return stack;
-    }
+    //$$ public ItemStack assemble(
+    //$$         CraftingInput recipeInput,
+    //$$         net.minecraft.core.HolderLookup.Provider registries
+    //$$ )
+    //$$ {
+    //$$     ItemStack stack = new ItemStack(resultItem, resultCount);
+    //$$     stack.setDamageValue(0);
+    //$$     return stack;
+    //$$ }
     //#endif
 
     @Override
