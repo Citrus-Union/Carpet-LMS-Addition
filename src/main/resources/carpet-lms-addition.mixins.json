@@ -5,11 +5,13 @@
   "mixins": [
     "AllayHealIntervalMixin",
     "ExplosionProofBuddingAmethystMixin",
+    "FragileTrialSpawnerMixin",
     "FragileVaultMixin",
     "PearlIgnoreEntityCollisionMixin",
     "PearlNoTpMixin",
     "ShulkerDuplicateLowHealthFailureChanceMixin",
     "ShulkerDuplicateNearbyLimitMixin",
+    "SoftTrialSpawnerMixin",
     "SoftVaultMixin",
     "UnbreakableBuddingAmethystMixin",
     "VaultMaxBlacklistSizeMixin",

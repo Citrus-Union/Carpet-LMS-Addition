@@ -16,6 +16,8 @@ carpet:
       desc: Add a crafting recipe to make enchanted golden apples renewable
     explosionProofBuddingAmethyst:
       desc: Set the blast resistance of budding amethyst to be the same as bedrock
+    fragileTrialSpawner:
+      desc: Set the blast resistance of trial spawner to be the same as beacon
     fragileVault:
       desc: Set the blast resistance of vault to be the same as beacon
     helmetControlsPlayerDistance:
@@ -73,6 +75,8 @@ carpet:
       desc: Sets the divisor used to reduce shulker duplication chance based on nearby count
       extra:
         "0": Failure chance = (nearbyShulkersIncludingSelf - 1) / value
+    softTrialSpawner:
+      desc: Set the hardness of trial spawner to be the same as beacon
     softVault:
       desc: Set the hardness of vault to be the same as beacon
     spongeRecipe:
