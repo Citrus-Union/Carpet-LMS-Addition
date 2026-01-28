@@ -3,8 +3,8 @@ import java.nio.file.Path
 plugins {
     `maven-publish`
     signing
-    id("net.fabricmc.fabric-loom") version "1.14-SNAPSHOT" apply false
-    id("net.fabricmc.fabric-loom-remap") version "1.14-SNAPSHOT" apply false
+    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT" apply false
+    id("net.fabricmc.fabric-loom-remap") version "1.15-SNAPSHOT" apply false
 
     // https://github.com/ReplayMod/preprocessor
     // https://github.com/Fallen-Breath/preprocessor
@@ -12,8 +12,8 @@ plugins {
 
     // https://github.com/Fallen-Breath/yamlang
     id("me.fallenbreath.yamlang") version "1.5.0" apply false
-    id("com.diffplug.spotless") version "8.1.0"
-    id("com.vanniktech.maven.publish") version "0.35.0"
+    id("com.diffplug.spotless") version "8.2.1"
+    id("com.vanniktech.maven.publish") version "0.36.0"
 }
 
 repositories {
