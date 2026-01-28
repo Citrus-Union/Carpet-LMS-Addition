@@ -1,0 +1,35 @@
+---
+import rawYaml from "../../../src/main/resources/assets/carpetlmsaddition/lang/en_us.yml?raw";
+import yaml from "js-yaml";
+
+const data = yaml.load(rawYaml);
+const ruleMap = data.carpet.rule;
+---
+
+{
+  Object.entries(ruleMap).map(([key, rule]) => {
+    const name =
+      rule.name && String(rule.name).trim().length > 0 ? rule.name : key;
+
+    const desc = rule.desc;
+    const extra = rule.extra ?? null;
+
+    return (
+      <section style={{ marginBottom: "2rem" }}>
+        <h2>{name}</h2>
+
+        <p>{desc}</p>
+
+        {extra && (
+          <ul>
+            {Object.entries(extra).map(([k, v]) => (
+              <li>{String(v)}</li>
+            ))}
+          </ul>
+        )}
+
+        <hr />
+      </section>
+    );
+  })
+}

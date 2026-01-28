@@ -2,5 +2,6 @@
 prettier = "3.7.4"
 prettierPlugin-toml = "2.0.6"
 prettierPlugin-xml = "3.4.2"
+prettierPlugin-astro = "0.14.1"
 eclipse = "4.38"
 ktlint = "1.8.0"
