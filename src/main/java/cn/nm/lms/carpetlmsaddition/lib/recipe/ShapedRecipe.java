@@ -41,8 +41,10 @@ import net.minecraft.world.level.Level;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import cn.nm.lms.carpetlmsaddition.lib.recipe.compat.DualVersionCustomRecipe;
+
 @NullMarked
-public abstract class ShapedRecipe extends CustomRecipe
+public abstract class ShapedRecipe extends DualVersionCustomRecipe
 {
     private static final Function<CraftingInput, NonNullList<ItemStack>> DEFAULT_REMAINDER = input -> NonNullList.withSize(
             input.size(),

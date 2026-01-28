@@ -19,21 +19,22 @@ package cn.nm.lms.carpetlmsaddition;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 
+import cn.nm.lms.carpetlmsaddition.lib.recipe.compat.CompatRecipeSerializer;
 import cn.nm.lms.carpetlmsaddition.rules.elytrarecipe.CraftableElytra;
 import cn.nm.lms.carpetlmsaddition.rules.enchantedgoldenapplerecipe.CraftableEnchantedGoldenApple;
 import cn.nm.lms.carpetlmsaddition.rules.spongerecipe.CraftableSponge;
 
 public final class CarpetLMSAdditionRecipes
 {
-    public static final CustomRecipe.Serializer<CraftableElytra> CRAFTABLE_ELYTRA = new CustomRecipe.Serializer<>(
+    public static final RecipeSerializer<CraftableElytra> CRAFTABLE_ELYTRA = CompatRecipeSerializer.simple(
             CraftableElytra::new
     );
-    public static final CustomRecipe.Serializer<CraftableEnchantedGoldenApple> CRAFTABLE_ENCHANTED_GOLDEN_APPLE = new CustomRecipe.Serializer<>(
+    public static final RecipeSerializer<CraftableEnchantedGoldenApple> CRAFTABLE_ENCHANTED_GOLDEN_APPLE = CompatRecipeSerializer.simple(
             CraftableEnchantedGoldenApple::new
     );
-    public static final CustomRecipe.Serializer<CraftableSponge> CRAFTABLE_SPONGE = new CustomRecipe.Serializer<>(
+    public static final RecipeSerializer<CraftableSponge> CRAFTABLE_SPONGE = CompatRecipeSerializer.simple(
             CraftableSponge::new
     );
 
