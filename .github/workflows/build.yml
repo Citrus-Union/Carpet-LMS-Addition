@@ -99,7 +99,7 @@ jobs:
           BUILD_RELEASE: ${{ inputs.release }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY_ASC }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.JASON_GPG_PRIVATE_KEY_ASC }}
 
   summary:
     runs-on: ubuntu-latest
