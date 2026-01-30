@@ -1,0 +1,9 @@
+---
+import Analytics from "@vercel/analytics/astro";
+import SpeedInsights from "@vercel/speed-insights/astro";
+
+const isProd = import.meta.env.PROD;
+---
+
+{isProd && <Analytics />}
+{isProd && <SpeedInsights />}

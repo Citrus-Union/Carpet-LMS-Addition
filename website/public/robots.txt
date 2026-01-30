@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://carpet.lms.jasonxue.top/sitemap-index.xml
