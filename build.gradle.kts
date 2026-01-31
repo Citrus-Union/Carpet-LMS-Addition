@@ -70,25 +70,12 @@ tasks.register("buildAndGather") {
 
 spotless {
     val licenseHeaderFile = rootProject.file("copyright.txt")
-    val commonExcludes =
-        listOf(
-            "**/build/**",
-            "**/.gradle/**",
-            "**/run/**",
-            "**/.idea/**",
-            "**/node_modules/**",
-            "**/dist/**",
-            "**/.astro/**",
-            "**/pnpm-lock.yaml",
-        )
     kotlinGradle {
-        target("**/*.gradle.kts")
-        targetExclude(commonExcludes)
+        target("*.gradle.kts")
         ktlint(libs.versions.ktlint.get())
     }
     java {
-        target("**/*.java")
-        targetExclude(commonExcludes)
+        target("src/**/*.java", "versions/*/src/**/*.java")
         removeUnusedImports()
         forbidWildcardImports()
         forbidModuleImports()
@@ -113,19 +100,22 @@ spotless {
     }
     format("styling") {
         target(
-            "**/*.md",
-            "**/*.json",
-            "**/*.yaml",
-            "**/*.yml",
-            "**/*.toml",
-            "**/*.xml",
-            "**/*.mjs",
-            "**/*.svg",
-            "**/*.mdx",
-            "**/*.ts",
-            "**/*.astro",
+            "gradle/libs.versions.toml",
+            "*.md",
+            "*.json",
+            "*.yml",
+            "*.xml",
+            "website/src/**/*.md",
+            "website/src/**/*.mdx",
+            "website/src/**/*.astro",
+            "website/src/**/*.ts",
+            "website/*.json",
+            "website/*.yaml",
+            "website/*.mjs",
+            "src/main/resources/**/*.json",
+            "src/main/resources/**/*.yml",
         )
-        targetExclude(commonExcludes)
+
         prettier(
             mapOf(
                 "prettier" to libs.versions.prettier.get(),
@@ -141,13 +131,25 @@ spotless {
             ),
         ).config(
             mapOf(
-                "plugins" to listOf("prettier-plugin-toml", "@prettier/plugin-xml", "prettier-plugin-astro"),
+                "plugins" to
+                    listOf(
+                        "prettier-plugin-toml",
+                        "@prettier/plugin-xml",
+                        "prettier-plugin-astro",
+                    ),
             ),
         )
     }
     format("text") {
-        target("**/*.properties", "**/*.txt")
-        targetExclude(commonExcludes)
+        target(
+            "LICENSE",
+            "gradle.properties",
+            "gradle/wrapper/gradle-wrapper.properties",
+            "versions/*/gradle.properties",
+            "copyright.txt",
+            "mappings/*.txt",
+            "website/public/robots.txt",
+        )
         trimTrailingWhitespace()
         endWithNewline()
     }
