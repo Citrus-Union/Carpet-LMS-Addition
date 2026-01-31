@@ -83,17 +83,33 @@ jobs:
           name: mod-jars
           path: mod-jars/*.jar
 
-      - name: Publish with gradle
+      - name: Publish with gradle (skip if already published)
         if: inputs.release || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main'
+        shell: bash
         run: |
+          set +e  # we handle failure manually
+
           if [ -z "${{ inputs.target_subproject }}" ]; then
               echo "Publishing all subprojects"
-              ./gradlew publish
+              publish_cmd=(./gradlew publish)
           else
               args=$(echo "${{ inputs.target_subproject }}" | tr ',' '\n' | sed 's/$/:publish/' | paste -sd ' ')
               echo "Publishing with arguments=$args"
-              ./gradlew $args
+              publish_cmd=(./gradlew $args)
           fi
+
+          log_file=publish.log
+          "${publish_cmd[@]}" 2>&1 | tee "$log_file"
+          status=${PIPESTATUS[0]}
+
+          conflict_regex="Return code is: 409|status code 409|HTTP/1\\.?1 409|artifact exists|already deployed|already exists|component.+already exists"
+
+          if [ $status -ne 0 ] && grep -Ei "$conflict_regex" "$log_file"; then
+              echo "Detected 409/conflict (artifact already present). Skipping publish and continuing workflow."
+              exit 0
+          fi
+
+          exit $status
         env:
           BUILD_ID: ${{ github.run_number }}
           BUILD_RELEASE: ${{ inputs.release }}

@@ -183,12 +183,12 @@ jobs:
 
           files: ${{ steps.file_info.outputs.path }}
 
-          name: ${{ format('{0} v{1} for mc{2}', steps.properties_g.outputs.mod_name, steps.properties_g.outputs.mod_version, steps.properties_v.outputs.minecraft_version) }}
-          version: ${{ format('v{1}-mc{0}', steps.properties_v.outputs.minecraft_version, steps.properties_g.outputs.mod_version) }}
+          name: ${{ format('{0} v{1} for mc{2}', steps.properties_g.outputs.modName, steps.properties_g.outputs.modVersion, steps.properties_v.outputs.minecraftVersion) }}
+          version: ${{ format('v{1}-mc{0}', steps.properties_v.outputs.minecraftVersion, steps.properties_g.outputs.modVersion) }}
           version-type: release
 
           loaders: fabric
-          game-versions: ${{ steps.properties_v.outputs.game_versions }}
+          game-versions: ${{ steps.properties_v.outputs.gameVersions }}
           game-version-filter: any
           dependencies: |-
             fabric-api(required){modrinth:P7dR8mSH}{curseforge:306612}
