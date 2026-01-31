@@ -281,10 +281,18 @@ extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
             developer {
                 id.set("jasonxue1")
                 name.set("jasonxue")
+                email.set("contact@jasonxue.top")
+                url.set("https://github.com/jasonxue1")
             }
             developer {
                 id.set("LittleLemonJam")
                 name.set("小柠檬lemon酱")
+                url.set("https://github.com/LittleLemonJam")
+            }
+            developer {
+                id.set("stupidOIO")
+                name.set("stupidOIO")
+                url.set("https://github.com/stupidOIO")
             }
         }
         scm {
