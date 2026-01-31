@@ -29,9 +29,6 @@ export default defineConfig({
           link: "/rules/",
         },
       ],
-      components: {
-        Footer: "./src/components/Analytics.astro",
-      },
     }),
   ],
 
