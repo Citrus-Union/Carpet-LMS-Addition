@@ -6,19 +6,19 @@
 [![CurseForge](https://img.shields.io/curseforge/dt/1450056?label=CurseForge%20Downloads)](https://www.curseforge.com/minecraft/mc-mods/carpet-lms-addition)
 [![Modrinth](https://img.shields.io/modrinth/dt/fcv5tQYp?label=Modrinth%20Downloads)](https://modrinth.com/mod/carpet-lms-addition)
 
-**English** | [中文](README_CN.md)
+[English](README.md) | **中文**
 
-A [Carpet mod](https://github.com/gnembon/fabric-carpet) (fabric-carpet) extension, consisting of a collection of useful tools and interesting features in the carpet mod style
+这是一个 [Carpet mod](https://github.com/gnembon/fabric-carpet) (fabric-carpet) 的扩展 mod，包含了不少~~NotVanilla的~~有意思的功能以及特性
 
-Under the default configuration, this mod does not alter any vanilla behavior
+在默认配置条件下，本模组不会改变任何原版机制
 
-Use it with the carpet mod in the same version of Minecraft. Always use the latest version of the Carpet mod when possible
+跟同 Minecraft 版本的 carpet mod 一起使用即可。尽可能地使用较新的 carpet mod
 
-## Document
+## 文档
 
-See the document website: https://carpet-lms-addition.pages.dev/
+见文档网页：https://carpet-lms-addition.pages.dev/
 
-## Reference
+## 参考
 
 - [Carpet-TIS-Addition](https://github.com/TISUnion/Carpet-TIS-Addition)
 - [Carpet-Org-Addition](https://github.com/fcsailboat/Carpet-Org-Addition)
