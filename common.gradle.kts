@@ -302,6 +302,13 @@ extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
         scm {
             url.set(modSource)
             connection.set("scm:git:$modSource.git")
+
+            val sshUrl =
+                modSource
+                    .removePrefix("https://")
+                    .let { "ssh://git@$it.git" }
+
+            developerConnection.set("scm:git:$sshUrl")
         }
         issueManagement {
             system = "Github Issues"
