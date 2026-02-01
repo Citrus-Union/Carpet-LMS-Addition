@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://carpet.lms.nm.cn/sitemap-index.xml

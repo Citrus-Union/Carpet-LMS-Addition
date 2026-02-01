@@ -112,6 +112,7 @@ spotless {
             "website/*.json",
             "website/*.yaml",
             "website/*.mjs",
+            "website/public/*.html",
             "src/main/resources/**/*.json",
             "src/main/resources/**/*.yml",
             ".github/**/*.yml",

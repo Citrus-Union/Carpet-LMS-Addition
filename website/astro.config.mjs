@@ -2,11 +2,12 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import sitemap from "@astrojs/sitemap";
+import { SITE } from "./src/config/site.ts";
 import path from "path";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://carpet.lms.nm.cn",
+  site: SITE.url,
 
   integrations: [
     sitemap(),
@@ -22,11 +23,11 @@ export default defineConfig({
       sidebar: [
         {
           label: "Intro",
-          link: "/intro/",
+          link: "/docs/",
         },
         {
           label: "Rules",
-          link: "/rules/",
+          link: "/docs/rules/",
         },
       ],
     }),
