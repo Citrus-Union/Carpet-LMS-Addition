@@ -6,7 +6,7 @@
   "description": "${description}",
   "authors": ["jasonxue", "stupidOIO", "小柠檬lemon酱"],
   "contact": {
-    "homepage": "${wiki}",
+    "homepage": "${website}",
     "issues": "${issues}",
     "sources": "${source}"
   },
@@ -25,7 +25,15 @@
   },
   "custom": {
     "modmenu": {
-      "parent": "carpet"
+      "parent": "carpet",
+      "links": {
+        "modmenu.website": "${website}",
+        "modmenu.modrinth": "${modrinth}",
+        "modmenu.curseforge": "${curseforge}",
+        "modmenu.github_releases": "${source}/releases",
+        "modmenu.issues": "${issues}"
+      },
+      "update_checker": true
     }
   }
 }

@@ -19,11 +19,13 @@ val modId: String by project
 val modName: String by project
 val modDescription: String by project
 val modSource: String by project
-val modWiki: String by project
+val modWebsite: String by project
 val minecraftDependency: String by project
 val fabricloaderDependency: String by project
 val mavenGroup: String by project
 val archivesBaseName: String by project
+val modrinthUrl: String by project
+val curseforgeUrl: String by project
 val issueTrackerUrl: String = "$modSource/issues"
 
 repositories {
@@ -188,8 +190,10 @@ val modProperties =
         "version" to fullModVersion,
         "description" to modDescription,
         "source" to modSource,
-        "wiki" to modWiki,
+        "website" to modWebsite,
         "issues" to issueTrackerUrl,
+        "modrinth" to modrinthUrl,
+        "curseforge" to curseforgeUrl,
         "minecraft_dependency" to minecraftDependency,
         "fabricloader_dependency" to fabricloaderDependency,
     )
@@ -274,7 +278,7 @@ extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
     pom {
         name.set(modName)
         description.set(modDescription)
-        url.set(modWiki)
+        url.set(modWebsite)
         licenses {
             license {
                 name.set("The GNU General Public License v3.0")
