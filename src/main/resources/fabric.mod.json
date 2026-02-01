@@ -6,6 +6,8 @@
   "description": "${description}",
   "authors": ["jasonxue", "stupidOIO", "小柠檬lemon酱"],
   "contact": {
+    "homepage": "${wiki}",
+    "issues": "${issues}",
     "sources": "${source}"
   },
   "license": "GPL-3.0-only",

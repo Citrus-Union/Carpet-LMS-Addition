@@ -19,10 +19,12 @@ val modId: String by project
 val modName: String by project
 val modDescription: String by project
 val modSource: String by project
+val modWiki: String by project
 val minecraftDependency: String by project
 val fabricloaderDependency: String by project
 val mavenGroup: String by project
 val archivesBaseName: String by project
+val issueTrackerUrl: String = "$modSource/issues"
 
 repositories {
     maven {
@@ -123,8 +125,8 @@ val mixinCompatibilityLevel = javaCompatibility
 val commonVmArgs = listOf("-Dmixin.debug.export=true", "-Dmixin.debug.countInjections=true")
 loomExtension.runConfigs.configureEach {
     // to make sure it generates all "Minecraft Client (:subproject_name)" applications
-    setIdeConfigGenerated(true)
-    setRunDir("../../run")
+    isIdeConfigGenerated = true
+    runDir = "../../run"
     vmArgs(commonVmArgs)
 }
 loomExtension.runs {
@@ -132,12 +134,12 @@ loomExtension.runs {
     register("serverMixinAudit") {
         server()
         vmArgs.addAll(auditVmArgs)
-        setIdeConfigGenerated(false)
+        isIdeConfigGenerated = false
     }
     register("clientMixinAudit") {
         client()
         vmArgs.addAll(auditVmArgs)
-        setIdeConfigGenerated(false)
+        isIdeConfigGenerated = false
     }
 }
 
@@ -173,7 +175,7 @@ if (System.getenv("JITPACK") == "true") {
 } else {
     baseExtension.archivesName.set(archivesBaseName)
     fullProjectVersion = "v$modVersion-mc$minecraftVersion$modVersionSuffix"
-    fullArtifactVersion = artifactVersion + "-mc" + minecraftVersion + artifactVersionSuffix
+    fullArtifactVersion = "$artifactVersion-mc$minecraftVersion$artifactVersionSuffix"
 }
 version = fullProjectVersion
 
@@ -186,6 +188,8 @@ val modProperties =
         "version" to fullModVersion,
         "description" to modDescription,
         "source" to modSource,
+        "wiki" to modWiki,
+        "issues" to issueTrackerUrl,
         "minecraft_dependency" to minecraftDependency,
         "fabricloader_dependency" to fabricloaderDependency,
     )
@@ -270,7 +274,7 @@ extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
     pom {
         name.set(modName)
         description.set(modDescription)
-        url.set(modSource)
+        url.set(modWiki)
         licenses {
             license {
                 name.set("The GNU General Public License v3.0")
@@ -281,7 +285,7 @@ extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
             developer {
                 id.set("jasonxue1")
                 name.set("jasonxue")
-                email.set("contact@jasonxue.top")
+                email.set("lms@jasonxue.top")
                 url.set("https://github.com/jasonxue1")
             }
             developer {
@@ -296,8 +300,12 @@ extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
             }
         }
         scm {
-            url.set("https://github.com/Citrus-Union/Carpet-LMS-Addition")
-            connection.set("scm:git:https://github.com/Citrus-Union/Carpet-LMS-Addition.git")
+            url.set(modSource)
+            connection.set("scm:git:$modSource.git")
+        }
+        issueManagement {
+            system = "Github Issues"
+            url = issueTrackerUrl
         }
     }
 }

@@ -16,10 +16,9 @@
 
 ## 文档
 
-见文档网页：https://carpet-lms-addition.pages.dev/
+见文档网页：https://carpet.lms.nm.cn
 
 ## 参考
 
 - [Carpet-TIS-Addition](https://github.com/TISUnion/Carpet-TIS-Addition)
 - [Carpet-Org-Addition](https://github.com/fcsailboat/Carpet-Org-Addition)
-- [Fallen-Breath/fabric-mod-template](https://github.com/Fallen-Breath/fabric-mod-template)

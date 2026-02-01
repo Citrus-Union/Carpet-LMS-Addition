@@ -6,7 +6,7 @@ import path from "path";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://carpet.lms.jasonxue.top",
+  site: "https://carpet.lms.nm.cn",
 
   integrations: [
     sitemap(),

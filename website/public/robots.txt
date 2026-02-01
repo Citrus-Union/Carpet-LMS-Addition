@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://carpet.lms.jasonxue.top/sitemap-index.xml
+Sitemap: https://carpet.lms.nm.cn/sitemap-index.xml
