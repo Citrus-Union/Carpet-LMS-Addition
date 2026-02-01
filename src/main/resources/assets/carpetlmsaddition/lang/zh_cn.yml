@@ -7,18 +7,101 @@ carpet:
       desc: 控制悦灵的回血间隔(单位：gt)
       extra:
         "0": 设置为0时不回血
+    commandLMSOthers:
+      name: 管理他人LMS设置
+      desc: 查看或修改其他玩家的 /lms 设置
+    commandLMSSelf:
+      name: 管理自己的LMS设置
+      desc: 查看或修改自己的 /lms 设置
+    elytraRecipe:
+      name: 可再生鞘翅
+      desc: 添加鞘翅的制作配方
+    enchantedGoldenAppleRecipe:
+      name: 可再生附魔金苹果
+      desc: 添加附魔金苹果的制作配方
+    explosionProofBuddingAmethyst:
+      name: 防爆紫晶芽
+      desc: 将紫晶芽的爆炸抗性设置为与基岩相同
+    fragileTrialSpawner:
+      name: 脆弱试炼刷怪笼
+      desc: 将试炼刷怪笼的爆炸抗性设置为与信标相同
     fragileVault:
       name: 脆弱宝库
       desc: 将宝库的爆炸抗性设置为与信标相同
+    helmetControlsPlayerDistance:
+      name: 头盔控制加载距离
+      desc: "命名为 #load<数字> 的皮革头盔，会将佩戴者的模拟距离和渲染距离设置为指定的数字"
+      extra:
+        "0": 有效范围：[1,31]
+        "1": 渲染距离被限制在服务器的默认渲染距离内
+        "2": 模拟距离被限制在服务器的默认模拟距离内
+    lowHealthSpectator:
+      name: 低血量自动切换旁观
+      desc: 当玩家生命值在受到伤害后低于设定的阈值时，将玩家切换到旁观者模式
+    lowHealthSpectatorCooldown:
+      name: 低血量切换旁观冷却
+      desc: 设置玩家再次切换到旁观模式前的冷却时间
+    lowHealthSpectatorMethod:
+      name: 低血量切换旁观方式
+      desc: 设置低生命时将玩家切换到旁观模式的方法
+    lowHealthSpectatorThreshold:
+      name: 低血量切换旁观阈值
+      desc: 玩家生命值低于此阈值时，将被切换到旁观模式
+    minimalLootingLevel:
+      name: 最低抢夺等级
+      desc: 设置怪物掉落的最低抢夺等级
+    opPlayerNoCheatExtra:
+      name: 更好的防止op作弊
+      desc: 禁用更多命令以防止作弊
+      extra:
+        "0": 禁用命令列表：
+        "1": >-
+          /clear
+          /damage
+          /fillbiome
+          /forceload
+          /item
+          /place
+          /spawnpoint
     pearlIgnoreEntityCollision:
       name: 珍珠忽略实体碰撞
       desc: 末影珍珠忽略与实体的碰撞
+    pearlNoTp:
+      name: 命名珍珠不传送
+      desc: 阻止具有特定自定义命名的末影珍珠传送
+      extra:
+        "0": 如果设置为 false，则禁用该规则
+        "1": 设置为 true 时，命名为“noTp”的末影珍珠不会传送玩家
+        "2": 如果设置为别的字符串，则以该字符串命名的末影珍珠在撞击时不会传送玩家
     playerCommandDropall:
       name: 玩家丢出全部物品
       desc: 用“dropall”替代“dropstack all”
+    shulkerDuplicateLowHealthFailureChance:
+      name: 低血量潜影贝复制失败概率
+      desc: 设置潜影贝生命值低于一半时复制失败的概率
+      extra:
+        "0": 失败概率 = 1 / value
+        "1": 设置为0时不会失败
+    shulkerDuplicateNearbyLimit:
+      name: 潜影贝复制附近数量限制
+      desc: 设置根据附近数量减少潜影贝复制几率的除数
+      extra:
+        "0": 失败概率 = (附近潜影贝数量包括自身 - 1) / value
+    softTrialSpawner:
+      name: 易碎试炼刷怪笼
+      desc: 将试炼刷怪笼的硬度设置为与信标相同
     softVault:
       name: 易碎宝库
       desc: 将宝库的硬度设置为与信标相同
+    spongeRecipe:
+      name: 可再生海绵
+      desc: 添加海绵的制作配方
+    unbreakableBuddingAmethyst:
+      name: 不可破坏紫水晶母岩
+      desc: 将紫水晶母岩的硬度设置为与基岩相同
+    vaultMaxBlacklistSize:
+      name: 宝库黑名单上限
+      desc: 设置宝库黑名单中存储的最大玩家数量
     zombifiedPiglinSpawnFix:
       name: 僵尸猪灵生成修复
       desc: 当僵尸猪人在地狱门上受随机刻而生成时，将会检测他的碰撞箱来判断是否可以生成
