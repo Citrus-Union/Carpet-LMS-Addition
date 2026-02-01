@@ -114,6 +114,7 @@ spotless {
             "website/*.mjs",
             "src/main/resources/**/*.json",
             "src/main/resources/**/*.yml",
+            ".github/**/*.yml",
         )
 
         prettier(
