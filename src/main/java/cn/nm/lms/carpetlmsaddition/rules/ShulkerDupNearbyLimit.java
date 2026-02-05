@@ -14,30 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.mixin;
+package cn.nm.lms.carpetlmsaddition.rules;
 
-import net.minecraft.world.entity.monster.Shulker;
+import carpet.api.settings.Rule;
+import carpet.api.settings.RuleCategory;
+import carpet.api.settings.Validators;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
-
-import cn.nm.lms.carpetlmsaddition.rules.ShulkerDuplicateNearbyLimit;
-
-@Mixin(
-    Shulker.class
-)
-public abstract class ShulkerDuplicateNearbyLimitMixin
+public final class ShulkerDupNearbyLimit
 {
-    @ModifyConstant(
-            method = "hitByShulkerBullet",
-            constant = @Constant(
-                    floatValue = 5.0F,
-                    ordinal = 0
-            )
+    @Rule(
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            },
+            validators = {
+                    Validators.NonNegativeNumber.class
+            }
     )
-    private float changeBlacklistLimit(float original)
+    public static int shulkerDupNearbyLimit = 5;
+
+    private ShulkerDupNearbyLimit()
     {
-        return (float) ShulkerDuplicateNearbyLimit.shulkerDuplicateNearbyLimit;
     }
 }

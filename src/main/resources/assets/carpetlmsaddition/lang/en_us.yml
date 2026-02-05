@@ -66,12 +66,12 @@ carpet:
           an ender pearl named that string will not teleport the player on impact
     playerCommandDropall:
       desc: Use "dropall" instead of "dropstack all"
-    shulkerDuplicateLowHealthFailureChance:
+    shulkerDupLowHealthFailChance:
       desc: Sets the failure chance of shulker duplication when below half health
       extra:
         "0": Failure chance = 1 / value
         "1": 0 disables failure
-    shulkerDuplicateNearbyLimit:
+    shulkerDupNearbyLimit:
       desc: Sets the divisor used to reduce shulker duplication chance based on nearby count
       extra:
         "0": Failure chance = (nearbyShulkersIncludingSelf - 1) / value

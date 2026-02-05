@@ -22,23 +22,22 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-import cn.nm.lms.carpetlmsaddition.rules.ShulkerDuplicateLowHealthFailureChance;
+import cn.nm.lms.carpetlmsaddition.rules.ShulkerDupNearbyLimit;
 
 @Mixin(
     Shulker.class
 )
-public abstract class ShulkerDuplicateLowHealthFailureChanceMixin
+public abstract class ShulkerDupNearbyLimitMixin
 {
     @ModifyConstant(
-            method = "hurtServer",
+            method = "hitByShulkerBullet",
             constant = @Constant(
-                    intValue = 4,
+                    floatValue = 5.0F,
                     ordinal = 0
             )
     )
-    private int changeBlacklistLimit(int original)
+    private float changeBlacklistLimit(float original)
     {
-        int chance = ShulkerDuplicateLowHealthFailureChance.shulkerDuplicateLowHealthFailureChance;
-        return chance == 0 ? Integer.MAX_VALUE : chance;
+        return (float) ShulkerDupNearbyLimit.shulkerDupNearbyLimit;
     }
 }

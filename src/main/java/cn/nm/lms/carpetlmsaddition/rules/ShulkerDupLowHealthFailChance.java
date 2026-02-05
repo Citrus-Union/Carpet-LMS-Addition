@@ -20,7 +20,7 @@ import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 import carpet.api.settings.Validators;
 
-public final class ShulkerDuplicateNearbyLimit
+public final class ShulkerDupLowHealthFailChance
 {
     @Rule(
             categories = {
@@ -30,9 +30,9 @@ public final class ShulkerDuplicateNearbyLimit
                     Validators.NonNegativeNumber.class
             }
     )
-    public static int shulkerDuplicateNearbyLimit = 5;
+    public static int shulkerDupLowHealthFailChance = 4;
 
-    private ShulkerDuplicateNearbyLimit()
+    private ShulkerDupLowHealthFailChance()
     {
     }
 }

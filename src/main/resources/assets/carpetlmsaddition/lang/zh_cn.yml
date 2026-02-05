@@ -76,13 +76,13 @@ carpet:
     playerCommandDropall:
       name: 玩家丢出全部物品
       desc: 用“dropall”替代“dropstack all”
-    shulkerDuplicateLowHealthFailureChance:
+    shulkerDupLowHealthFailChance:
       name: 低血量潜影贝复制失败概率
       desc: 设置潜影贝生命值低于一半时复制失败的概率
       extra:
         "0": 失败概率 = 1 / value
         "1": 设置为0时不会失败
-    shulkerDuplicateNearbyLimit:
+    shulkerDupNearbyLimit:
       name: 潜影贝复制附近数量限制
       desc: 设置根据附近数量减少潜影贝复制几率的除数
       extra:
