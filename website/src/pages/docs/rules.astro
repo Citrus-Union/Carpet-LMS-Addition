@@ -1,0 +1,56 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import yaml from "js-yaml";
+
+import rawYaml from "../../../../src/main/resources/assets/carpetlmsaddition/lang/en_us.yml?raw";
+
+const data = yaml.load(rawYaml);
+const ruleMap = data?.carpet?.rule ?? {};
+
+const normalizeName = (key: string, rule: any) => {
+  return rule?.name && String(rule.name).trim().length > 0
+    ? String(rule.name)
+    : key;
+};
+
+const headings = Object.entries(ruleMap).map(([key, rule]) => ({
+  depth: 2,
+  slug: key,
+  text: normalizeName(key, rule),
+}));
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "Rules",
+    description: "Overview of the rules for Carpet LMS Addition",
+  }}
+  headings={headings}
+>
+  {
+    Object.entries(ruleMap).map(([key, rule]) => {
+      const name = normalizeName(key, rule);
+      const desc = rule?.desc;
+      const extra = rule?.extra ?? null;
+      const slug = key;
+
+      return (
+        <section style={{ marginBottom: "2rem" }} key={slug}>
+          <h2 id={slug}>{name}</h2>
+
+          <p>{desc}</p>
+
+          {extra && (
+            <ul>
+              {Object.entries(extra).map(([k, v]) => (
+                <li>{String(v)}</li>
+              ))}
+            </ul>
+          )}
+
+          <hr />
+        </section>
+      );
+    })
+  }
+</StarlightPage>
