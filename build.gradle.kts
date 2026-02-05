@@ -150,7 +150,7 @@ spotless {
             "versions/*/gradle.properties",
             "copyright.txt",
             "mappings/*.txt",
-            "website/public/robots.txt",
+            "website/public/_headers",
         )
         trimTrailingWhitespace()
         endWithNewline()

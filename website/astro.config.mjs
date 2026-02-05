@@ -30,6 +30,9 @@ export default defineConfig({
           link: "/docs/rules/",
         },
       ],
+      components: {
+        Head: "./src/components/Head.astro",
+      },
     }),
   ],
 
