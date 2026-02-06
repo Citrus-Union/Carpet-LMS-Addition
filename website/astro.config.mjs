@@ -23,11 +23,11 @@ export default defineConfig({
       sidebar: [
         {
           label: "Intro",
-          link: "/docs/",
+          link: "/docs",
         },
         {
           label: "Rules",
-          link: "/docs/rules/",
+          link: "/docs/rules",
         },
       ],
       components: {
