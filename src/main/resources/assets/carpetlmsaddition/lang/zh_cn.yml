@@ -4,7 +4,7 @@ carpet:
   rule:
     allayHealInterval:
       name: 悦灵回血间隔
-      desc: 控制悦灵的回血间隔(单位：gt)
+      desc: 控制悦灵的回血间隔（单位：gt）
       extra:
         "0": 设置为0时不回血
     commandLMSOthers:
@@ -32,7 +32,7 @@ carpet:
       name: 头盔控制加载距离
       desc: "命名为 #load<数字> 的皮革头盔，会将佩戴者的模拟距离和渲染距离设置为指定的数字"
       extra:
-        "0": 有效范围：[1,31]
+        "0": 有效范围：[1，31]
         "1": 渲染距离被限制在服务器的默认渲染距离内
         "2": 模拟距离被限制在服务器的默认模拟距离内
     lowHealthSpectator:
@@ -92,7 +92,7 @@ carpet:
       name: 潜影贝复制附近数量限制
       desc: 设置根据附近数量减少潜影贝复制几率的除数
       extra:
-        "0": 失败概率 = (附近潜影贝数量包括自身 - 1) / value
+        "0": 失败概率 = （附近潜影贝数量包括自身 - 1） / value
     softTrialSpawner:
       name: 易碎试炼刷怪笼
       desc: 将试炼刷怪笼的硬度设置为与信标相同

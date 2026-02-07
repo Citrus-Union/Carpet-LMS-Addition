@@ -26,10 +26,6 @@ public final class MinecartChunkLoaderInit
     private static final TicketType T20 = Tickets.register("minecart_20", 20, 15);
     private static final TicketType T300 = Tickets.register("minecart_300", 300, 15);
 
-    private MinecartChunkLoaderInit()
-    {
-    }
-
     public static TicketType getTicket(long timeout)
     {
         return switch ((int) timeout)

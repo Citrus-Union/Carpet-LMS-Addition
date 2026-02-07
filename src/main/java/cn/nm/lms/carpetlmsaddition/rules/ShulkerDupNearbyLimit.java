@@ -31,8 +31,4 @@ public final class ShulkerDupNearbyLimit
             }
     )
     public static int shulkerDupNearbyLimit = 5;
-
-    private ShulkerDupNearbyLimit()
-    {
-    }
 }

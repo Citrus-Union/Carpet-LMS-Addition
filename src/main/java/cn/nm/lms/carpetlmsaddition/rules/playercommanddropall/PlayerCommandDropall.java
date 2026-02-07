@@ -33,8 +33,4 @@ public final class PlayerCommandDropall
             }
     )
     public static String playerCommandDropall = "false";
-
-    private PlayerCommandDropall()
-    {
-    }
 }

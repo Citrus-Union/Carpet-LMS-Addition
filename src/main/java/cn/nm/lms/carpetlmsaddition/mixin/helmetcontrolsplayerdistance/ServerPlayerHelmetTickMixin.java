@@ -47,11 +47,8 @@ public abstract class ServerPlayerHelmetTickMixin
                 "TAIL"
             )
     )
-    private void carpetlmsaddition$refreshHelmetDistances(CallbackInfo ci)
+    private void refreshHelmetDistances$LMS(CallbackInfo _unusedCi)
     {
-        @SuppressWarnings(
-            "DataFlowIssue"
-        )
         ServerPlayer player = (ServerPlayer) (Object) this;
         if (player.isSpectator()) return;
 
@@ -64,18 +61,18 @@ public abstract class ServerPlayerHelmetTickMixin
         {
             if (ruleChangedForPlayer || firstSeen)
             {
-                this.carpetlmsaddition$refreshTickets(player);
+                this.refreshTickets$LMS(player);
             }
             return;
         }
 
         if (!ruleChangedForPlayer && !firstSeen && player.tickCount % 300 != 0) return;
 
-        this.carpetlmsaddition$refreshTickets(player);
+        this.refreshTickets$LMS(player);
     }
 
     @Unique
-    private void carpetlmsaddition$refreshTickets(ServerPlayer player)
+    private void refreshTickets$LMS(ServerPlayer player)
     {
         ServerLevel level = (ServerLevel) player.level();
         ChunkMap chunkMap = level.getChunkSource().chunkMap;
@@ -84,6 +81,6 @@ public abstract class ServerPlayerHelmetTickMixin
         chunkMap.getDistanceManager().removePlayer(sectionPos, player);
         chunkMap.getDistanceManager().addPlayer(sectionPos, player);
 
-        ((ChunkMapInvokerMixin) chunkMap).carpetlmsaddition$invokeUpdateChunkTracking(player);
+        ((ChunkMapInvokerMixin) chunkMap).updateChunkTracking$LMS(player);
     }
 }

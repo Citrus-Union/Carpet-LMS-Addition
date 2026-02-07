@@ -33,8 +33,4 @@ public final class LowHealthSpectatorCooldown
             }
     )
     public static int lowHealthSpectatorCooldown = 200;
-
-    private LowHealthSpectatorCooldown()
-    {
-    }
 }

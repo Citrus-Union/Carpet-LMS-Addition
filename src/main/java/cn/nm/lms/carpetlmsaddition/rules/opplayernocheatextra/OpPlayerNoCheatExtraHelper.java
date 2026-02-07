@@ -23,9 +23,6 @@ import net.minecraft.server.level.ServerPlayer;
 
 public final class OpPlayerNoCheatExtraHelper
 {
-    private OpPlayerNoCheatExtraHelper()
-    {
-    }
 
     public static Predicate<CommandSourceStack> wrapPredicate(
             Predicate<CommandSourceStack> predicate

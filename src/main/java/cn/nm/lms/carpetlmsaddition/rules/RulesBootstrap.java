@@ -34,9 +34,6 @@ import cn.nm.lms.carpetlmsaddition.rules.spongerecipe.SpongeRecipe;
 
 public final class RulesBootstrap
 {
-    private RulesBootstrap()
-    {
-    }
 
     public static void registerAll()
     {

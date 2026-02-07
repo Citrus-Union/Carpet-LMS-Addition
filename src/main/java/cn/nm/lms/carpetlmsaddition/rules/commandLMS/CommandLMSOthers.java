@@ -33,8 +33,4 @@ public final class CommandLMSOthers
             }
     )
     public static String commandLMSOthers = "ops";
-
-    private CommandLMSOthers()
-    {
-    }
 }

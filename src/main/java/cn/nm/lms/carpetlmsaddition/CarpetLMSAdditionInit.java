@@ -22,9 +22,6 @@ import cn.nm.lms.carpetlmsaddition.rules.minecartchunkloader.MinecartChunkLoader
 
 public final class CarpetLMSAdditionInit
 {
-    private CarpetLMSAdditionInit()
-    {
-    }
 
     public static void initAll()
     {

@@ -31,8 +31,4 @@ public final class PearlNoTp
             strict = false
     )
     public static String pearlNoTp = "false";
-
-    private PearlNoTp()
-    {
-    }
 }

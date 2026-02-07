@@ -36,7 +36,7 @@ public abstract class ShulkerDupLowHealthFailChanceMixin
                     ordinal = 0
             )
     )
-    private int changeBlacklistLimit(int original)
+    private int changeBlacklistLimit$LMS(int _unusedOriginal)
     {
         int chance = ShulkerDupLowHealthFailChance.shulkerDupLowHealthFailChance;
         return chance == 0 ? Integer.MAX_VALUE : chance;

@@ -27,8 +27,4 @@ public final class HelmetControlsPlayerDistance
             }
     )
     public static boolean helmetControlsPlayerDistance = false;
-
-    private HelmetControlsPlayerDistance()
-    {
-    }
 }

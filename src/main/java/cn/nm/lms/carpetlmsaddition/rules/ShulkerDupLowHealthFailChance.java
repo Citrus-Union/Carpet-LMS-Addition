@@ -31,8 +31,4 @@ public final class ShulkerDupLowHealthFailChance
             }
     )
     public static int shulkerDupLowHealthFailChance = 4;
-
-    private ShulkerDupLowHealthFailChance()
-    {
-    }
 }

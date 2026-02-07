@@ -25,9 +25,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public final class MinimalLootingLevelLib
 {
-    private MinimalLootingLevelLib()
-    {
-    }
 
     public static int getLootingLevel(LootContext context, Holder<Enchantment> enchantment)
     {

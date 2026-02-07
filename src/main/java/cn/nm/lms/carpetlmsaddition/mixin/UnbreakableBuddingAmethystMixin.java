@@ -45,7 +45,7 @@ public abstract class UnbreakableBuddingAmethystMixin
             ),
             cancellable = true
     )
-    private void amethystHardnessToNegative(
+    private void amethystHardnessToNegative$LMS(
             BlockGetter world,
             BlockPos pos,
             CallbackInfoReturnable<Float> cir

@@ -18,7 +18,7 @@ package cn.nm.lms.carpetlmsaddition.rules.playercommanddropall;
 
 public interface DropAllActionExtension
 {
-    void lms$setDropAll(boolean dropAll);
+    void setDropAll$LMS(boolean dropAll);
 
-    boolean lms$isDropAll();
+    boolean isDropAll$LMS();
 }

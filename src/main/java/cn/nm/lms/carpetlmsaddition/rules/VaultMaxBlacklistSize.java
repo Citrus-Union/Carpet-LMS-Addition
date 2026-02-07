@@ -31,8 +31,4 @@ public final class VaultMaxBlacklistSize
             }
     )
     public static int vaultMaxBlacklistSize = 128;
-
-    private VaultMaxBlacklistSize()
-    {
-    }
 }

@@ -36,7 +36,7 @@ public abstract class AllayHealIntervalMixin
                     ordinal = 0
             )
     )
-    private int changeAllayHealInterval(int original)
+    private int changeAllayHealInterval$LMS(int _unusedOriginal)
     {
         int interval = AllayHealInterval.allayHealInterval;
         return interval == 0 ? Integer.MAX_VALUE : interval;

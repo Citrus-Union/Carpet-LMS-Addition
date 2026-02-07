@@ -38,10 +38,6 @@ public final class CarpetLMSAdditionTranslations
     private static final String RESOURCE_DIR = "assets/carpetlmsaddition/lang";
     private static final Gson GSON = new Gson();
 
-    private CarpetLMSAdditionTranslations()
-    {
-    }
-
     public static void loadTranslations()
     {
         List<String> languages;

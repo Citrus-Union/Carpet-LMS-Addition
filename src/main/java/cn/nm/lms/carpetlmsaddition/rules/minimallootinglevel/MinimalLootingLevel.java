@@ -33,8 +33,4 @@ public final class MinimalLootingLevel
             }
     )
     public static int minimalLootingLevel = 0;
-
-    private MinimalLootingLevel()
-    {
-    }
 }

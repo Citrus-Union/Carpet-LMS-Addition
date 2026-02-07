@@ -45,7 +45,7 @@ public abstract class ExplosionProofBuddingAmethystMixin
             ),
             cancellable = true
     )
-    private void vaultBlastResistanceTo3(
+    private void vaultBlastResistanceTo3$LMS(
             Explosion explosion,
             BlockGetter world,
             BlockPos pos,

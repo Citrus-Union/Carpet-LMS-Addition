@@ -36,7 +36,7 @@ public abstract class VaultMaxBlacklistSizeMixin
                     ordinal = 0
             )
     )
-    private int changeBlacklistLimit(int original)
+    private int changeBlacklistLimit$LMS(int _unusedOriginal)
     {
         return VaultMaxBlacklistSize.vaultMaxBlacklistSize;
     }

@@ -39,7 +39,7 @@ public abstract class PearlIgnoreEntityCollisionMixin
                     target = "Lnet/minecraft/world/entity/projectile/Projectile;onHit" + "(Lnet/minecraft/world/phys/HitResult;)V"
             )
     )
-    private boolean skipCollisionIfEntityHit(Projectile self, HitResult hitResult)
+    private boolean skipCollisionIfEntityHit$LMS(Projectile self, HitResult hitResult)
     {
         return !(self instanceof ThrownEnderpearl) || hitResult.getType() != HitResult.Type.ENTITY || !PearlIgnoreEntityCollision.pearlIgnoreEntityCollision;
     }

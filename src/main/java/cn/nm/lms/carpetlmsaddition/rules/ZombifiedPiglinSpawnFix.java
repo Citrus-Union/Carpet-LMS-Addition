@@ -27,8 +27,4 @@ public final class ZombifiedPiglinSpawnFix
             }
     )
     public static boolean zombifiedPiglinSpawnFix = false;
-
-    private ZombifiedPiglinSpawnFix()
-    {
-    }
 }

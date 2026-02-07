@@ -39,7 +39,7 @@ public abstract class ViewDistanceMixin
             ),
             cancellable = true
     )
-    private void viewDistance(ServerPlayer player, CallbackInfoReturnable<Integer> cir)
+    private void viewDistance$LMS(ServerPlayer player, CallbackInfoReturnable<Integer> cir)
     {
         int n = HelmetLoadValue.helmetLoadValue(player);
         if (n > 0)

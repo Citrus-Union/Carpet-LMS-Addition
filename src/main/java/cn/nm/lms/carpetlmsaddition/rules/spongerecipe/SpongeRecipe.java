@@ -29,8 +29,4 @@ public final class SpongeRecipe
             }
     )
     public static boolean spongeRecipe = false;
-
-    private SpongeRecipe()
-    {
-    }
 }

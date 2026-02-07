@@ -29,8 +29,4 @@ public final class EnchantedGoldenAppleRecipe
             }
     )
     public static boolean enchantedGoldenAppleRecipe = false;
-
-    private EnchantedGoldenAppleRecipe()
-    {
-    }
 }

@@ -27,8 +27,4 @@ public final class UnbreakableBuddingAmethyst
             }
     )
     public static boolean unbreakableBuddingAmethyst = false;
-
-    private UnbreakableBuddingAmethyst()
-    {
-    }
 }

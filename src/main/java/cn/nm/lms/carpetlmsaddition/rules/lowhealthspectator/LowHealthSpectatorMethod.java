@@ -32,8 +32,4 @@ public final class LowHealthSpectatorMethod
             }
     )
     public static String lowHealthSpectatorMethod = "vanilla";
-
-    private LowHealthSpectatorMethod()
-    {
-    }
 }

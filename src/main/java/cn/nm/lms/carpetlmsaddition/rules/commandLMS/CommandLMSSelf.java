@@ -33,8 +33,4 @@ public final class CommandLMSSelf
             }
     )
     public static String commandLMSSelf = "true";
-
-    private CommandLMSSelf()
-    {
-    }
 }

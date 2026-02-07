@@ -39,7 +39,7 @@ public abstract class PearlNoTpMixin
             ),
             cancellable = true
     )
-    private void disableTeleportWhenNamed(HitResult result, CallbackInfo ci)
+    private void disableTeleportWhenNamed$LMS(HitResult _unusedResult, CallbackInfo ci)
     {
         String noTpName = "true".equals(PearlNoTp.pearlNoTp) ? "noTp" : PearlNoTp.pearlNoTp;
         ThrownEnderpearl pearl = (ThrownEnderpearl) (Object) this;

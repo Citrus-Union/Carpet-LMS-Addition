@@ -36,10 +36,6 @@ public final class LowHealthSpectatorController
 {
     private static final Map<UUID, Long> COOLDOWN_MAP = new HashMap<>();
 
-    private LowHealthSpectatorController()
-    {
-    }
-
     public static void init()
     {
         ServerLivingEntityEvents.AFTER_DAMAGE.register(

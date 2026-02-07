@@ -27,8 +27,4 @@ public final class SoftVault
             }
     )
     public static boolean softVault = false;
-
-    private SoftVault()
-    {
-    }
 }

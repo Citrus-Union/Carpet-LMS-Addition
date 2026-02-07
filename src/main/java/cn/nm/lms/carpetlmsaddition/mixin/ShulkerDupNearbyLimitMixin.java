@@ -36,7 +36,7 @@ public abstract class ShulkerDupNearbyLimitMixin
                     ordinal = 0
             )
     )
-    private float changeBlacklistLimit(float original)
+    private float changeBlacklistLimit$LMS(float _unusedOriginal)
     {
         return (float) ShulkerDupNearbyLimit.shulkerDupNearbyLimit;
     }

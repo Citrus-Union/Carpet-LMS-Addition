@@ -27,8 +27,4 @@ public final class FragileVault
             }
     )
     public static boolean fragileVault = false;
-
-    private FragileVault()
-    {
-    }
 }

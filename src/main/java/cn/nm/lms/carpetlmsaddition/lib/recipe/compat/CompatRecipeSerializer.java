@@ -27,9 +27,6 @@ import com.mojang.serialization.MapCodec;
 
 public final class CompatRecipeSerializer
 {
-    private CompatRecipeSerializer()
-    {
-    }
 
     public static <T extends CustomRecipe> RecipeSerializer<T> simple(
             Function<CraftingBookCategory, T> factory

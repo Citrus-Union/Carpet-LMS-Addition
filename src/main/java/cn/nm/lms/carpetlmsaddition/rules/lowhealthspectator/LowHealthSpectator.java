@@ -32,8 +32,4 @@ public final class LowHealthSpectator
             }
     )
     public static String lowHealthSpectator = "false";
-
-    private LowHealthSpectator()
-    {
-    }
 }

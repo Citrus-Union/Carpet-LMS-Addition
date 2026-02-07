@@ -30,10 +30,6 @@ public final class HelmetLoadValue
 {
     private static final Pattern HELMET_PATTERN = Pattern.compile("^#load(\\d+)$");
 
-    private HelmetLoadValue()
-    {
-    }
-
     public static int helmetLoadValue(ServerPlayer player)
     {
         if (!HelmetControlsPlayerDistance.helmetControlsPlayerDistance) return 0;

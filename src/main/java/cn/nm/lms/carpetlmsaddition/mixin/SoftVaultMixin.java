@@ -45,7 +45,7 @@ public abstract class SoftVaultMixin
             ),
             cancellable = true
     )
-    private void vaultHardnessTo3(
+    private void vaultHardnessTo3$LMS(
             BlockGetter world,
             BlockPos pos,
             CallbackInfoReturnable<Float> cir

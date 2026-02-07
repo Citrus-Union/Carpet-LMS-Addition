@@ -45,7 +45,7 @@ public abstract class FragileTrialSpawnerMixin
             ),
             cancellable = true
     )
-    private void trialSpawnerBlastResistanceTo3(
+    private void trialSpawnerBlastResistanceTo3$LMS(
             Explosion explosion,
             BlockGetter world,
             BlockPos pos,

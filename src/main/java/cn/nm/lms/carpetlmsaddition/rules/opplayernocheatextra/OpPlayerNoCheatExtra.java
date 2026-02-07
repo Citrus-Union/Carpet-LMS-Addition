@@ -29,8 +29,4 @@ public final class OpPlayerNoCheatExtra
             }
     )
     public static boolean opPlayerNoCheatExtra = false;
-
-    private OpPlayerNoCheatExtra()
-    {
-    }
 }

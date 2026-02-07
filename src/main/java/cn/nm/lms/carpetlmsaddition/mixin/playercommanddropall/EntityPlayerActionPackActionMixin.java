@@ -40,14 +40,14 @@ public class EntityPlayerActionPackActionMixin implements DropAllActionExtension
 
     @Override
     @Unique
-    public void lms$setDropAll(boolean v)
+    public void setDropAll$LMS(boolean v)
     {
         this.lms$dropAll = v;
     }
 
     @Override
     @Unique
-    public boolean lms$isDropAll()
+    public boolean isDropAll$LMS()
     {
         return this.lms$dropAll;
     }
@@ -60,7 +60,7 @@ public class EntityPlayerActionPackActionMixin implements DropAllActionExtension
             ),
             remap = false
     )
-    private boolean lms$wrapExecute(
+    private boolean wrapExecute$LMS(
             EntityPlayerActionPack.ActionType type,
             net.minecraft.server.level.ServerPlayer player,
             EntityPlayerActionPack.Action action,
@@ -68,7 +68,7 @@ public class EntityPlayerActionPackActionMixin implements DropAllActionExtension
             EntityPlayerActionPack pack
     )
     {
-        if (type == EntityPlayerActionPack.ActionType.DROP_STACK && lms$isDropAll())
+        if (type == EntityPlayerActionPack.ActionType.DROP_STACK && isDropAll$LMS())
         {
             if (!CommandHelper.canUseCommand(
                     player.createCommandSourceStack(),

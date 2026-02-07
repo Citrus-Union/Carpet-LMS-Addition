@@ -54,7 +54,11 @@ public abstract class MinimalLootingLevelCountMixin
                 "RETURN"
             )
     )
-    private ItemStack minimumLootingLevel(ItemStack result, ItemStack stack, LootContext context)
+    private ItemStack minimumLootingLevel$LMS(
+            ItemStack result,
+            ItemStack stack,
+            LootContext context
+    )
     {
         int level = MinimalLootingLevelLib.getLootingLevel(context, enchantment);
         if (!enchantment.is(Enchantments.LOOTING))

@@ -31,8 +31,4 @@ public final class AllayHealInterval
             }
     )
     public static int allayHealInterval = 10;
-
-    private AllayHealInterval()
-    {
-    }
 }

@@ -23,9 +23,6 @@ import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 
 public final class CheckMod
 {
-    private CheckMod()
-    {
-    }
 
     public static boolean checkMod(String modid, String version)
     {

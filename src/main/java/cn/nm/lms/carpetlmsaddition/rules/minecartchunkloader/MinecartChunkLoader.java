@@ -32,8 +32,4 @@ public final class MinecartChunkLoader
             }
     )
     public static int minecartChunkLoader = 0;
-
-    private MinecartChunkLoader()
-    {
-    }
 }

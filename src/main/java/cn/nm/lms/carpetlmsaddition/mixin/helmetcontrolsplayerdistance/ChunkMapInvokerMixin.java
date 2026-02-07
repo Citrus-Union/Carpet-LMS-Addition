@@ -30,5 +30,5 @@ public interface ChunkMapInvokerMixin
     @Invoker(
         "updateChunkTracking"
     )
-    void carpetlmsaddition$invokeUpdateChunkTracking(ServerPlayer player);
+    void updateChunkTracking$LMS(ServerPlayer player);
 }

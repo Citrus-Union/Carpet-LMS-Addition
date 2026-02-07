@@ -27,8 +27,4 @@ public final class FragileTrialSpawner
             }
     )
     public static boolean fragileTrialSpawner = false;
-
-    private FragileTrialSpawner()
-    {
-    }
 }

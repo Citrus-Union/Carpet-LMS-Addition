@@ -27,8 +27,4 @@ public final class SoftTrialSpawner
             }
     )
     public static boolean softTrialSpawner = false;
-
-    private SoftTrialSpawner()
-    {
-    }
 }

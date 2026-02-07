@@ -40,7 +40,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 public abstract class ZombifiedPiglinSpawnFixMixin
 {
     @Unique
-    private static boolean passesNaturalCollisionChecks(
+    private static boolean passesNaturalCollisionChecks$LMS(
             EntityType<?> type,
             ServerLevel world,
             BlockPos spawnPos,
@@ -71,7 +71,7 @@ public abstract class ZombifiedPiglinSpawnFixMixin
                     target = "Lnet/minecraft/world/entity/EntityType;spawn" + "(Lnet/minecraft/server/level/ServerLevel;" + "Lnet/minecraft/core/BlockPos;" + "Lnet/minecraft/world/entity/EntitySpawnReason;)" + "Lnet/minecraft/world/entity/Entity;"
             )
     )
-    private Entity onlyIfClear(
+    private Entity onlyIfClear$LMS(
             EntityType<?> type,
             ServerLevel world,
             BlockPos spawnPos,
@@ -79,7 +79,12 @@ public abstract class ZombifiedPiglinSpawnFixMixin
             Operation<Entity> origin
     )
     {
-        if (zombifiedPiglinSpawnFix && !passesNaturalCollisionChecks(type, world, spawnPos, reason))
+        if (zombifiedPiglinSpawnFix && !passesNaturalCollisionChecks$LMS(
+                type,
+                world,
+                spawnPos,
+                reason
+        ))
         {
             return null;
         }

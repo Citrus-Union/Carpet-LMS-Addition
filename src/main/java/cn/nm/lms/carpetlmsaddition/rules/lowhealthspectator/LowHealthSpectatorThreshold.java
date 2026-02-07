@@ -37,8 +37,4 @@ public final class LowHealthSpectatorThreshold
             strict = false
     )
     public static int lowHealthSpectatorThreshold = 5;
-
-    private LowHealthSpectatorThreshold()
-    {
-    }
 }

@@ -41,10 +41,6 @@ public final class PlayerConfig
     private static final String PLAYER_CONFIG_KEY = "playerConfig";
     private static JsonObject root;
 
-    private PlayerConfig()
-    {
-    }
-
     public static String get(UUID playerUUID, String configName)
     {
         JsonObject data = ensureLoaded();

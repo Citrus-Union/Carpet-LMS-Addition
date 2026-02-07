@@ -55,7 +55,7 @@ public abstract class SimulationDistanceMixin
                     target = "Lnet/minecraft/world/level/TicketStorage;addTicket(Lnet/minecraft/server/level/Ticket;Lnet/minecraft/world/level/ChunkPos;)V"
             )
     )
-    private void carpetlmsaddition$applyHelmetSimulationDistanceOnAdd(
+    private void applyHelmetSimulationDistanceOnAdd$LMS(
             TicketStorage ticketStorage,
             Ticket ticket,
             ChunkPos chunkPos,
@@ -63,7 +63,7 @@ public abstract class SimulationDistanceMixin
             ServerPlayer serverPlayer
     )
     {
-        Ticket adjustedTicket = this.createSimulationTicket(ticket, serverPlayer);
+        Ticket adjustedTicket = this.createSimulationTicket$LMS(ticket, serverPlayer);
         lastSimTicketLevel.put(serverPlayer.getUUID(), adjustedTicket.getTicketLevel());
         ticketStorage.addTicket(adjustedTicket, chunkPos);
     }
@@ -75,7 +75,7 @@ public abstract class SimulationDistanceMixin
                     target = "Lnet/minecraft/world/level/TicketStorage;removeTicket(Lnet/minecraft/server/level/Ticket;Lnet/minecraft/world/level/ChunkPos;)V"
             )
     )
-    private void carpetlmsaddition$applyHelmetSimulationDistanceOnRemove(
+    private void applyHelmetSimulationDistanceOnRemove$LMS(
             TicketStorage ticketStorage,
             Ticket ticket,
             ChunkPos chunkPos,
@@ -83,23 +83,23 @@ public abstract class SimulationDistanceMixin
             ServerPlayer serverPlayer
     )
     {
-        Ticket adjustedTicket = this.createSimulationTicket(ticket, serverPlayer);
-        long chunkKey = this.chunkKey(chunkPos);
+        Ticket adjustedTicket = this.createSimulationTicket$LMS(ticket, serverPlayer);
+        long chunkKey$LMS = this.chunkKey$LMS(chunkPos);
 
         Integer storedLevel = lastSimTicketLevel.get(serverPlayer.getUUID());
         boolean removed = false;
         if (storedLevel != null)
         {
             Ticket storedTicket = new Ticket(ticket.getType(), storedLevel);
-            removed = ticketStorage.removeTicket(chunkKey, storedTicket);
+            removed = ticketStorage.removeTicket(chunkKey$LMS, storedTicket);
         }
         if (!removed)
         {
-            removed = ticketStorage.removeTicket(chunkKey, adjustedTicket);
+            removed = ticketStorage.removeTicket(chunkKey$LMS, adjustedTicket);
         }
         if (!removed && adjustedTicket != ticket)
         {
-            ticketStorage.removeTicket(chunkKey, ticket);
+            ticketStorage.removeTicket(chunkKey$LMS, ticket);
         }
         else if (removed)
         {
@@ -108,7 +108,7 @@ public abstract class SimulationDistanceMixin
     }
 
     @Unique
-    private Ticket createSimulationTicket(Ticket originalTicket, ServerPlayer player)
+    private Ticket createSimulationTicket$LMS(Ticket originalTicket, ServerPlayer player)
     {
         int helmetDistance = HelmetLoadValue.helmetLoadValue(player);
         if (helmetDistance <= 0)
@@ -130,7 +130,7 @@ public abstract class SimulationDistanceMixin
     }
 
     @Unique
-    private long chunkKey(ChunkPos chunkPos)
+    private long chunkKey$LMS(ChunkPos chunkPos)
     {
         //#if MC>=260100
         return chunkPos.pack();

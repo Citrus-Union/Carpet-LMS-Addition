@@ -47,7 +47,7 @@ public abstract class OpPlayerNoCheatExtraFillBiomeMixin
             require = 1,
             allow = 1
     )
-    private static ArgumentBuilder<CommandSourceStack, ?> opPlayerNoCheatExtra$wrapRequires(
+    private static ArgumentBuilder<CommandSourceStack, ?> wrapRequires$LMS(
             LiteralArgumentBuilder<CommandSourceStack> instance,
             Predicate<CommandSourceStack> predicate,
             Operation<ArgumentBuilder<CommandSourceStack, ?>> original

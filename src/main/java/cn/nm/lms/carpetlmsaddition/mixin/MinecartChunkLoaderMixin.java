@@ -44,7 +44,7 @@ public abstract class MinecartChunkLoaderMixin
                 "TAIL"
             )
     )
-    private void minecartChunkLoader(CallbackInfo ci)
+    private void minecartChunkLoader$LMS(CallbackInfo _unusedCi)
     {
         long timeout = MinecartChunkLoader.minecartChunkLoader;
         if (timeout <= 0) return;

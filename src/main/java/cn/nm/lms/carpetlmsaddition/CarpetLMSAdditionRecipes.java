@@ -38,10 +38,6 @@ public final class CarpetLMSAdditionRecipes
             CraftableSponge::new
     );
 
-    private CarpetLMSAdditionRecipes()
-    {
-    }
-
     public static void register()
     {
         Registry.register(

@@ -50,7 +50,7 @@ public abstract class MinimalLootingLevelChanceMixin
                 "RETURN"
             )
     )
-    private boolean minimumLootingLevel(boolean result, LootContext context)
+    private boolean minimumLootingLevel$LMS(boolean result, LootContext context)
     {
         int level = MinimalLootingLevelLib.getLootingLevel(context, enchantment);
         if (!enchantment.is(Enchantments.LOOTING))

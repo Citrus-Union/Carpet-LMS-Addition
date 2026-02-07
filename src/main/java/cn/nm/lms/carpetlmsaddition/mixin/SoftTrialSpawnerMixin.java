@@ -45,7 +45,7 @@ public abstract class SoftTrialSpawnerMixin
             ),
             cancellable = true
     )
-    private void trialSpawnerHardnessTo5(
+    private void trialSpawnerHardnessTo5$LMS(
             BlockGetter world,
             BlockPos pos,
             CallbackInfoReturnable<Float> cir

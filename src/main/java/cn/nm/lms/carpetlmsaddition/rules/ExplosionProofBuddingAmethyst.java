@@ -27,8 +27,4 @@ public final class ExplosionProofBuddingAmethyst
             }
     )
     public static boolean explosionProofBuddingAmethyst = false;
-
-    private ExplosionProofBuddingAmethyst()
-    {
-    }
 }

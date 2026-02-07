@@ -55,7 +55,7 @@ public abstract class PlayerCommandDropAllMixin
                 "TAIL"
             )
     )
-    private static void lms$registerDropAll(
+    private static void registerDropAll$LMS(
             CommandDispatcher<CommandSourceStack> dispatcher,
             CommandBuildContext ctx,
             CallbackInfo ci
@@ -70,7 +70,7 @@ public abstract class PlayerCommandDropAllMixin
         }
         if (playerArg.getChild("dropall") == null)
         {
-            playerArg.addChild(cmd().build());
+            playerArg.addChild(buildDropAllCommand$LMS().build());
         }
     }
 
@@ -78,7 +78,7 @@ public abstract class PlayerCommandDropAllMixin
             value = "manipulate",
             remap = false
     )
-    private static int manipulate(
+    private static int invokeManipulate$LMS(
             CommandContext<CommandSourceStack> context,
             Consumer<EntityPlayerActionPack> op
     )
@@ -87,7 +87,7 @@ public abstract class PlayerCommandDropAllMixin
     }
 
     @Unique
-    private static LiteralArgumentBuilder<CommandSourceStack> cmd()
+    private static LiteralArgumentBuilder<CommandSourceStack> buildDropAllCommand$LMS()
     {
         return Commands.literal("dropall")
                        .requires(
@@ -96,11 +96,16 @@ public abstract class PlayerCommandDropAllMixin
                                        PlayerCommandDropall.playerCommandDropall
                                )
                        )
-                       .executes(PlayerCommandDropAllMixin::once)
-                       .then(Commands.literal("once").executes(PlayerCommandDropAllMixin::once))
+                       .executes(PlayerCommandDropAllMixin::executeDropAllOnce$LMS)
+                       .then(
+                               Commands.literal("once")
+                                       .executes(PlayerCommandDropAllMixin::executeDropAllOnce$LMS)
+                       )
                        .then(
                                Commands.literal("continuous")
-                                       .executes(PlayerCommandDropAllMixin::continuous)
+                                       .executes(
+                                               PlayerCommandDropAllMixin::executeDropAllContinuous$LMS
+                                       )
                        )
                        .then(
                                Commands.literal("interval")
@@ -108,43 +113,46 @@ public abstract class PlayerCommandDropAllMixin
                                                Commands.argument(
                                                        "ticks",
                                                        IntegerArgumentType.integer(1)
-                                               ).executes(PlayerCommandDropAllMixin::interval)
+                                               )
+                                                       .executes(
+                                                               PlayerCommandDropAllMixin::executeDropAllInterval$LMS
+                                                       )
                                        )
                        );
     }
 
     @Unique
-    private static void markAndStart(
+    private static void markAndStart$LMS(
             EntityPlayerActionPack pack,
             EntityPlayerActionPack.Action action
     )
     {
-        ((DropAllActionExtension) action).lms$setDropAll(true);
+        ((DropAllActionExtension) action).setDropAll$LMS(true);
         pack.start(EntityPlayerActionPack.ActionType.DROP_STACK, action);
     }
 
     @Unique
-    private static int once(CommandContext<CommandSourceStack> ctx)
+    private static int executeDropAllOnce$LMS(CommandContext<CommandSourceStack> ctx)
     {
-        return manipulate(ctx, pack -> pack.drop(-2, true));
+        return invokeManipulate$LMS(ctx, pack -> pack.drop(-2, true));
     }
 
     @Unique
-    private static int continuous(CommandContext<CommandSourceStack> ctx)
+    private static int executeDropAllContinuous$LMS(CommandContext<CommandSourceStack> ctx)
     {
-        return manipulate(
+        return invokeManipulate$LMS(
                 ctx,
-                pack -> markAndStart(pack, EntityPlayerActionPack.Action.continuous())
+                pack -> markAndStart$LMS(pack, EntityPlayerActionPack.Action.continuous())
         );
     }
 
     @Unique
-    private static int interval(CommandContext<CommandSourceStack> ctx)
+    private static int executeDropAllInterval$LMS(CommandContext<CommandSourceStack> ctx)
     {
         int t = IntegerArgumentType.getInteger(ctx, "ticks");
-        return manipulate(
+        return invokeManipulate$LMS(
                 ctx,
-                pack -> markAndStart(pack, EntityPlayerActionPack.Action.interval(t))
+                pack -> markAndStart$LMS(pack, EntityPlayerActionPack.Action.interval(t))
         );
     }
 }

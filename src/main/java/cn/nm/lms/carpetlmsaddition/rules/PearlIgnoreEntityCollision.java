@@ -27,8 +27,4 @@ public final class PearlIgnoreEntityCollision
             }
     )
     public static boolean pearlIgnoreEntityCollision = false;
-
-    private PearlIgnoreEntityCollision()
-    {
-    }
 }

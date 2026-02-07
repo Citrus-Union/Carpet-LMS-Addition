@@ -29,8 +29,4 @@ public final class ElytraRecipe
             }
     )
     public static boolean elytraRecipe = false;
-
-    private ElytraRecipe()
-    {
-    }
 }
