@@ -5,10 +5,23 @@ import yaml from "js-yaml";
 
 import rawYaml from "../../../../src/main/resources/assets/carpetlmsaddition/lang/en_us.yml?raw";
 
-const data = yaml.load(rawYaml);
-const ruleMap = data?.carpet?.rule ?? {};
+type RuleExtra = Record<string, unknown>;
+type RuleEntry = {
+  name?: string;
+  desc?: string;
+  extra?: RuleExtra;
+};
 
-const normalizeName = (key: string, rule: any) => {
+type TranslationData = {
+  carpet?: {
+    rule?: Record<string, RuleEntry>;
+  };
+};
+
+const data = yaml.load(rawYaml) as TranslationData;
+const ruleMap: Record<string, RuleEntry> = data?.carpet?.rule ?? {};
+
+const normalizeName = (key: string, rule: RuleEntry) => {
   return rule?.name && String(rule.name).trim().length > 0
     ? String(rule.name)
     : key;
@@ -33,19 +46,18 @@ const headings = Object.entries(ruleMap).map(([key, rule]) => ({
       const name = normalizeName(key, rule);
       const desc = rule?.desc;
       const extra = rule?.extra ?? null;
-      const slug = key;
 
       return (
-        <section style={{ marginBottom: "2rem" }} key={slug}>
-          <AnchorHeading level="2" id={slug}>
+        <section style={{ marginBottom: "2rem" }}>
+          <AnchorHeading level={2} id={key}>
             {name}
           </AnchorHeading>
 
-          <p>{desc}</p>
+          {desc && <p>{String(desc)}</p>}
 
           {extra && (
             <ul>
-              {Object.entries(extra).map(([k, v]) => (
+              {Object.entries(extra).map(([, v]) => (
                 <li>{String(v)}</li>
               ))}
             </ul>
