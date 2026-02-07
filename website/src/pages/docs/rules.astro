@@ -1,5 +1,6 @@
 ---
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
 import yaml from "js-yaml";
 
 import rawYaml from "../../../../src/main/resources/assets/carpetlmsaddition/lang/en_us.yml?raw";
@@ -36,7 +37,9 @@ const headings = Object.entries(ruleMap).map(([key, rule]) => ({
 
       return (
         <section style={{ marginBottom: "2rem" }} key={slug}>
-          <h2 id={slug}>{name}</h2>
+          <AnchorHeading level="2" id={slug}>
+            {name}
+          </AnchorHeading>
 
           <p>{desc}</p>
 
