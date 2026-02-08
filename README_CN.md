@@ -18,7 +18,8 @@
 
 见文档网页：https://carpet.lms.nm.cn
 
-## 参考
+## 参考（按字母顺序）
 
-- [Carpet-TIS-Addition](https://github.com/TISUnion/Carpet-TIS-Addition)
+- [Carpet-AMS-Addition](https://github.com/Minecraft-AMS/Carpet-AMS-Addition)
 - [Carpet-Org-Addition](https://github.com/fcsailboat/Carpet-Org-Addition)
+- [Carpet-TIS-Addition](https://github.com/TISUnion/Carpet-TIS-Addition)

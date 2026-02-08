@@ -38,6 +38,13 @@ carpet:
       desc: Defines the method used to switch the player into spectator mode
     lowHealthSpectatorThreshold:
       desc: The health threshold below which the player will be switched to spectator mode
+    minecartChunkLoader:
+      desc: >-
+        While fueled, a furnace minecart emits a chunk loading ticket every gt,
+        with a duration equal to the rule value (unit: gt)
+      extra:
+        "0": Set to 0 to disable chunk loading by furnace minecarts
+        "1": Uses the same ticket level as nether portals
     minimalLootingLevel:
       desc: Sets the minimum looting level applied to mob drops
     opPlayerNoCheatExtra:

@@ -14,24 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition;
+package cn.nm.lms.carpetlmsaddition.lib;
 
-import cn.nm.lms.carpetlmsaddition.rules.commandLMS.CommandLMS;
-import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorController;
-import cn.nm.lms.carpetlmsaddition.rules.minecartchunkloader.MinecartChunkLoaderInit;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.TicketType;
 
-public final class CarpetLMSAdditionInit
+public final class Tickets
 {
-    private CarpetLMSAdditionInit()
+    public static TicketType register(final String name, final long timeout, final int flags)
     {
-    }
-
-    public static void initAll()
-    {
-        MinecartChunkLoaderInit.init();
-        CarpetLMSAdditionTranslations.loadTranslations();
-        CarpetLMSAdditionRecipes.register();
-        CommandLMS.register();
-        LowHealthSpectatorController.init();
+        return Registry.register(
+                BuiltInRegistries.TICKET_TYPE,
+                name,
+                new TicketType(timeout, flags)
+        );
     }
 }

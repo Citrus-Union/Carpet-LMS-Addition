@@ -26,6 +26,7 @@ import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectator;
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorCooldown;
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorMethod;
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorThreshold;
+import cn.nm.lms.carpetlmsaddition.rules.minecartchunkloader.MinecartChunkLoader;
 import cn.nm.lms.carpetlmsaddition.rules.minimallootinglevel.MinimalLootingLevel;
 import cn.nm.lms.carpetlmsaddition.rules.opplayernocheatextra.OpPlayerNoCheatExtra;
 import cn.nm.lms.carpetlmsaddition.rules.playercommanddropall.PlayerCommandDropall;
@@ -53,6 +54,7 @@ public final class RulesBootstrap
                 LowHealthSpectatorCooldown.class,
                 LowHealthSpectatorMethod.class,
                 LowHealthSpectatorThreshold.class,
+                MinecartChunkLoader.class,
                 MinimalLootingLevel.class,
                 OpPlayerNoCheatExtra.class,
                 PearlIgnoreEntityCollision.class,

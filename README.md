@@ -18,7 +18,8 @@ Use it with the carpet mod in the same version of Minecraft. Always use the late
 
 See the document website: https://carpet.lms.nm.cn
 
-## Reference
+## References (ordered alphabetically)
 
-- [Carpet-TIS-Addition](https://github.com/TISUnion/Carpet-TIS-Addition)
+- [Carpet-AMS-Addition](https://github.com/Minecraft-AMS/Carpet-AMS-Addition)
 - [Carpet-Org-Addition](https://github.com/fcsailboat/Carpet-Org-Addition)
+- [Carpet-TIS-Addition](https://github.com/TISUnion/Carpet-TIS-Addition)

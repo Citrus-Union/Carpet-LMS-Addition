@@ -47,6 +47,12 @@ carpet:
     lowHealthSpectatorThreshold:
       name: 低血量切换旁观阈值
       desc: 玩家生命值低于此阈值时，将被切换到旁观模式
+    minecartChunkLoader:
+      name: 动力矿车区块加载
+      desc: 动力矿车有燃料时，每 gt 会为所在区块发出一张时长为规则值（单位：gt）的加载票
+      extra:
+        "0": 设置为 0 时，动力矿车不会加载区块
+        "1": 加载票等级与地狱门相同
     minimalLootingLevel:
       name: 最低抢夺等级
       desc: 设置怪物掉落的最低抢夺等级

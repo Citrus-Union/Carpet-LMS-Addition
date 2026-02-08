@@ -7,6 +7,7 @@
     "ExplosionProofBuddingAmethystMixin",
     "FragileTrialSpawnerMixin",
     "FragileVaultMixin",
+    "MinecartChunkLoaderMixin",
     "PearlIgnoreEntityCollisionMixin",
     "PearlNoTpMixin",
     "ShulkerDupLowHealthFailChanceMixin",

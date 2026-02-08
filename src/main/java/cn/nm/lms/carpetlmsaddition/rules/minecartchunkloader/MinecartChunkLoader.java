@@ -14,24 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition;
+package cn.nm.lms.carpetlmsaddition.rules.minecartchunkloader;
 
-import cn.nm.lms.carpetlmsaddition.rules.commandLMS.CommandLMS;
-import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorController;
-import cn.nm.lms.carpetlmsaddition.rules.minecartchunkloader.MinecartChunkLoaderInit;
+import carpet.api.settings.Rule;
+import carpet.api.settings.RuleCategory;
 
-public final class CarpetLMSAdditionInit
+import cn.nm.lms.carpetlmsaddition.rules.LMSRuleCategory;
+
+public final class MinecartChunkLoader
 {
-    private CarpetLMSAdditionInit()
-    {
-    }
+    @Rule(
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            },
+            options = {
+                    "0", "1", "20", "300"
+            }
+    )
+    public static int minecartChunkLoader = 0;
 
-    public static void initAll()
+    private MinecartChunkLoader()
     {
-        MinecartChunkLoaderInit.init();
-        CarpetLMSAdditionTranslations.loadTranslations();
-        CarpetLMSAdditionRecipes.register();
-        CommandLMS.register();
-        LowHealthSpectatorController.init();
     }
 }
