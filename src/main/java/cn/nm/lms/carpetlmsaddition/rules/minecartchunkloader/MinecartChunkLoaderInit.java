@@ -22,9 +22,9 @@ import cn.nm.lms.carpetlmsaddition.lib.Tickets;
 
 public final class MinecartChunkLoaderInit
 {
-    private static final TicketType T1 = Tickets.register("minecart_1", 1, 15);
-    private static final TicketType T20 = Tickets.register("minecart_20", 20, 15);
-    private static final TicketType T300 = Tickets.register("minecart_300", 300, 15);
+    private static final TicketType T1 = Tickets.register("minecart_1", 1);
+    private static final TicketType T20 = Tickets.register("minecart_20", 20);
+    private static final TicketType T300 = Tickets.register("minecart_300", 300);
 
     public static TicketType getTicket(long timeout)
     {

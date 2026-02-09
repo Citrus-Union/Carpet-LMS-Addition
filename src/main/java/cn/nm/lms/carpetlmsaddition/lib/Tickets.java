@@ -22,12 +22,17 @@ import net.minecraft.server.level.TicketType;
 
 public final class Tickets
 {
-    public static TicketType register(final String name, final long timeout, final int flags)
+    public static TicketType register(final String name, final long timeout)
     {
         return Registry.register(
                 BuiltInRegistries.TICKET_TYPE,
                 name,
-                new TicketType(timeout, flags)
+                //#if MC>=12109
+                new TicketType(timeout, 15)
+                //#else
+                //$$ new TicketType(timeout, true,TicketType.TicketUse.LOADING_AND_SIMULATION)
+                //#endif
         );
+
     }
 }
