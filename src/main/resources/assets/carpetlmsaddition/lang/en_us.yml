@@ -10,6 +10,24 @@ carpet:
       desc: View or modify other players' /lms settings
     commandLMSSelf:
       desc: View or modify your own /lms settings
+    dispenserBartering:
+      desc: Trigger piglin bartering by dispensing gold items
+      extra:
+        "0": When set to ingot, dispensing a gold ingot triggers bartering
+        "1": When set to block, dispensing a gold ingot or gold block triggers bartering
+        "2": >-
+          When set to shulkerBox, dispensing a shulker box that contains only gold ingots or
+          gold blocks triggers bartering, and the shulker box is dispensed as an item
+    dispenserBarteringName:
+      desc: Set the dispenser name required to trigger dispenser bartering
+      extra:
+        "0": If set to false, the rule is disabled
+        "1": >-
+          When set to true,
+          only a dispenser named "bartering" will trigger piglin bartering
+        "2": >-
+          If set to a different string,
+          only a dispenser named that string will trigger piglin bartering
     elytraRecipe:
       desc: Add a crafting recipe to make elytra renewable
     enchantedGoldenAppleRecipe:

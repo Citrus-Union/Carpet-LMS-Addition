@@ -20,6 +20,7 @@ import carpet.CarpetServer;
 
 import cn.nm.lms.carpetlmsaddition.rules.commandLMS.CommandLMSOthers;
 import cn.nm.lms.carpetlmsaddition.rules.commandLMS.CommandLMSSelf;
+import cn.nm.lms.carpetlmsaddition.rules.dispenserbartering.DispenserBartering;
 import cn.nm.lms.carpetlmsaddition.rules.elytrarecipe.ElytraRecipe;
 import cn.nm.lms.carpetlmsaddition.rules.enchantedgoldenapplerecipe.EnchantedGoldenAppleRecipe;
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectator;
@@ -34,13 +35,13 @@ import cn.nm.lms.carpetlmsaddition.rules.spongerecipe.SpongeRecipe;
 
 public final class RulesBootstrap
 {
-
     public static void registerAll()
     {
         Class<?>[] settingsClasses = new Class<?>[]{
                 AllayHealInterval.class,
                 CommandLMSOthers.class,
                 CommandLMSSelf.class,
+                DispenserBartering.class,
                 ElytraRecipe.class,
                 EnchantedGoldenAppleRecipe.class,
                 ExplosionProofBuddingAmethyst.class,

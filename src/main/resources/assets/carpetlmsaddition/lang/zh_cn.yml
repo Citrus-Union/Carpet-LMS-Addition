@@ -13,6 +13,20 @@ carpet:
     commandLMSSelf:
       name: 管理自己的LMS设置
       desc: 查看或修改自己的 /lms 设置
+    dispenserBartering:
+      name: 发射器猪灵交易
+      desc: 发射金物品会触发猪灵交易
+      extra:
+        "0": 设置为ingot时，金锭会触发交易
+        "1": 设置为block时，金锭和金块会触发交易
+        "2": 设置为shulkerBox时，有且仅有金锭或金块的潜影盒会触发交易，且潜影盒以物品形式投出
+    dispenserBarteringName:
+      name: 发射器猪灵交易名称
+      desc: 设置触发发射器猪灵交易所需的发射器名称
+      extra:
+        "0": 如果设置为 false，则禁用该规则
+        "1": 设置为 true 时，命名为“bartering”的发射器会触发猪灵交易
+        "2": 如果设置为别的字符串，则以该字符串命名的发射器会触发猪灵交易
     elytraRecipe:
       name: 可再生鞘翅
       desc: 添加鞘翅的制作配方

@@ -17,6 +17,7 @@
 package cn.nm.lms.carpetlmsaddition;
 
 import cn.nm.lms.carpetlmsaddition.rules.commandLMS.CommandLMS;
+import cn.nm.lms.carpetlmsaddition.rules.dispenserbartering.DispenserBarteringInit;
 import cn.nm.lms.carpetlmsaddition.rules.lowhealthspectator.LowHealthSpectatorController;
 import cn.nm.lms.carpetlmsaddition.rules.minecartchunkloader.MinecartChunkLoaderInit;
 
@@ -30,5 +31,6 @@ public final class CarpetLMSAdditionInit
         CarpetLMSAdditionRecipes.register();
         CommandLMS.register();
         LowHealthSpectatorController.init();
+        DispenserBarteringInit.register();
     }
 }
