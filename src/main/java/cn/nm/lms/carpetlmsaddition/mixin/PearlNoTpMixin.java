@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import cn.nm.lms.carpetlmsaddition.lib.check.CheckName;
 import cn.nm.lms.carpetlmsaddition.rules.PearlNoTp;
 
 @Mixin(
@@ -41,12 +42,11 @@ public abstract class PearlNoTpMixin
     )
     private void disableTeleportWhenNamed$LMS(HitResult _unusedResult, CallbackInfo ci)
     {
-        String noTpName = "true".equals(PearlNoTp.pearlNoTp) ? "noTp" : PearlNoTp.pearlNoTp;
         ThrownEnderpearl pearl = (ThrownEnderpearl) (Object) this;
-        if (pearl.level().isClientSide() || noTpName.equals("false")) return;
+        if (pearl.level().isClientSide()) return;
         ItemStack stack = pearl.getItem();
         String name = stack.getHoverName().getString();
-        if (!noTpName.equalsIgnoreCase(name)) return;
+        if (!CheckName.checkName(name, PearlNoTp.pearlNoTp, "noTp")) return;
         ci.cancel();
         pearl.discard();
     }
