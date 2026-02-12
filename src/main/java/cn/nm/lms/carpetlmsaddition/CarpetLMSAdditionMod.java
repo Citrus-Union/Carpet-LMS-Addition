@@ -26,7 +26,7 @@ import carpet.CarpetServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import cn.nm.lms.carpetlmsaddition.rules.RulesBootstrap;
+import cn.nm.lms.carpetlmsaddition.rule.RulesBootstrap;
 
 public class CarpetLMSAdditionMod implements ModInitializer, CarpetExtension
 {

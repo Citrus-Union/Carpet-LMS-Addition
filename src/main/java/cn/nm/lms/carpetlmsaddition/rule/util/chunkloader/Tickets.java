@@ -14,24 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition;
+package cn.nm.lms.carpetlmsaddition.rule.util.chunkloader;
 
-import cn.nm.lms.carpetlmsaddition.rule.block.util.dispenserbartering.DispenserBarteringInit;
-import cn.nm.lms.carpetlmsaddition.rule.recipes.RecipesInit;
-import cn.nm.lms.carpetlmsaddition.rule.util.chunkloader.minecartchunkloader.MinecartChunkLoaderInit;
-import cn.nm.lms.carpetlmsaddition.rule.util.command.commandlms.CommandLMS;
-import cn.nm.lms.carpetlmsaddition.rule.util.helper.lowhealthspectator.LowHealthSpectator;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.TicketType;
 
-public final class CarpetLMSAdditionInit
+public final class Tickets
 {
-
-    public static void initAll()
+    public static TicketType register(final String name, final long timeout)
     {
-        MinecartChunkLoaderInit.init();
-        CarpetLMSAdditionTranslations.init();
-        RecipesInit.init();
-        CommandLMS.init();
-        LowHealthSpectator.init();
-        DispenserBarteringInit.init();
+        return Registry.register(
+                BuiltInRegistries.TICKET_TYPE,
+                name,
+                //#if MC>=12109
+                new TicketType(timeout, 15)
+                //#else
+                //$$ new TicketType(timeout, true,TicketType.TicketUse.LOADING_AND_SIMULATION)
+                //#endif
+        );
+
     }
 }
