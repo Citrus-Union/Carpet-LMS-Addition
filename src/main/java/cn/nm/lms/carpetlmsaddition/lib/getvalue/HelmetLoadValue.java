@@ -24,7 +24,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import cn.nm.lms.carpetlmsaddition.rules.HelmetControlsPlayerDistance;
+import cn.nm.lms.carpetlmsaddition.rule.util.chunkloader.helmetcontrolsplayerdistance.HelmetControlsPlayerDistanceRule;
 
 public final class HelmetLoadValue
 {
@@ -32,7 +32,7 @@ public final class HelmetLoadValue
 
     public static int helmetLoadValue(ServerPlayer player)
     {
-        if (!HelmetControlsPlayerDistance.helmetControlsPlayerDistance) return 0;
+        if (!HelmetControlsPlayerDistanceRule.helmetControlsPlayerDistance) return 0;
         if (player.isSpectator()) return 0;
 
         ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
