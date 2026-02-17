@@ -45,15 +45,9 @@ public final class PlayerConfig
     {
         JsonObject data = ensureLoaded();
         JsonObject allConfig = data.getAsJsonObject(PLAYER_CONFIG_KEY);
-        if (allConfig == null)
-        {
-            return null;
-        }
+        if (allConfig == null) return null;
         JsonObject perConfig = allConfig.getAsJsonObject(configName);
-        if (perConfig == null)
-        {
-            return null;
-        }
+        if (perConfig == null) return null;
         return perConfig.get(playerUUID.toString()) != null ? perConfig.get(playerUUID.toString())
                                                                        .getAsString() : null;
     }
@@ -92,10 +86,7 @@ public final class PlayerConfig
 
     private static JsonObject ensureLoaded()
     {
-        if (root != null)
-        {
-            return root;
-        }
+        if (root != null) return root;
         if (Files.exists(FILE))
         {
             try (

@@ -33,6 +33,7 @@ public final class LowHealthSpectatorRule
             }
     )
     public static String lowHealthSpectator = "false";
+
     @Rule(
             categories = {
                     LMSRuleCategory.LMS, RuleCategory.SURVIVAL
@@ -42,6 +43,7 @@ public final class LowHealthSpectatorRule
             }
     )
     public static String lowHealthSpectatorMethod = "vanilla";
+
     @Rule(
             categories = {
                     LMSRuleCategory.LMS, RuleCategory.SURVIVAL
@@ -50,5 +52,19 @@ public final class LowHealthSpectatorRule
                     Validators.NonNegativeNumber.class
             }
     )
-    public static int lowHealthSpectatorCooldown = 200;
+    public static long lowHealthSpectatorCooldown = 200;
+
+    @Rule(
+            categories = {
+                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
+            },
+            validators = {
+                    Validators.NonNegativeNumber.class
+            },
+            options = {
+                    "5", "10", "15", "20"
+            },
+            strict = false
+    )
+    public static float lowHealthSpectatorThreshold = 5;
 }

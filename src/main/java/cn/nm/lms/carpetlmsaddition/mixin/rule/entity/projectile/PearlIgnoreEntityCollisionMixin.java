@@ -21,6 +21,7 @@ import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnder
 import net.minecraft.world.phys.HitResult;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
@@ -41,6 +42,14 @@ public abstract class PearlIgnoreEntityCollisionMixin
     )
     private boolean skipCollisionIfEntityHit$LMS(Projectile self, HitResult hitResult)
     {
-        return !(self instanceof ThrownEnderpearl) || hitResult.getType() != HitResult.Type.ENTITY || !PearlIgnoreEntityCollisionRule.pearlIgnoreEntityCollision;
+        return !shouldSkip(self, hitResult);
+    }
+
+    @Unique
+    private boolean shouldSkip(Projectile self, HitResult hitResult)
+    {
+        if (!PearlIgnoreEntityCollisionRule.pearlIgnoreEntityCollision) return false;
+        if (!(self instanceof ThrownEnderpearl)) return false;
+        return hitResult.getType() == HitResult.Type.ENTITY;
     }
 }

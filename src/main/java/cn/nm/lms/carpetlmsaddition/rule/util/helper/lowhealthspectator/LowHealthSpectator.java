@@ -31,7 +31,6 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import cn.nm.lms.carpetlmsaddition.CarpetLMSAdditionMod;
 import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
 import cn.nm.lms.carpetlmsaddition.lib.check.CheckMod;
-import cn.nm.lms.carpetlmsaddition.rule.util.command.commandlms.CommandLMSRule;
 
 public final class LowHealthSpectator
 {
@@ -48,57 +47,57 @@ public final class LowHealthSpectator
                         ignoreBlockedDamage
                 ) ->
                 {
-                    if (!(entity instanceof ServerPlayer player))
-                    {
-                        return;
-                    }
+                    if (!(entity instanceof ServerPlayer player)) return;
                     long now = player.level().getGameTime();
                     UUID playerUUID = player.getUUID();
                     long last = COOLDOWN_MAP.getOrDefault(
                             playerUUID,
                             now - LowHealthSpectatorRule.lowHealthSpectatorCooldown
                     );
+
+                    if (!isEnabled(playerUUID)) return;
+                    if (isInCooldown(now, last)) return;
+                    if (player.gameMode() != GameType.SURVIVAL) return;
+
                     float hp = player.getHealth();
-                    if (isEnabled(
-                            playerUUID
-                    ) && now - last >= LowHealthSpectatorRule.lowHealthSpectatorCooldown && player.gameMode() == GameType.SURVIVAL && hp > 0f && hp <= (float) CommandLMSRule.lowHealthSpectatorThreshold)
+                    if (hp <= 0f) return;
+                    if (hp > LowHealthSpectatorRule.lowHealthSpectatorThreshold) return;
+
+                    switch (LowHealthSpectatorRule.lowHealthSpectatorMethod)
                     {
-                        switch (LowHealthSpectatorRule.lowHealthSpectatorMethod)
-                        {
-                            case "vanilla" -> player.setGameMode(GameType.SPECTATOR);
-                            case "mcdreforged" -> CarpetLMSAdditionMod.LOGGER.info(
-                                    "<{}> !!spec",
-                                    player.getName().getString()
-                            );
-                            case "carpet-org-addition" -> {
-                                if (CheckMod.checkMod("carpet-org-addition", ">=1.38.0"))
-                                {
-                                    MinecraftServer server = player.level().getServer();
-                                    Commands commandManager = server.getCommands();
-                                    server.execute(
-                                            () -> commandManager.performPrefixedCommand(
-                                                    player.createCommandSourceStack(),
-                                                    "spectator"
-                                            )
-                                    );
-                                }
-                                else
-                                {
-                                    CarpetLMSAdditionMod.LOGGER.warn(
-                                            "Carpet Org Addition (>=1.38.0) not installed"
-                                    );
-                                }
+                        case "vanilla" -> player.setGameMode(GameType.SPECTATOR);
+                        case "mcdreforged" -> CarpetLMSAdditionMod.LOGGER.info(
+                                "<{}> !!spec",
+                                player.getName().getString()
+                        );
+                        case "carpet-org-addition" -> {
+                            if (CheckMod.checkMod("carpet-org-addition", ">=1.38.0"))
+                            {
+                                MinecraftServer server = player.level().getServer();
+                                Commands commandManager = server.getCommands();
+                                server.execute(
+                                        () -> commandManager.performPrefixedCommand(
+                                                player.createCommandSourceStack(),
+                                                "spectator"
+                                        )
+                                );
                             }
-                            case "kick" -> player.connection.disconnect(
-                                    Component.nullToEmpty("Kicked by Carpet LMS Addition")
-                            );
-                            default -> CarpetLMSAdditionMod.LOGGER.warn(
-                                    "Unknown lowHealthSpectatorMethod: {}",
-                                    LowHealthSpectatorRule.lowHealthSpectatorMethod
-                            );
+                            else
+                            {
+                                CarpetLMSAdditionMod.LOGGER.warn(
+                                        "Carpet Org Addition (>=1.38.0) not installed"
+                                );
+                            }
                         }
-                        COOLDOWN_MAP.put(playerUUID, now);
+                        case "kick" -> player.connection.disconnect(
+                                Component.nullToEmpty("Kicked by Carpet LMS Addition")
+                        );
+                        default -> CarpetLMSAdditionMod.LOGGER.warn(
+                                "Unknown lowHealthSpectatorMethod: {}",
+                                LowHealthSpectatorRule.lowHealthSpectatorMethod
+                        );
                     }
+                    COOLDOWN_MAP.put(playerUUID, now);
                 }
         );
     }
@@ -106,19 +105,19 @@ public final class LowHealthSpectator
     private static boolean isEnabled(UUID playerUUID)
     {
         String value = LowHealthSpectatorRule.lowHealthSpectator;
-        if ("true".equals(value))
-        {
-            return true;
-        }
-        if ("false".equals(value))
-        {
-            return false;
-        }
+        if ("true".equals(value)) return true;
+        if ("false".equals(value)) return false;
+
         if ("custom".equals(value))
         {
             String configured = PlayerConfig.get(playerUUID, "lowHealthSpectator");
             return Boolean.parseBoolean(configured);
         }
         return false;
+    }
+
+    private static boolean isInCooldown(long now, long last)
+    {
+        return now - last < LowHealthSpectatorRule.lowHealthSpectatorCooldown;
     }
 }

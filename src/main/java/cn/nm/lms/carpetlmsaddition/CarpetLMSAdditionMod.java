@@ -31,38 +31,34 @@ import cn.nm.lms.carpetlmsaddition.rule.RulesBootstrap;
 public class CarpetLMSAdditionMod implements ModInitializer, CarpetExtension
 {
     public static final String MOD_ID = "carpet-lms-addition";
-    private static volatile ModContainer modContainer;
     public static final Logger LOGGER = LogManager.getLogger(getModName());
-
-    private static ModContainer getModContainer()
-    {
-        if (modContainer == null)
-        {
-            synchronized (CarpetLMSAdditionMod.class)
-            {
-                if (modContainer == null)
-                {
-                    modContainer = FabricLoader.getInstance()
-                                               .getModContainer(MOD_ID)
-                                               .orElseThrow(
-                                                       () -> new RuntimeException(
-                                                               "Mod not found: " + MOD_ID
-                                                       )
-                                               );
-                }
-            }
-        }
-        return modContainer;
-    }
 
     public static String getVersion()
     {
-        return getModContainer().getMetadata().getVersion().getFriendlyString();
+        return ModInfoHolder.VERSION;
     }
 
     public static String getModName()
     {
-        return getModContainer().getMetadata().getName();
+        return ModInfoHolder.NAME;
+    }
+
+    private static class ModInfoHolder
+    {
+        private static final ModContainer CONTAINER;
+        private static final String NAME;
+        private static final String VERSION;
+        static
+        {
+            CONTAINER = FabricLoader.getInstance()
+                                    .getModContainer(MOD_ID)
+                                    .orElseThrow(
+                                            () -> new RuntimeException("Mod not found: " + MOD_ID)
+                                    );
+            ;
+            NAME = CONTAINER.getMetadata().getName();
+            VERSION = CONTAINER.getMetadata().getVersion().getFriendlyString();
+        }
     }
 
     @Override

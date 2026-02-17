@@ -87,23 +87,26 @@ public abstract class SimulationDistanceMixin
         long chunkKey$LMS = this.chunkKey$LMS(chunkPos);
 
         Integer storedLevel = lastSimTicketLevel.get(serverPlayer.getUUID());
-        boolean removed = false;
+
         if (storedLevel != null)
         {
             Ticket storedTicket = new Ticket(ticket.getType(), storedLevel);
-            removed = ticketStorage.removeTicket(chunkKey$LMS, storedTicket);
+            if (ticketStorage.removeTicket(chunkKey$LMS, storedTicket))
+            {
+                lastSimTicketLevel.remove(serverPlayer.getUUID());
+                return;
+            }
         }
-        if (!removed)
-        {
-            removed = ticketStorage.removeTicket(chunkKey$LMS, adjustedTicket);
-        }
-        if (!removed && adjustedTicket != ticket)
-        {
-            ticketStorage.removeTicket(chunkKey$LMS, ticket);
-        }
-        else if (removed)
+
+        if (ticketStorage.removeTicket(chunkKey$LMS, adjustedTicket))
         {
             lastSimTicketLevel.remove(serverPlayer.getUUID());
+            return;
+        }
+
+        if (adjustedTicket != ticket)
+        {
+            ticketStorage.removeTicket(chunkKey$LMS, ticket);
         }
     }
 

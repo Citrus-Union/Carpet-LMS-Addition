@@ -50,16 +50,13 @@ public abstract class ZombifiedPiglinSpawnFixMixin
         double x = spawnPos.getX() + 0.5D;
         double y = spawnPos.getY();
         double z = spawnPos.getZ() + 0.5D;
+
         AABB spawnBox = type.getSpawnAABB(x, y, z);
-        if (!world.noCollision(spawnBox))
-        {
-            return false;
-        }
+        if (!world.noCollision(spawnBox)) return false;
+
         Entity entity = type.create(world, reason);
-        if (!(entity instanceof Mob mob))
-        {
-            return true;
-        }
+        if (!(entity instanceof Mob mob)) return true;
+
         mob.snapTo(x, y, z, 0.0F, 0.0F);
         return mob.checkSpawnObstruction(world);
     }
@@ -84,10 +81,8 @@ public abstract class ZombifiedPiglinSpawnFixMixin
                 world,
                 spawnPos,
                 reason
-        ))
-        {
-            return null;
-        }
+        )) return null;
+
         return origin.call(type, world, spawnPos, reason);
     }
 }

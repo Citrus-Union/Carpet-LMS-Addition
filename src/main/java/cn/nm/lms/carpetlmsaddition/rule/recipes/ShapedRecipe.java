@@ -92,14 +92,10 @@ public abstract class ShapedRecipe extends DualVersionCustomRecipe
     @Override
     public boolean matches(CraftingInput input, Level world)
     {
-        if (!enabled.getAsBoolean())
-        {
-            return false;
-        }
-        if (input.width() != width || input.height() != height)
-        {
-            return false;
-        }
+        if (!enabled.getAsBoolean()) return false;
+
+        if (input.width() != width || input.height() != height) return false;
+
         for (
                 int y = 0;
                 y < input.height();
@@ -116,18 +112,11 @@ public abstract class ShapedRecipe extends DualVersionCustomRecipe
                 ItemStack stack = input.getItem(x, y);
                 if (expect == null)
                 {
-                    if (!stack.isEmpty())
-                    {
-                        return false;
-                    }
+                    if (!stack.isEmpty()) return false;
+                    continue;
                 }
-                else
-                {
-                    if (stack.isEmpty() || !stack.is(expect))
-                    {
-                        return false;
-                    }
-                }
+                if (stack.isEmpty()) return false;
+                if (!stack.is(expect)) return false;
             }
         }
         return true;
@@ -162,12 +151,6 @@ public abstract class ShapedRecipe extends DualVersionCustomRecipe
             return remainder.apply(input);
         }
         return NonNullList.withSize(input.size(), ItemStack.EMPTY);
-    }
-
-    @Override
-    public boolean isSpecial()
-    {
-        return false;
     }
 
     @Override

@@ -16,6 +16,9 @@
  */
 package cn.nm.lms.carpetlmsaddition.lib.check;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
@@ -23,14 +26,19 @@ import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 
 public final class CheckMod
 {
+    private static final Map<String, Boolean> CACHE = new ConcurrentHashMap<>();
 
     public static boolean checkMod(String modid, String version)
     {
+        String key = modid + "@" + version;
+        return CACHE.computeIfAbsent(key, k -> doCheck(modid, version));
+    }
+
+    private static boolean doCheck(String modid, String version)
+    {
         ModContainer container = FabricLoader.getInstance().getModContainer(modid).orElse(null);
-        if (container == null)
-        {
-            return false;
-        }
+        if (container == null) return false;
+
         try
         {
             VersionPredicate predicate = VersionPredicate.parse(version);

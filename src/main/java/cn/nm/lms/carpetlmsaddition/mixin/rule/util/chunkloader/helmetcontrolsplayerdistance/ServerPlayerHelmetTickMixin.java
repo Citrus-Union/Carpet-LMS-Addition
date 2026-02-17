@@ -55,20 +55,12 @@ public abstract class ServerPlayerHelmetTickMixin
         boolean enabled = HelmetControlsPlayerDistanceRule.helmetControlsPlayerDistance;
         Boolean previous = lastRuleState.put(player.getUUID(), enabled);
         boolean firstSeen = previous == null;
-        boolean ruleChangedForPlayer = previous != null && previous.booleanValue() != enabled;
+        boolean ruleChanged = previous != null && previous != enabled;
 
-        if (!enabled)
+        if (shouldRefresh(player, enabled, firstSeen, ruleChanged))
         {
-            if (ruleChangedForPlayer || firstSeen)
-            {
-                this.refreshTickets$LMS(player);
-            }
-            return;
+            refreshTickets$LMS(player);
         }
-
-        if (!ruleChangedForPlayer && !firstSeen && player.tickCount % 300 != 0) return;
-
-        this.refreshTickets$LMS(player);
     }
 
     @Unique
@@ -82,5 +74,23 @@ public abstract class ServerPlayerHelmetTickMixin
         chunkMap.getDistanceManager().addPlayer(sectionPos, player);
 
         ((ChunkMapInvokerMixin) chunkMap).updateChunkTracking$LMS(player);
+    }
+
+    @Unique
+    private boolean shouldRefresh(
+            ServerPlayer player,
+            boolean enabled,
+            boolean firstSeen,
+            boolean ruleChanged
+    )
+    {
+        if (!enabled)
+        {
+            return firstSeen || ruleChanged;
+        }
+
+        if (firstSeen || ruleChanged) return true;
+
+        return player.tickCount % 300 != 0;
     }
 }

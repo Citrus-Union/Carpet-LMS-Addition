@@ -43,17 +43,4 @@ public final class CommandLMSRule
             }
     )
     public static String commandLMSOthers = "ops";
-    @Rule(
-            categories = {
-                    LMSRuleCategory.LMS, RuleCategory.SURVIVAL
-            },
-            validators = {
-                    Validators.NonNegativeNumber.class
-            },
-            options = {
-                    "5", "10", "15", "20"
-            },
-            strict = false
-    )
-    public static int lowHealthSpectatorThreshold = 5;
 }
