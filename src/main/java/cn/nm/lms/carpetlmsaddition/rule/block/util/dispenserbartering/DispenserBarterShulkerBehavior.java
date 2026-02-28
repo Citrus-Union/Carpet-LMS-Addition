@@ -56,6 +56,7 @@ public class DispenserBarterShulkerBehavior extends DispenserBarterBaseBehavior
         }
 
         ItemStack shulkerDrop = stack.copyWithCount(1);
+        shulkerDrop.set(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
         stack.shrink(1);
         spawnItemFromDispenser(source, shulkerDrop);
         spawnBarterDrops(source, rolls);
