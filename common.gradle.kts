@@ -291,7 +291,7 @@ extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
             developer {
                 id.set("jasonxue1")
                 name.set("jasonxue")
-                email.set("lms@jasonxue.top")
+                email.set("hi@jasonxue.dev")
                 url.set("https://github.com/jasonxue1")
             }
             developer {
