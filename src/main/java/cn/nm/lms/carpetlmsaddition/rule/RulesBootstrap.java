@@ -41,7 +41,6 @@ import cn.nm.lms.carpetlmsaddition.rule.util.command.commandlms.CommandLMSRule;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.opplayernocheatextra.OpPlayerNoCheatExtraRule;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.playercommanddropall.PlayerCommandDropallRule;
 import cn.nm.lms.carpetlmsaddition.rule.util.helper.lowhealthspectator.LowHealthSpectatorRule;
-import cn.nm.lms.carpetlmsaddition.rule.util.looting.minimallootinglevel.MinimalLootingLevelRule;
 
 public final class RulesBootstrap
 {
@@ -59,7 +58,6 @@ public final class RulesBootstrap
                 HelmetControlsPlayerDistanceRule.class,
                 LowHealthSpectatorRule.class,
                 MinecartChunkLoaderRule.class,
-                MinimalLootingLevelRule.class,
                 OpPlayerNoCheatExtraRule.class,
                 PearlIgnoreEntityCollisionRule.class,
                 PearlNoTpRule.class,

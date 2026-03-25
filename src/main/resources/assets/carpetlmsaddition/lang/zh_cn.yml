@@ -67,9 +67,6 @@ carpet:
       extra:
         "0": 设置为 0 时，动力矿车不会加载区块
         "1": 加载票等级与地狱门相同
-    minimalLootingLevel:
-      name: 最低抢夺等级
-      desc: 设置怪物掉落的最低抢夺等级
     opPlayerNoCheatExtra:
       name: 更好的防止op作弊
       desc: 禁用更多命令以防止作弊

@@ -63,8 +63,6 @@ carpet:
       extra:
         "0": Set to 0 to disable chunk loading by furnace minecarts
         "1": Uses the same ticket level as nether portals
-    minimalLootingLevel:
-      desc: Sets the minimum looting level applied to mob drops
     opPlayerNoCheatExtra:
       desc: Disable some more command to prevent cheating
       extra:

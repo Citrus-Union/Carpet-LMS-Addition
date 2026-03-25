@@ -28,9 +28,7 @@
     "rule.util.command.opplayernocheatextra.OpPlayerNoCheatExtraPlaceMixin",
     "rule.util.command.opplayernocheatextra.OpPlayerNoCheatExtraSpawnpointMixin",
     "rule.util.command.playercommanddropall.EntityPlayerActionPackActionMixin",
-    "rule.util.command.playercommanddropall.PlayerCommandDropallMixin",
-    "rule.util.looting.minimallootinglevel.MinimalLootingLevelChanceMixin",
-    "rule.util.looting.minimallootinglevel.MinimalLootingLevelCountMixin"
+    "rule.util.command.playercommanddropall.PlayerCommandDropallMixin"
   ],
   "injectors": {
     "defaultRequire": 1
