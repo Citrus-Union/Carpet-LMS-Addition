@@ -93,6 +93,13 @@ carpet:
     playerCommandDropall:
       name: 玩家丢出全部物品
       desc: 用“dropall”替代“dropstack all”
+    shulkerBoxFurnace:
+      name: 潜影盒熔炉
+      desc: 按模式处理潜影盒烧制
+      extra:
+        "0": false - 原版逻辑
+        "1": force - 盒内可烧制物品在原槽位烧制完成，不可烧制物品保留原槽位，10秒后返回潜影盒
+        "2": strict - 仅当盒内非空且全部可烧制时才可烧制，否则该潜影盒不可烧制
     shulkerDupLowHealthFailChance:
       name: 低血量潜影贝复制失败概率
       desc: 设置潜影贝生命值低于一半时复制失败的概率

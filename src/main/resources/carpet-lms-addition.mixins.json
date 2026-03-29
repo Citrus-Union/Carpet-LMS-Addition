@@ -16,6 +16,7 @@
     "rule.entity.projectile.PearlNoTpMixin",
     "rule.entity.shulker.ShulkerDupLowHealthFailChanceMixin",
     "rule.entity.shulker.ShulkerDupNearbyLimitMixin",
+    "rule.recipes.furnace.shulkerbox.ShulkerBoxFurnaceMixin",
     "rule.util.chunkloader.helmetcontrolsplayerdistance.ServerPlayerHelmetTickMixin",
     "rule.util.chunkloader.helmetcontrolsplayerdistance.SimulationDistanceMixin",
     "rule.util.chunkloader.helmetcontrolsplayerdistance.ViewDistanceMixin",

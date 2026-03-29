@@ -89,6 +89,12 @@ carpet:
           an ender pearl named that string will not teleport the player on impact
     playerCommandDropall:
       desc: Use "dropall" instead of "dropstack all"
+    shulkerBoxFurnace:
+      desc: Smelt shulker boxes with mode-based behavior
+      extra:
+        "0": false - Vanilla behavior
+        "1": force - Smelt all smeltable items in place, keep non-smeltable items in place, return the box after 10s
+        "2": strict - Only works for non-empty boxes where all items are smeltable; otherwise the box cannot be smelted
     shulkerDupLowHealthFailChance:
       desc: Sets the failure chance of shulker duplication when below half health
       extra:

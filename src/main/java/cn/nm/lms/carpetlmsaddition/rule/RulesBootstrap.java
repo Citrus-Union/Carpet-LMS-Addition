@@ -34,6 +34,7 @@ import cn.nm.lms.carpetlmsaddition.rule.entity.shulker.ShulkerDupLowHealthFailCh
 import cn.nm.lms.carpetlmsaddition.rule.entity.shulker.ShulkerDupNearbyLimitRule;
 import cn.nm.lms.carpetlmsaddition.rule.recipes.elytrarecipe.ElytraRecipeRule;
 import cn.nm.lms.carpetlmsaddition.rule.recipes.enchantedgoldenapplerecipe.EnchantedGoldenAppleRecipeRule;
+import cn.nm.lms.carpetlmsaddition.rule.recipes.furnace.shulkerbox.ShulkerBoxFurnaceRule;
 import cn.nm.lms.carpetlmsaddition.rule.recipes.spongerecipe.SpongeRecipeRule;
 import cn.nm.lms.carpetlmsaddition.rule.util.chunkloader.helmetcontrolsplayerdistance.HelmetControlsPlayerDistanceRule;
 import cn.nm.lms.carpetlmsaddition.rule.util.chunkloader.minecartchunkloader.MinecartChunkLoaderRule;
@@ -62,6 +63,7 @@ public final class RulesBootstrap
                 PearlIgnoreEntityCollisionRule.class,
                 PearlNoTpRule.class,
                 PlayerCommandDropallRule.class,
+                ShulkerBoxFurnaceRule.class,
                 ShulkerDupLowHealthFailChanceRule.class,
                 ShulkerDupNearbyLimitRule.class,
                 SoftTrialSpawnerRule.class,
