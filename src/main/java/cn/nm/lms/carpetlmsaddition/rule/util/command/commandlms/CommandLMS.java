@@ -86,7 +86,7 @@ public final class CommandLMS
     }
 
     private static ServerPlayer getTarget(CommandContext<CommandSourceStack> ctx)
-                                                                                  throws CommandSyntaxException
+            throws CommandSyntaxException
     {
         return EntityArgument.getPlayer(ctx, ARG_PLAYER);
     }
@@ -135,7 +135,7 @@ public final class CommandLMS
     }
 
     private static int executeGet(CommandContext<CommandSourceStack> ctx)
-                                                                          throws CommandSyntaxException
+            throws CommandSyntaxException
     {
         CommandSourceStack src = ctx.getSource();
         ServerPlayer target = getTarget(ctx);
@@ -157,7 +157,7 @@ public final class CommandLMS
     }
 
     private static int executeSet(CommandContext<CommandSourceStack> ctx)
-                                                                          throws CommandSyntaxException
+            throws CommandSyntaxException
     {
         CommandSourceStack src = ctx.getSource();
         ServerPlayer target = getTarget(ctx);

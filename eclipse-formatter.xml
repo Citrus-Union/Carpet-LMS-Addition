@@ -1152,7 +1152,7 @@
     />
 		<setting
       id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_constructor_declaration"
-      value="82"
+      value="..."
     />
 		<setting
       id="org.eclipse.jdt.core.formatter.alignment_for_method_declaration"
@@ -1160,7 +1160,7 @@
     />
 		<setting
       id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_method_declaration"
-      value="82"
+      value="..."
     />
 		<setting
       id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration"
