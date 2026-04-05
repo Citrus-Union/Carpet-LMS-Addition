@@ -12,7 +12,9 @@ plugins {
 
     // https://github.com/Fallen-Breath/yamlang
     id("me.fallenbreath.yamlang") version "1.5.0" apply false
-    id("com.diffplug.spotless") version "8.3.0"
+    // https://github.com/diffplug/spotless/releases?q=gradle
+    id("com.diffplug.spotless") version "8.4.0"
+    // https://github.com/vanniktech/gradle-maven-publish-plugin
     id("com.vanniktech.maven.publish") version "0.36.0"
 }
 
@@ -97,7 +99,15 @@ spotless {
             "",
         )
         cleanthat()
-        eclipse(libs.versions.eclipse.get()).configFile(rootProject.file("eclipse-formatter.xml"))
+        val eclipseRelease = libs.versions.eclipse.get()
+        val eclipseVersion = eclipseRelease.removePrefix("R-").substringBeforeLast("-")
+        eclipse(eclipseVersion)
+            .withP2Mirrors(
+                mapOf(
+                    "https://download.eclipse.org/eclipse/updates/$eclipseVersion/" to
+                        "https://download.eclipse.org/eclipse/updates/$eclipseVersion/$eclipseRelease/",
+                ),
+            ).configFile(rootProject.file("eclipse-formatter.xml"))
         licenseHeaderFile(licenseHeaderFile)
     }
     format("styling") {

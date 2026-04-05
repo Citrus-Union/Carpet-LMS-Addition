@@ -1,5 +1,6 @@
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 
 val mcVersion = (project.extra["mcVersion"] as Number).toInt()
 val unobfuscated = mcVersion >= 26_00_00
@@ -14,6 +15,8 @@ val parchmentVersion: String by project
 val loaderVersion: String by project
 val fabricApiVersion: String by project
 val carpetVersion: String by project
+val conditionalMixinVersion: String by project
+val mixinExtrasVersion: String by project
 val modVersion: String by project
 val modId: String by project
 val modName: String by project
@@ -51,6 +54,7 @@ repositories {
 }
 
 val loomExtension = extensions.getByType(LoomGradleExtensionAPI::class)
+val fabricApiExtension = extensions.getByType(FabricApiExtension::class)
 
 dependencies {
     fun processDependency(dep: Dependency?): Dependency? {
@@ -66,6 +70,8 @@ dependencies {
     fun autoRuntimeOnly(dep: Any): Dependency? = processDependency(add(if (unobfuscated) "runtimeOnly" else "modRuntimeOnly", dep))
 
     fun autoCompileOnly(dep: Any): Dependency? = processDependency(add(if (unobfuscated) "compileOnly" else "modCompileOnly", dep))
+
+    fun includeDependency(dep: Any?): Dependency? = processDependency(add("include", requireNotNull(dep)))
 
     // loom
     add("minecraft", "com.mojang:minecraft:$minecraftVersion")
@@ -87,29 +93,35 @@ dependencies {
 
     autoCompileOnly("org.jspecify:jspecify:1.0.0")
     // runtime mods
-//  if (mcVersion < 11904) {
-//      autoRuntimeOnly(mcVersion < 11900 ? "com.github.astei:lazydfu:0.1.2" : "com.github.Fallen-Breath:lazydfu:a7cfc44c0c")
-//  }
+    if (mcVersion < 11904) {
+        autoRuntimeOnly(
+            if (mcVersion < 11900) {
+                "com.github.astei:lazydfu:0.1.2"
+            } else {
+                "com.github.Fallen-Breath:lazydfu:a7cfc44c0c"
+            },
+        )
+    }
     autoRuntimeOnly("me.fallenbreath:mixin-auditor:0.2.0-${if (unobfuscated) "u" else "o"}")
 
     // dependencies
-//  val fabricApiModules = mutableListOf<String>()
-//  if (mcVersion >= 12105) {  // "fabric-resource-loader-v0" dependency since fabric api 0.117.0 (25w07a, mc1.21.5 snapshot)
-//      fabricApiModules.add("fabric-api-base")
-//  }
-//  if (mcVersion < 12111) {  // "fabric-resource-loader" is fully moved from v0 to v1 since fabric api 0.139.3 (1.21.11-pre4)
-//      fabricApiModules.add("fabric-resource-loader-v0")
-//  }
-//  if (mcVersion >= 12109) {  // "fabric-resource-loader-v0" dependency since fabric api 0.133.11 (1.21.9-rc1)
-//      fabricApiModules.add("fabric-resource-loader-v1")
-//  }
-//  fabricApiModules.forEach {
-//      include(autoImplementation(fabricApi.module(it, fabric_api_version)))
-//  }
-//  include(autoImplementation("me.fallenbreath:conditional-mixin-fabric:$conditionalmixin_version"))
-//  if (mcVersion < 12005) {
-//      include("io.github.llamalad7:mixinextras-fabric:$mixinextras_version")
-//  }
+    val fabricApiModules = mutableListOf<String>()
+    if (mcVersion >= 12105) { // "fabric-resource-loader-v0" dependency since fabric api 0.117.0 (25w07a, mc1.21.5 snapshot)
+        fabricApiModules.add("fabric-api-base")
+    }
+    if (mcVersion < 12111) { // "fabric-resource-loader" is fully moved from v0 to v1 since fabric api 0.139.3 (1.21.11-pre4)
+        fabricApiModules.add("fabric-resource-loader-v0")
+    }
+    if (mcVersion >= 12109) { // "fabric-resource-loader-v0" dependency since fabric api 0.133.11 (1.21.9-rc1)
+        fabricApiModules.add("fabric-resource-loader-v1")
+    }
+    fabricApiModules.forEach {
+        includeDependency(autoImplementation(fabricApiExtension.module(it, fabricApiVersion)))
+    }
+    includeDependency(autoImplementation("me.fallenbreath:conditional-mixin-fabric:$conditionalMixinVersion"))
+    if (mcVersion < 12005) {
+        includeDependency("io.github.llamalad7:mixinextras-fabric:$mixinExtrasVersion")
+    }
 }
 
 val mixinConfigPath = "carpet-lms-addition.mixins.json"

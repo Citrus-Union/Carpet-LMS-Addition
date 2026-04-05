@@ -1,7 +1,16 @@
 [versions]
+
+# https://www.npmjs.com/package/prettier
 prettier = "3.8.1"
+# https://www.npmjs.com/package/prettier-plugin-toml
 prettierPlugin-toml = "2.0.6"
+# https://www.npmjs.com/package/@prettier/plugin-xml
 prettierPlugin-xml = "3.4.2"
+# https://www.npmjs.com/package/prettier-plugin-astro
 prettierPlugin-astro = "0.14.1"
-eclipse = "4.38"
+
+# https://download.eclipse.org/eclipse/updates
+eclipse = "R-4.39-202602260420"
+
+# https://github.com/pinterest/ktlint
 ktlint = "1.8.0"
