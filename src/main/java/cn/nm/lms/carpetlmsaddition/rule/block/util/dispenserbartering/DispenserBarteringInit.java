@@ -17,6 +17,9 @@
 package cn.nm.lms.carpetlmsaddition.rule.block.util.dispenserbartering;
 
 import net.minecraft.core.dispenser.ShulkerBoxDispenseBehavior;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DispenserBlock;
 
@@ -44,22 +47,17 @@ public class DispenserBarteringInit
                 new ShulkerBoxDispenseBehavior()
         );
         DispenserBlock.registerBehavior(Items.SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.WHITE_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.ORANGE_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.MAGENTA_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.LIGHT_BLUE_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.YELLOW_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.LIME_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.PINK_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.GRAY_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.LIGHT_GRAY_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.CYAN_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.PURPLE_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.BLUE_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.BROWN_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.GREEN_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.RED_SHULKER_BOX, shulkerBehavior);
-        DispenserBlock.registerBehavior(Items.BLACK_SHULKER_BOX, shulkerBehavior);
+        for (
+            Item item : BuiltInRegistries.ITEM
+        )
+        {
+            Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
+            String path = itemId.getPath();
+            if (path.endsWith("shulker_box"))
+            {
+                DispenserBlock.registerBehavior(item, shulkerBehavior);
+            }
+        }
     }
 
 }
