@@ -27,6 +27,7 @@ val rootProjectRef: Project = project
 preprocess {
     strictExtraMappings = false
 
+    val mc1213 = createNode("1.21.3", 1_21_03, "")
     val mc1214 = createNode("1.21.4", 1_21_04, "")
     val mc1215 = createNode("1.21.5", 1_21_05, "")
     val mc1218 = createNode("1.21.8", 1_21_08, "")
@@ -35,6 +36,7 @@ preprocess {
     val mc260101 = createNode("26.1.2", 26_01_01, "")
     val mc260200 = createNode("26.2", 26_02_00, "")
 
+    mc1213.link(mc1214, file("mappings/mapping-1.21.3-1.21.4.txt"))
     mc1214.link(mc1215)
     mc1215.link(mc1218)
     mc1218.link(mc12110)
