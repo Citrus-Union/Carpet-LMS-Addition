@@ -17,26 +17,28 @@
 package cn.nm.lms.carpetlmsaddition.rule.recipe.crafting;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-
-import cn.nm.lms.carpetlmsaddition.rule.Settings;
-import cn.nm.lms.carpetlmsaddition.rule.recipe.crafting.helper.RecipesInit;
-import cn.nm.lms.carpetlmsaddition.rule.recipe.crafting.helper.ShapedRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 
 public class CraftableSponge extends ShapedRecipe {
     public CraftableSponge(CraftingBookCategory category) {
-        super(category, () -> Settings.spongeRecipe, 3, 3,
-            Arrays.asList(Items.SLIME_BLOCK, Items.HAY_BLOCK, Items.SLIME_BLOCK, Items.HAY_BLOCK, Items.SLIME_BLOCK,
-                Items.HAY_BLOCK, Items.SLIME_BLOCK, Items.HAY_BLOCK, Items.SLIME_BLOCK),
-            Items.SPONGE);
-    }
-
-    @Override
-    protected RecipeSerializer<? extends CustomRecipe> getSerializer0() {
-        return RecipesInit.CRAFTABLE_SPONGE;
+        //#if MC>=260100
+        super(new net.minecraft.world.item.crafting.Recipe.CommonInfo(true),
+            new net.minecraft.world.item.crafting.CraftingRecipe.CraftingBookInfo(category, ""),
+            //#else
+            //$$ super("", category,
+            //#endif
+            ShapedRecipePattern.of(Map.of('S', Ingredient.of(Items.SLIME_BLOCK), 'H', Ingredient.of(Items.HAY_BLOCK)),
+                Arrays.asList("SHS", "HSH", "SHS")),
+            //#if MC>=260100
+            new net.minecraft.world.item.ItemStackTemplate(Items.SPONGE));
+        //#else
+        //$$ Items.SPONGE.getDefaultInstance());
+        //#endif
     }
 }

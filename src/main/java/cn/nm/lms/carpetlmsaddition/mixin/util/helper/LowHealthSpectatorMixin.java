@@ -23,9 +23,7 @@ import java.util.UUID;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -88,8 +86,7 @@ public abstract class LowHealthSpectatorMixin {
     }
 
     @Inject(method = "hurtServer", at = @At("RETURN"))
-    private void spectatorAfterHurt$lms(ServerLevel level, DamageSource source, float dmg,
-        CallbackInfoReturnable<Boolean> cir) {
+    private void spectatorAfterHurt$lms(CallbackInfoReturnable<Boolean> cir) {
 
         if (!cir.getReturnValue()) {
             return;
@@ -97,7 +94,7 @@ public abstract class LowHealthSpectatorMixin {
 
         ServerPlayer player = (ServerPlayer)(Object)this;
 
-        long now = level.getGameTime();
+        long now = player.level().getGameTime();
         UUID playerUUID = player.getUUID();
         long last = COOLDOWN_MAP.getOrDefault(playerUUID, now - Settings.lowHealthSpectatorCooldown);
 

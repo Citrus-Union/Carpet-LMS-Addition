@@ -118,10 +118,10 @@ val javaCompatibility =
     }
 val mixinCompatibilityLevel = javaCompatibility
 
-val commonVmArgs = listOf("-Dmixin.debug.export=true", "-Dmixin.debug.countInjections=true")
+val commonVmArgs = listOf("--sun-misc-unsafe-memory-access=allow", "-Dmixin.debug.export=true")
 loomExtension.runConfigs.configureEach {
     // to make sure it generates all "Minecraft Client (:subproject_name)" applications
-    isIdeConfigGenerated = true
+    isIdeConfigGenerated = false
     runDir = if (unobfuscated) "../../run" else "../../run-obsuscated"
     vmArgs(commonVmArgs)
 }

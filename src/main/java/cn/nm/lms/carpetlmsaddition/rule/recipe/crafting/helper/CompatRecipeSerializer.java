@@ -30,8 +30,10 @@ public final class CompatRecipeSerializer {
         //#if MC>=260100
         T sample = factory.apply(CraftingBookCategory.MISC);
         return new RecipeSerializer<>(MapCodec.unit(sample), StreamCodec.unit(sample));
-        //#else
+        //#elseif MC>=12102
         //$$ return new CustomRecipe.Serializer<>(factory::apply);
+        //#else
+        //$$ return new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(factory::apply);
         //#endif
     }
 }

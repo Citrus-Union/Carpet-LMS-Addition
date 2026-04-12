@@ -31,10 +31,21 @@ import cn.nm.lms.carpetlmsaddition.rule.recipe.smelting.ShulkerBoxFurnaceService
 @Mixin(AbstractFurnaceBlockEntity.class)
 public abstract class ShulkerBoxFurnaceMixin {
     @Inject(method = "serverTick", at = @At("HEAD"), cancellable = true)
+    //#if MC>=12102
     private static void shulkerBoxFurnace$lms(ServerLevel level, BlockPos pos, BlockState state,
         AbstractFurnaceBlockEntity entity, CallbackInfo ci) {
         if (ShulkerBoxFurnaceService.tryTick(level, pos, state, entity)) {
             ci.cancel();
         }
     }
+    //#else
+    //$$ private static void shulkerBoxFurnace$lms(net.minecraft.world.level.Level level,
+    //$$     BlockPos pos, BlockState state,
+    //$$     AbstractFurnaceBlockEntity entity, CallbackInfo ci) {
+    //$$     if (level instanceof ServerLevel serverLevel
+    //$$         && ShulkerBoxFurnaceService.tryTick(serverLevel, pos, state, entity)) {
+    //$$         ci.cancel();
+    //$$     }
+    //$$ }
+    //#endif
 }

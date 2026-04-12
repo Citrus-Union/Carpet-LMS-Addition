@@ -1,0 +1,5 @@
+net.minecraft.world.entity.MobSpawnType net.minecraft.world.entity.EntitySpawnReason
+net.minecraft.server.level.ServerLevel getRecipeManager() recipeAccess()
+net.minecraft.world.item.Item getCraftingRemainingItem() getCraftingRemainder()
+net.minecraft.world.entity.monster.Shulker hurt() hurtServer()
+net.minecraft.server.level.ServerPlayer hurt() hurtServer()

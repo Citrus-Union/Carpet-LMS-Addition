@@ -73,7 +73,11 @@ public final class ShulkerBoxFurnaceService {
         boolean canProcess = result != null && canBurn(entity.items, entity.getMaxStackSize(), result);
 
         if (!isLit && !fuel.isEmpty() && canProcess) {
+            //#if MC>=12102
             int burnDuration = entity.getBurnDuration(level.fuelValues(), fuel);
+            //#else
+            //$$ int burnDuration = AbstractFurnaceBlockEntity.getFuel().getOrDefault(fuel.getItem(), 0);
+            //#endif
             entity.litTimeRemaining = burnDuration;
             entity.litTotalTime = burnDuration;
             if (burnDuration > 0) {
@@ -183,8 +187,11 @@ public final class ShulkerBoxFurnaceService {
             //#if MC>=260100
             net.minecraft.world.item.ItemStackTemplate craftingRemainder = fuelItem.getCraftingRemainder();
             items.set(SLOT_FUEL, craftingRemainder != null ? craftingRemainder.create() : ItemStack.EMPTY);
-            //#else
+            //#elseif MC>=12102
             //$$ items.set(SLOT_FUEL, fuelItem.getCraftingRemainder());
+            //#else
+            //$$ Item remainder = fuelItem.getCraftingRemainingItem();
+            //$$ items.set(SLOT_FUEL, remainder != null ? new ItemStack(remainder) : ItemStack.EMPTY);
             //#endif
         }
     }

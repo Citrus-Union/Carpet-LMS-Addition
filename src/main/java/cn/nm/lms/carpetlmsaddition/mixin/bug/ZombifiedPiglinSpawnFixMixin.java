@@ -48,7 +48,8 @@ public abstract class ZombifiedPiglinSpawnFixMixin {
             return false;
         }
 
-        Entity entity = type.create(world, reason);
+        Entity entity = type.create(world, created -> {
+        }, spawnPos, reason, false, false);
         if (!(entity instanceof Mob mob)) {
             return true;
         }
@@ -57,11 +58,19 @@ public abstract class ZombifiedPiglinSpawnFixMixin {
         return mob.checkSpawnObstruction(world);
     }
 
+    //#if MC>=12102
     @WrapOperation(method = "randomTick",
         at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/entity/EntityType;spawn" + "(Lnet/minecraft/server/level/ServerLevel;"
                 + "Lnet/minecraft/core/BlockPos;" + "Lnet/minecraft/world/entity/EntitySpawnReason;)"
                 + "Lnet/minecraft/world/entity/Entity;"))
+    //#else
+    //$$ @WrapOperation(method = "randomTick",
+    //$$     at = @At(value = "INVOKE",
+    //$$         target = "Lnet/minecraft/world/entity/EntityType;spawn" + "(Lnet/minecraft/server/level/ServerLevel;"
+    //$$             + "Lnet/minecraft/core/BlockPos;" + "Lnet/minecraft/world/entity/MobSpawnType;)"
+    //$$             + "Lnet/minecraft/world/entity/Entity;"))
+    //#endif
     private Entity onlyIfClear$LMS(EntityType<?> type, ServerLevel world, BlockPos spawnPos, EntitySpawnReason reason,
         Operation<Entity> origin) {
         if (zombifiedPiglinSpawnFix && !passesNaturalCollisionChecks$LMS(type, world, spawnPos, reason)) {

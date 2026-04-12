@@ -17,26 +17,28 @@
 package cn.nm.lms.carpetlmsaddition.rule.recipe.crafting;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-
-import cn.nm.lms.carpetlmsaddition.rule.Settings;
-import cn.nm.lms.carpetlmsaddition.rule.recipe.crafting.helper.RecipesInit;
-import cn.nm.lms.carpetlmsaddition.rule.recipe.crafting.helper.ShapedRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 
 public class CraftableEnchantedGoldenApple extends ShapedRecipe {
     public CraftableEnchantedGoldenApple(CraftingBookCategory category) {
-        super(category, () -> Settings.enchantedGoldenAppleRecipe, 3, 3,
-            Arrays.asList(Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLDEN_APPLE,
-                Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLD_BLOCK, Items.GOLD_BLOCK),
-            Items.ENCHANTED_GOLDEN_APPLE);
-    }
-
-    @Override
-    protected RecipeSerializer<? extends CustomRecipe> getSerializer0() {
-        return RecipesInit.CRAFTABLE_ENCHANTED_GOLDEN_APPLE;
+        //#if MC>=260100
+        super(new net.minecraft.world.item.crafting.Recipe.CommonInfo(true),
+            new net.minecraft.world.item.crafting.CraftingRecipe.CraftingBookInfo(category, ""),
+            //#else
+            //$$ super("", category,
+            //#endif
+            ShapedRecipePattern.of(Map.of('G', Ingredient.of(Items.GOLD_BLOCK), 'A', Ingredient.of(Items.GOLDEN_APPLE)),
+                Arrays.asList("GGG", "GAG", "GGG")),
+            //#if MC>=260100
+            new net.minecraft.world.item.ItemStackTemplate(Items.ENCHANTED_GOLDEN_APPLE));
+        //#else
+        //$$ Items.ENCHANTED_GOLDEN_APPLE.getDefaultInstance());
+        //#endif
     }
 }

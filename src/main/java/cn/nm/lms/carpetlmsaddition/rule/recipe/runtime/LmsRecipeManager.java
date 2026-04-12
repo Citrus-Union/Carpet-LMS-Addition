@@ -37,8 +37,8 @@ import cn.nm.lms.carpetlmsaddition.rule.recipe.crafting.CraftableEnchantedGolden
 import cn.nm.lms.carpetlmsaddition.rule.recipe.crafting.CraftableSponge;
 
 public final class LmsRecipeManager {
-    private static final Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> CUSTOM_RECIPES = new LinkedHashMap<>();
-    private static final Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> ALL_RECIPES = new LinkedHashMap<>();
+    private static final Map<Object, RecipeHolder<?>> CUSTOM_RECIPES = new LinkedHashMap<>();
+    private static final Map<Object, RecipeHolder<?>> ALL_RECIPES = new LinkedHashMap<>();
 
     public static synchronized Collection<RecipeHolder<?>> getCustomRecipes() {
         CUSTOM_RECIPES.clear();
@@ -91,8 +91,13 @@ public final class LmsRecipeManager {
     }
 
     private static RecipeHolder<?> createHolder(String recipeId, Supplier<? extends Recipe<?>> recipeFactory) {
+        //#if MC>=12102
         Identifier id = Identifier.fromNamespaceAndPath(Mod.MOD_ID, recipeId);
         ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
         return new RecipeHolder<>(key, recipeFactory.get());
+        //#else
+        //$$ ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Mod.MOD_ID, recipeId);
+        //$$ return new RecipeHolder<>(id, recipeFactory.get());
+        //#endif
     }
 }

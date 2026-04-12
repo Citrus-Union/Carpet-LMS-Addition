@@ -17,6 +17,8 @@
 package cn.nm.lms.carpetlmsaddition.rule.recipe.runtime;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -38,6 +40,17 @@ public final class RecipeRuleHelper {
 
     public static Collection<RecipeHolder<?>> getRecipes() {
         return LmsRecipeManager.getCustomRecipes();
+    }
+
+    public static Collection<RecipeHolder<?>> mergeWithManagedRecipes(Iterable<RecipeHolder<?>> existingRecipes) {
+        Map<Object, RecipeHolder<?>> merged = new LinkedHashMap<>();
+        for (RecipeHolder<?> recipeHolder : existingRecipes) {
+            merged.put(recipeHolder.id(), recipeHolder);
+        }
+        for (RecipeHolder<?> recipeHolder : getRecipes()) {
+            merged.put(recipeHolder.id(), recipeHolder);
+        }
+        return merged.values();
     }
 
     public static void flushPendingReload(MinecraftServer server) {

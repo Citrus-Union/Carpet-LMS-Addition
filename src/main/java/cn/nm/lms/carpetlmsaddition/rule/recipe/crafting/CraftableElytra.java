@@ -17,41 +17,52 @@
 package cn.nm.lms.carpetlmsaddition.rule.recipe.crafting;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
-import cn.nm.lms.carpetlmsaddition.rule.recipe.crafting.helper.RecipesInit;
-import cn.nm.lms.carpetlmsaddition.rule.recipe.crafting.helper.ShapedRecipe;
 
 public class CraftableElytra extends ShapedRecipe {
     public CraftableElytra(CraftingBookCategory category) {
-        super(category, () -> Settings.elytraRecipe, 3, 3,
-            Arrays.asList(Items.PHANTOM_MEMBRANE, Items.END_CRYSTAL, Items.PHANTOM_MEMBRANE, Items.PHANTOM_MEMBRANE,
-                Items.ELYTRA, Items.PHANTOM_MEMBRANE, Items.PHANTOM_MEMBRANE, Items.END_CRYSTAL,
-                Items.PHANTOM_MEMBRANE),
-            Items.ELYTRA, 1, (CraftingInput input) -> {
-                NonNullList<ItemStack> rem = NonNullList.withSize(input.size(), ItemStack.EMPTY);
-                for (int i = 0; i < input.size(); i++) {
-                    ItemStack stack = input.getItem(i);
-                    if (stack.is(Items.ELYTRA)) {
-                        ItemStack copy = stack.copy();
-                        copy.setCount(1);
-                        rem.set(i, copy);
-                    }
-                }
-                return rem;
-            });
+        //#if MC>=260100
+        super(new net.minecraft.world.item.crafting.Recipe.CommonInfo(true),
+            new net.minecraft.world.item.crafting.CraftingRecipe.CraftingBookInfo(category, ""),
+            //#else
+            //$$ super("", category,
+            //#endif
+            ShapedRecipePattern.of(Map.of('M', Ingredient.of(Items.PHANTOM_MEMBRANE), 'C',
+                Ingredient.of(Items.END_CRYSTAL), 'E', Ingredient.of(Items.ELYTRA)),
+                Arrays.asList("MCM", "MEM", "MCM")),
+            //#if MC>=260100
+            new net.minecraft.world.item.ItemStackTemplate(Items.ELYTRA));
+        //#else
+        //$$ new ItemStack(Items.ELYTRA));
+        //#endif
     }
 
     @Override
-    protected RecipeSerializer<? extends CustomRecipe> getSerializer0() {
-        return RecipesInit.CRAFTABLE_ELYTRA;
+    public NonNullList<ItemStack> getRemainingItems(CraftingInput input) {
+        if (!Settings.elytraRecipe) {
+            return NonNullList.withSize(input.size(), ItemStack.EMPTY);
+        }
+
+        NonNullList<ItemStack> rem = NonNullList.withSize(input.size(), ItemStack.EMPTY);
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack stack = input.getItem(i);
+            if (stack.is(Items.ELYTRA)) {
+                ItemStack copy = stack.copy();
+                copy.setCount(1);
+                rem.set(i, copy);
+            }
+        }
+        return rem;
     }
 }

@@ -31,11 +31,7 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.display.RecipeDisplay;
-import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
-import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 
 import org.jspecify.annotations.NullMarked;
@@ -130,25 +126,29 @@ public abstract class ShapedRecipe extends DualVersionCustomRecipe {
         return NonNullList.withSize(input.size(), ItemStack.EMPTY);
     }
 
+    //#if MC>=12102
     @Override
-    public List<RecipeDisplay> display() {
+    public List<net.minecraft.world.item.crafting.display.RecipeDisplay> display() {
         if (!enabled.getAsBoolean()) {
             return Collections.emptyList();
         }
-        SlotDisplay empty = SlotDisplay.Empty.INSTANCE;
-        List<SlotDisplay> ingredients = new ArrayList<>(key.size());
+        net.minecraft.world.item.crafting.display.SlotDisplay empty =
+            net.minecraft.world.item.crafting.display.SlotDisplay.Empty.INSTANCE;
+        List<net.minecraft.world.item.crafting.display.SlotDisplay> ingredients = new ArrayList<>(key.size());
         for (@Nullable
         Item item : key) {
-            ingredients.add(item == null ? empty : new SlotDisplay.ItemSlotDisplay(item));
+            ingredients.add(
+                item == null ? empty : new net.minecraft.world.item.crafting.display.SlotDisplay.ItemSlotDisplay(item));
         }
-        return List.of(new ShapedCraftingRecipeDisplay(width, height, ingredients,
-            new SlotDisplay.ItemSlotDisplay(resultItem), new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)));
+        return List.of(new net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay(width, height,
+            ingredients, new net.minecraft.world.item.crafting.display.SlotDisplay.ItemSlotDisplay(resultItem),
+            new net.minecraft.world.item.crafting.display.SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)));
     }
 
     @Override
-    public PlacementInfo placementInfo() {
+    public net.minecraft.world.item.crafting.PlacementInfo placementInfo() {
         if (!enabled.getAsBoolean()) {
-            return PlacementInfo.NOT_PLACEABLE;
+            return net.minecraft.world.item.crafting.PlacementInfo.NOT_PLACEABLE;
         }
         List<Optional<Ingredient>> slots = new ArrayList<>(key.size());
         for (@Nullable
@@ -159,8 +159,29 @@ public abstract class ShapedRecipe extends DualVersionCustomRecipe {
                 slots.add(Optional.of(Ingredient.of(item)));
             }
         }
-        return PlacementInfo.createFromOptionals(slots);
+        return net.minecraft.world.item.crafting.PlacementInfo.createFromOptionals(slots);
     }
+    //#else
+    //$$ @Override
+    //$$ public boolean canCraftInDimensions(int width, int height) {
+    //$$     return width >= this.width && height >= this.height;
+    //$$ }
+    //$$
+    //$$ @Override
+    //$$ public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider registries) {
+    //$$     return new ItemStack(resultItem, resultCount);
+    //$$ }
+    //$$
+    //$$ @Override
+    //$$ public NonNullList<Ingredient> getIngredients() {
+    //$$     NonNullList<Ingredient> ingredients = NonNullList.withSize(key.size(), Ingredient.EMPTY);
+    //$$     for (int i = 0; i < key.size(); i++) {
+    //$$         Item item = key.get(i);
+    //$$         ingredients.set(i, item == null ? Ingredient.EMPTY : Ingredient.of(item));
+    //$$     }
+    //$$     return ingredients;
+    //$$ }
+    //#endif
 
     protected abstract RecipeSerializer<? extends CustomRecipe> getSerializer0();
 
