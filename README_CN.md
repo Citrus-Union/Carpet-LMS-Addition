@@ -12,7 +12,7 @@
 
 在默认配置条件下，本模组不会改变任何原版机制
 
-跟同 Minecraft 版本的 carpet mod 一起使用即可。尽可能地使用较新的 carpet mod
+跟同 Minecraft 版本的 carpet mod 一起使用即可。
 
 ## 文档
 
