@@ -1,6 +1,6 @@
 carpet:
   category:
-    LMS: LMS
+    storage: 储存
   rule:
     allayHealInterval:
       name: 悦灵回血间隔
@@ -27,6 +27,21 @@ carpet:
     commandSetPassword:
       name: 设置密码命令
       desc: 启用 "/setPassword" 命令
+    commandGetItem:
+      name: 取物命令
+      desc: 启用 "/getItem <item> <count>" 命令
+    getItemBotPrefix:
+      name: 取物假人前缀
+      desc: 设置自动取物假人的命名前缀
+      extra:
+        "0": 假人名称格式为 <prefix><index>
+        "1": 示例：前缀为 "bot_getitem_" 时，名称会是 "bot_getitem_1"、"bot_getitem_2"……
+    getItemDelayMs:
+      name: 取物容器调用间隔
+      desc: 设置 getItem 中每次调用容器取物之间的等待时间（单位：毫秒）
+    getItemMaxCount:
+      name: 取物单次最大数量
+      desc: 设置 getItem 单次请求允许的最大物品数量
     dispenserBartering:
       name: 发射器猪灵交易
       desc: 发射金物品会触发猪灵交易

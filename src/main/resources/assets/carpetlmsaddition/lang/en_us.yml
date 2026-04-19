@@ -1,6 +1,4 @@
 carpet:
-  category:
-    LMS: LMS
   rule:
     allayHealInterval:
       desc: "Control the interval of allay healing (unit: gt)"
@@ -20,6 +18,17 @@ carpet:
       desc: View or modify your own /lms settings
     commandSetPassword:
       desc: Enable "/setPassword" command
+    commandGetItem:
+      desc: Enable "/getItem <item> <count>" command
+    getItemBotPrefix:
+      desc: Set the naming prefix for auto item-fetch bots
+      extra:
+        "0": Bot name format is <prefix><index>
+        "1": 'Example: if prefix is "bot_getitem_", names are "bot_getitem_1", "bot_getitem_2", ...'
+    getItemDelayMs:
+      desc: Set the wait time between each container-fetch call in getItem (milliseconds)
+    getItemMaxCount:
+      desc: Set the maximum item count accepted by getItem in a single request
     dispenserBartering:
       desc: Trigger piglin bartering by dispensing gold items
       extra:

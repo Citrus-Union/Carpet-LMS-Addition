@@ -101,7 +101,7 @@ public class Mod implements ModInitializer, CarpetExtension {
     @Override
     public void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher,
         final CommandBuildContext commandBuildContext) {
-        SetupCommands.registerAll(dispatcher);
+        SetupCommands.registerAll(dispatcher, commandBuildContext);
     }
 
     private static class ModInfoHolder {

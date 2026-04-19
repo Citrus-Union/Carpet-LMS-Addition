@@ -14,9 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.rule;
+package cn.nm.lms.carpetlmsaddition.lib;
 
-public final class LMSRuleCategory {
-    public static final String LMS = "LMS";
-    public static final String STORAGE = "storage";
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+
+public final class ChatEventCompat {
+    private ChatEventCompat() {}
+
+    public static ClickEvent runCommand(String command) {
+        //#if MC>=12105
+        return new ClickEvent.RunCommand(command);
+        //#else
+        //$$ return new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
+        //#endif
+    }
+
+    public static HoverEvent showText(Component text) {
+        //#if MC>=12105
+        return new HoverEvent.ShowText(text);
+        //#else
+        //$$ return new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
+        //#endif
+    }
 }

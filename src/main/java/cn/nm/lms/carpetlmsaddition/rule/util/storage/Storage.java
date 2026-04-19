@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -39,6 +38,7 @@ import com.google.gson.JsonObject;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
+import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 
 public class Storage {
@@ -53,47 +53,65 @@ public class Storage {
 
     public static String checkStorage() {
         MinecraftServer server = CarpetServer.minecraft_server;
-        if (server.isSameThread()) {
-            return doCheckStorage(server);
-        }
+        return Utils.runOnServerThread(server, () -> doCheckStorage(server));
+    }
 
-        CompletableFuture<String> future = new CompletableFuture<>();
-        server.execute(() -> {
-            try {
-                future.complete(doCheckStorage(server));
-            } catch (Throwable throwable) {
-                future.completeExceptionally(throwable);
-            }
-        });
-        return future.join();
+    public static List<ContainerSnapshot> collectConfiguredContainerSnapshots() {
+        List<ContainerSnapshot> snapshots = new ArrayList<>();
+        for (ConfiguredStorageSnapshots storageSnapshots : collectConfiguredStorageSnapshots()) {
+            snapshots.addAll(storageSnapshots.snapshots);
+        }
+        return snapshots;
+    }
+
+    public static List<ConfiguredStorageSnapshots> collectConfiguredStorageSnapshots() {
+        MinecraftServer server = CarpetServer.minecraft_server;
+        return Utils.runOnServerThread(server, () -> doCollectConfiguredStorageSnapshots(server));
     }
 
     private static String doCheckStorage(MinecraftServer server) {
         Count count = new Count();
-        PreparedInputs prepared = AsyncTasks.supply(StorageJsonService::prepareInputs).join();
-        count.total = prepared.total;
+        List<ConfiguredStorageSnapshots> storages = doCollectConfiguredStorageSnapshots(server);
+        count.total = storages.size();
 
-        for (PreparedStorage storageInput : prepared.inputs) {
+        for (ConfiguredStorageSnapshots storage : storages) {
             try {
                 HashMap<Item, ItemCount> items = new HashMap<>();
-                List<Position> errors = new ArrayList<>();
-                List<ContainerSnapshot> snapshots =
-                    StorageContainerReader.collectSnapshots(storageInput.pos, server, errors);
-                StorageItemStackProcessor.processSnapshots(snapshots, items);
-                Path savePath = storageDataPath.resolve(storageInput.fileName);
-                StorageJsonService.saveToFile(savePath, items, errors);
+                StorageItemStackProcessor.processSnapshots(storage.snapshots, items);
+                Path savePath = storageDataPath.resolve(storage.fileName);
+                StorageJsonService.saveToFile(savePath, items, storage.errors);
                 count.success++;
             } catch (Exception e) {
-                Mod.LOGGER.warn("Failed to process storage file: {}", storageInput.fileName);
+                Mod.LOGGER.warn("Failed to process storage file: {}", storage.fileName);
             }
         }
 
         return count.praseResult();
     }
 
-    static final class Position {
-        final ResourceKey<Level> dimension;
-        final BlockPos pos;
+    private static List<ConfiguredStorageSnapshots> doCollectConfiguredStorageSnapshots(MinecraftServer server) {
+        PreparedInputs prepared = AsyncTasks.supply(StorageJsonService::prepareInputs).join();
+        List<ConfiguredStorageSnapshots> storages = new ArrayList<>();
+        for (PreparedStorage storageInput : prepared.inputs) {
+            List<Position> errors = new ArrayList<>();
+            try {
+                List<ContainerSnapshot> snapshots = collectSnapshots(storageInput, server, errors);
+                storages.add(new ConfiguredStorageSnapshots(storageInput.fileName, snapshots, errors));
+            } catch (Exception e) {
+                Mod.LOGGER.warn("Failed to collect snapshots from storage file: {}", storageInput.fileName);
+            }
+        }
+        return storages;
+    }
+
+    private static List<ContainerSnapshot> collectSnapshots(PreparedStorage storageInput, MinecraftServer server,
+        List<Position> errors) {
+        return StorageContainerReader.collectSnapshots(storageInput.pos, server, errors);
+    }
+
+    public static final class Position {
+        public final ResourceKey<Level> dimension;
+        public final BlockPos pos;
 
         Position(ResourceKey<Level> dimension, BlockPos pos) {
             this.dimension = dimension;
@@ -128,13 +146,26 @@ public class Storage {
         }
     }
 
-    static final class ContainerSnapshot {
-        final Position position;
-        final List<ItemStack> stacks;
+    public static final class ContainerSnapshot {
+        public final Position position;
+        public final List<ItemStack> stacks;
 
         ContainerSnapshot(Position position, List<ItemStack> stacks) {
             this.position = position;
             this.stacks = stacks;
+        }
+
+    }
+
+    public static final class ConfiguredStorageSnapshots {
+        final String fileName;
+        final List<ContainerSnapshot> snapshots;
+        final List<Position> errors;
+
+        ConfiguredStorageSnapshots(String fileName, List<ContainerSnapshot> snapshots, List<Position> errors) {
+            this.fileName = fileName;
+            this.snapshots = snapshots;
+            this.errors = errors;
         }
     }
 
@@ -164,9 +195,7 @@ public class Storage {
         int total = 0;
 
         String praseResult() {
-            String text = String.format("CheckStorage finished, success: %d, total: %d", this.success, this.total);
-            Mod.LOGGER.info(text);
-            return text;
+            return String.format("CheckStorage finished, success: %d, total: %d", this.success, this.total);
         }
     }
 

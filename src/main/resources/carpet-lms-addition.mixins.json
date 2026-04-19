@@ -19,6 +19,8 @@
     "entity.shulker.ShulkerDupNearbyLimitMixin",
     "furnace.ShulkerBoxFurnaceMixin",
     "recipe.RecipeManagerMixin",
+    "util.FakePlayerSilencePlayerListMixin",
+    "util.carpet.EntityPlayerMPFakeSilenceMixin",
     "util.chunk.loader.helmet.ServerPlayerHelmetTickMixin",
     "util.chunk.loader.helmet.SimulationDistanceMixin",
     "util.chunk.loader.helmet.ViewDistanceMixin",

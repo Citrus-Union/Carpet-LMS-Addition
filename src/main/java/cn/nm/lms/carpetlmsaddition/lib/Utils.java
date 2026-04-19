@@ -20,8 +20,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
+import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
@@ -53,5 +62,44 @@ public class Utils {
             list.add(item);
         }
         return list;
+    }
+
+    public static void teleportTo(ServerPlayer player, ServerLevel level, double x, double y, double z, float yaw,
+        float pitch) {
+        //#if MC >= 12102
+        player.teleportTo(level, x, y, z, Set.of(), yaw, pitch, true);
+        //#else
+        //$$ player.teleportTo(level, x, y, z, yaw, pitch);
+        //#endif
+    }
+
+    public static <T> T runOnServerThread(MinecraftServer server, Supplier<T> supplier) {
+        if (server == null) {
+            throw new IllegalStateException("Minecraft server is not initialized");
+        }
+        if (server.isSameThread()) {
+            return supplier.get();
+        }
+        CompletableFuture<T> future = new CompletableFuture<>();
+        server.execute(() -> {
+            try {
+                future.complete(supplier.get());
+            } catch (Throwable throwable) {
+                future.completeExceptionally(throwable);
+            }
+        });
+        return future.join();
+    }
+
+    public static Item itemFromInput(ItemInput itemInput) {
+        //#if MC>=260100
+        return itemInput.item().value();
+        //#else
+        //$$ return itemInput.getItem();
+        //#endif
+    }
+
+    public static Component itemDisplayName(Item item) {
+        return new ItemStack(item).getHoverName();
     }
 }
