@@ -16,8 +16,12 @@
  */
 package cn.nm.lms.carpetlmsaddition;
 
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -33,6 +37,7 @@ import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.rule.Bootstrap;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.runtime.RecipeBookHelper;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.runtime.RecipeRuleHelper;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.SetupCommands;
 import cn.nm.lms.carpetlmsaddition.rule.util.storage.Website;
 
 public class Mod implements ModInitializer, CarpetExtension {
@@ -91,6 +96,12 @@ public class Mod implements ModInitializer, CarpetExtension {
     @Override
     public void onPlayerLoggedIn(ServerPlayer player) {
         RecipeBookHelper.syncPlayer(player);
+    }
+
+    @Override
+    public void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher,
+        final CommandBuildContext commandBuildContext) {
+        SetupCommands.registerAll(dispatcher);
     }
 
     private static class ModInfoHolder {

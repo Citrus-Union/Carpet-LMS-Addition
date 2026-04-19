@@ -23,7 +23,6 @@
     "util.chunk.loader.helmet.SimulationDistanceMixin",
     "util.chunk.loader.helmet.ViewDistanceMixin",
     "util.chunk.loader.minecart.MinecartChunkLoaderMixin",
-    "util.command.CommandsMixin",
     "util.command.opplayernocheatextra.OpPlayerNoCheatExtraClearMixin",
     "util.command.opplayernocheatextra.OpPlayerNoCheatExtraDamageMixin",
     "util.command.opplayernocheatextra.OpPlayerNoCheatExtraFillBiomeMixin",

@@ -28,10 +28,10 @@ import carpet.helpers.EntityPlayerActionPack;
 import carpet.utils.CommandHelper;
 
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
-import cn.nm.lms.carpetlmsaddition.rule.util.command.DropallActionExtension;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandPlayerDropall;
 
 @Mixin(EntityPlayerActionPack.Action.class)
-public class EntityPlayerActionPackActionMixin implements DropallActionExtension {
+public class EntityPlayerActionPackActionMixin implements CommandPlayerDropall.DropallActionExtension {
     @Unique
     private boolean lms$dropall;
 

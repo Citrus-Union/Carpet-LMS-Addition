@@ -27,7 +27,7 @@ import cn.nm.lms.carpetlmsaddition.safety.CommandSetPassword;
 
 public final class SetupCommands {
     private static final List<BaseCommand> COMMANDS =
-        List.of(new CommandLms(), new CommandCheckStorage(), new CommandSetPassword());
+        List.of(new CommandLms(), new CommandCheckStorage(), new CommandSetPassword(), new CommandPlayerDropall());
 
     public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher) {
         for (BaseCommand cmd : COMMANDS) {
