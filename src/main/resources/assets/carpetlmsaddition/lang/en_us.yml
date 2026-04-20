@@ -28,7 +28,9 @@ carpet:
     getItemDelayMs:
       desc: Set the wait time between each container-fetch call in getItem (milliseconds)
     getItemMaxCount:
-      desc: Set the maximum item count accepted by getItem in a single request
+      desc: Set the maximum item count accepted by getItem in a single request (0 = unlimited)
+    getItemMaxBots:
+      desc: Set the maximum number of fake players that getItem may summon per request (0 = unlimited)
     dispenserBartering:
       desc: Trigger piglin bartering by dispensing gold items
       extra:

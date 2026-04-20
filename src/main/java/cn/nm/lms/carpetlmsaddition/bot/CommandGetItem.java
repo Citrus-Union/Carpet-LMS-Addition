@@ -58,7 +58,11 @@ public final class CommandGetItem implements BaseCommandWithContext {
 
     private int executeGetItem(CommandSourceStack source, Item item, int count) {
         int maxCount = Settings.getItemMaxCount;
-        if (count > maxCount || count < 1) {
+        if (count < 1) {
+            source.sendFailure(Component.literal("Count must be at least 1"));
+            return 0;
+        }
+        if (maxCount > 0 && count > maxCount) {
             source.sendFailure(Component.literal(String.format("Count must be between 1 and %d", maxCount)));
             return 0;
         }

@@ -150,5 +150,9 @@ public final class Settings {
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
         validators = {Validators.NonNegativeNumber.class})
-    public static int getItemMaxCount = 1728;
+    public static int getItemMaxCount = 0;
+
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
+        validators = {Validators.NonNegativeNumber.class})
+    public static int getItemMaxBots = 0;
 }

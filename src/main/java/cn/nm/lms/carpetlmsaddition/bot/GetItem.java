@@ -132,18 +132,20 @@ public class GetItem {
     }
 
     private static Map<String, Map<Item, Integer>> doGetItem(MinecraftServer server, Item item, int count) {
-        return doGetItem(server, item, count, 1, 0);
+        int maxBots = Settings.getItemMaxBots;
+        int remainingBots = maxBots <= 0 ? Integer.MAX_VALUE : maxBots;
+        return doGetItem(server, item, count, 1, 0, remainingBots).result();
     }
 
-    private static Map<String, Map<Item, Integer>> doGetItem(MinecraftServer server, Item item, int count,
-        int startBotIndex, int depth) {
+    private static RoundResult doGetItem(MinecraftServer server, Item item, int count, int startBotIndex, int depth,
+        int remainingBots) {
         if (count <= 0) {
-            return Map.of();
+            return new RoundResult(Map.of(), remainingBots);
         }
 
         List<ContainerTarget> targets = collectTargets(item);
         if (targets.isEmpty()) {
-            return Map.of();
+            return new RoundResult(Map.of(), remainingBots);
         }
         targets.sort(Comparator.comparingInt((ContainerTarget target) -> target.pos().getY()).reversed());
 
@@ -163,12 +165,16 @@ public class GetItem {
                 }
 
                 if (currentBot == null) {
+                    if (remainingBots <= 0) {
+                        break;
+                    }
                     int botStartIndex = nextBotIndex;
                     SpawnedFake spawned = spawnNextUsableBot(server, target, botStartIndex);
                     currentBot = spawned.player();
                     currentBotName = spawned.name();
                     currentBotFetched = 0;
                     nextBotIndex = spawned.nextIndex();
+                    remainingBots--;
                 }
 
                 int callTargetCount = remaining;
@@ -206,11 +212,13 @@ public class GetItem {
             }
         }
 
-        if (remaining > 0 && fetchedThisRound > 0) {
-            mergeResults(result, doGetItem(server, item, remaining, nextBotIndex, depth + 1), item);
+        if (remaining > 0 && fetchedThisRound > 0 && remainingBots > 0) {
+            RoundResult nextRound = doGetItem(server, item, remaining, nextBotIndex, depth + 1, remainingBots);
+            remainingBots = nextRound.remainingBots();
+            mergeResults(result, nextRound.result(), item);
         }
 
-        return result;
+        return new RoundResult(result, remainingBots);
     }
 
     private static List<ContainerTarget> collectTargets(Item item) {
@@ -323,5 +331,8 @@ public class GetItem {
     }
 
     private record SpawnedFake(EntityPlayerMPFake player, String name, int nextIndex) {
+    }
+
+    private record RoundResult(Map<String, Map<Item, Integer>> result, int remainingBots) {
     }
 }

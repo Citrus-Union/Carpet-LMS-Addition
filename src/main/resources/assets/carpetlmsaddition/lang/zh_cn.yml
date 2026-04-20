@@ -41,7 +41,10 @@ carpet:
       desc: 设置 getItem 中每次调用容器取物之间的等待时间（单位：毫秒）
     getItemMaxCount:
       name: 取物单次最大数量
-      desc: 设置 getItem 单次请求允许的最大物品数量
+      desc: 设置 getItem 单次请求允许的最大物品数量（0为不限制）
+    getItemMaxBots:
+      name: 取物单次假人上限
+      desc: 设置 getItem 单次请求最多可召唤的假人数量（0为不限制）
     dispenserBartering:
       name: 发射器猪灵交易
       desc: 发射金物品会触发猪灵交易
