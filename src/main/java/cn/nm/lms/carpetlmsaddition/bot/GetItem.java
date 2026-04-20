@@ -30,7 +30,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
@@ -77,8 +76,8 @@ public class GetItem {
         return screenHandler.quickMoveStack(player, slotIndex);
     }
 
-    private static int getItemFromContainer(ServerLevel level, BlockPos pos, EntityPlayerMPFake player, Item item,
-        int targetCount) {
+    private static FetchResult getItemFromContainer(ServerLevel level, BlockPos pos, EntityPlayerMPFake player,
+        Item item, int targetCount) {
 
         double tpX = pos.getX() + 0.5;
         double tpY = pos.getY() + 0.5 - player.getEyeHeight();
@@ -88,7 +87,7 @@ public class GetItem {
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (!(blockEntity instanceof Container container && blockEntity instanceof MenuProvider menuProvider)) {
-            return 0;
+            return new FetchResult(0, false);
         }
 
         player.openMenu(menuProvider);
@@ -96,6 +95,7 @@ public class GetItem {
         AbstractContainerMenu screenHandler = player.containerMenu;
 
         int already = 0;
+        boolean inventoryFull = false;
         boolean targetIsShulker = GetItemShulkerUtil.isShulker(item);
 
         int containerSlotCount = Math.min(container.getContainerSize(), screenHandler.slots.size());
@@ -110,6 +110,7 @@ public class GetItem {
             ItemStack moveRusult = quickMove(screenHandler, i, player);
 
             if (moveRusult == ItemStack.EMPTY) {
+                inventoryFull = true;
                 break;
             }
 
@@ -117,6 +118,7 @@ public class GetItem {
 
             if (slot.hasItem()) {
                 already -= GetItemShulkerUtil.slotAmount(slot.getItem(), item, targetIsShulker);
+                inventoryFull = true;
                 break;
             }
 
@@ -126,7 +128,7 @@ public class GetItem {
         }
 
         player.closeContainer();
-        return already;
+        return new FetchResult(already, inventoryFull);
     }
 
     private static Map<String, Map<Item, Integer>> doGetItem(MinecraftServer server, Item item, int count) {
@@ -171,13 +173,14 @@ public class GetItem {
 
                 int callTargetCount = remaining;
                 EntityPlayerMPFake callBot = currentBot;
-                int got = Utils.runOnServerThread(server, () -> {
+                FetchResult fetched = Utils.runOnServerThread(server, () -> {
                     ServerLevel level = server.getLevel(target.dimension());
                     if (level == null) {
-                        return 0;
+                        return new FetchResult(0, false);
                     }
                     return getItemFromContainer(level, target.pos(), callBot, item, callTargetCount);
                 });
+                int got = fetched.count();
                 if (got > 0) {
                     currentBotFetched += got;
                     remaining -= got;
@@ -188,9 +191,7 @@ public class GetItem {
                     waitBetweenCalls();
                 }
 
-                EntityPlayerMPFake checkBot = currentBot;
-                boolean canCarryMore = Utils.runOnServerThread(server, () -> canCarryMore(checkBot, item));
-                if (remaining <= 0 || !canCarryMore) {
+                if (remaining <= 0 || fetched.inventoryFull()) {
                     addOneBotResult(result, currentBotName, item, currentBotFetched);
                     FakePlayerSpawner.silenceLogout(currentBot);
                     currentBot = null;
@@ -261,20 +262,6 @@ public class GetItem {
         throw new IllegalStateException("No available fake player name in range starting from " + startIndex);
     }
 
-    private static boolean canCarryMore(EntityPlayerMPFake player, Item item) {
-        Inventory inventory = player.getInventory();
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            ItemStack stack = inventory.getItem(i);
-            if (stack.isEmpty()) {
-                return true;
-            }
-            if (stack.getItem() == item && stack.getCount() < stack.getMaxStackSize()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private static String getBotPrefix() {
         String prefix = Settings.getItemBotPrefix;
         if (prefix == null) {
@@ -295,6 +282,11 @@ public class GetItem {
 
     private static void waitBetweenCalls() {
         int delayMillis = Settings.getItemDelayMs;
+
+        if (delayMillis <= 0) {
+            return;
+        }
+
         try {
             Thread.sleep(delayMillis);
         } catch (InterruptedException e) {
@@ -325,6 +317,9 @@ public class GetItem {
     }
 
     private record ContainerTarget(ResourceKey<Level> dimension, BlockPos pos) {
+    }
+
+    private record FetchResult(int count, boolean inventoryFull) {
     }
 
     private record SpawnedFake(EntityPlayerMPFake player, String name, int nextIndex) {
