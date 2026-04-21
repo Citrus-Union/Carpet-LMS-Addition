@@ -14,6 +14,9 @@ const {
   authUsername,
   currentLocale,
   isAuthenticated,
+  isAnonymousAccess,
+  showData,
+  requiresLogin,
   storageCount,
   totalItemKinds,
   totalErrors,
@@ -30,7 +33,7 @@ const {
 
 const refreshedAtLabel = computed(() => formatRefreshedAt(refreshedAt.value));
 const loginErrorMessage = computed(() =>
-  isAuthenticated.value ? "" : errorMessage.value,
+  requiresLogin.value ? errorMessage.value : "",
 );
 </script>
 
@@ -40,6 +43,8 @@ const loginErrorMessage = computed(() =>
       <AppHeader
         :current-locale="currentLocale"
         :is-authenticated="isAuthenticated"
+        :is-anonymous-access="isAnonymousAccess"
+        :requires-login="requiresLogin"
         :loading="loading"
         :auth-username="authUsername"
         :username="credentials.username"
@@ -54,7 +59,7 @@ const loginErrorMessage = computed(() =>
         @logout="handleManualLogout"
       />
 
-      <template v-if="isAuthenticated">
+      <template v-if="showData">
         <StatsOverview
           :storage-count="storageCount"
           :total-item-kinds="totalItemKinds"

@@ -214,20 +214,23 @@ export async function login(
 }
 
 export async function fetchStorageData(
-  token: string,
+  token?: string | null,
 ): Promise<StorageResponse[]> {
   if (import.meta.env.DEV) {
     return Promise.resolve(DEV_MOCK_DATA);
   }
 
   let response: Response;
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+  };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
   try {
     response = await fetch("/api/storage/getData", {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers,
     });
   } catch {
     throw new StorageApiError("NETWORK_ERROR");

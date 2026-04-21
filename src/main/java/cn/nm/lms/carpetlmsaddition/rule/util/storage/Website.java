@@ -154,21 +154,23 @@ public class Website {
                 writeJson(exchange, 405, new MessageResp("405", "Method Not Allowed"));
                 return;
             }
-            String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
-            String token = extractBearerToken(authHeader);
-            if (token == null) {
-                writeJson(exchange, 401, new MessageResp("401", "Missing or invalid Authorization header"));
-                return;
-            }
-            try {
-                TokenManager.verifyToken(SECRET_PATH, token);
-            } catch (RuntimeException e) {
-                String message = TokenManager.TOKEN_INVALID_MESSAGE;
-                if (TokenManager.TOKEN_EXPIRED_MESSAGE.equals(e.getMessage())) {
-                    message = TokenManager.TOKEN_EXPIRED_MESSAGE;
+            if (!isNoPasswordEnabled()) {
+                String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
+                String token = extractBearerToken(authHeader);
+                if (token == null) {
+                    writeJson(exchange, 401, new MessageResp("401", "Missing or invalid Authorization header"));
+                    return;
                 }
-                writeJson(exchange, 401, new MessageResp("401", message));
-                return;
+                try {
+                    TokenManager.verifyToken(SECRET_PATH, token);
+                } catch (RuntimeException e) {
+                    String message = TokenManager.TOKEN_INVALID_MESSAGE;
+                    if (TokenManager.TOKEN_EXPIRED_MESSAGE.equals(e.getMessage())) {
+                        message = TokenManager.TOKEN_EXPIRED_MESSAGE;
+                    }
+                    writeJson(exchange, 401, new MessageResp("401", message));
+                    return;
+                }
             }
             handleGetDataAsync(exchange);
             return;
@@ -298,6 +300,18 @@ public class Website {
         } catch (Exception ignored) {
         }
         return 0;
+    }
+
+    private static boolean isNoPasswordEnabled() {
+        try {
+            JsonElement noPassword = JsonParser.parseString(AsyncFileIo.readString(Storage.configJsonPath))
+                .getAsJsonObject().get("noPassword");
+            if (noPassword != null && noPassword.isJsonPrimitive() && noPassword.getAsJsonPrimitive().isBoolean()) {
+                return noPassword.getAsBoolean();
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
     }
 
     private static class MessageResp {

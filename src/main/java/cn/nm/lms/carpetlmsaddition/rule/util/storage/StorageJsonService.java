@@ -149,6 +149,7 @@ final class StorageJsonService {
         JsonObject defaultConfig = new JsonObject();
         defaultConfig.addProperty("port", 7000);
         defaultConfig.addProperty("autoStartWebsite", false);
+        defaultConfig.addProperty("noPassword", false);
         defaultConfig.addProperty("expireDay", 0);
         JsonArray storageList = new JsonArray();
         storageList.add("example.json");

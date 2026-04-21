@@ -56,12 +56,19 @@ export function useStorageDashboard() {
   const authUsername = ref<string | null>(
     window.localStorage.getItem(STORAGE_WEBSITE_AUTH_USERNAME_KEY),
   );
+  const requiresLogin = ref(false);
   const errorState = ref<DashboardErrorState | null>(null);
 
   const currentLocale = computed<AppLocale>(() =>
     locale.value === "zh-CN" ? "zh-CN" : "en-US",
   );
   const isAuthenticated = computed<boolean>(() => Boolean(authToken.value));
+  const isAnonymousAccess = computed<boolean>(
+    () => !requiresLogin.value && !isAuthenticated.value,
+  );
+  const showData = computed<boolean>(
+    () => isAuthenticated.value || isAnonymousAccess.value,
+  );
   const mojangCache = new Map<AppLocale, Record<string, string>>();
   let mojangLoadToken = 0;
 
@@ -249,25 +256,25 @@ export function useStorageDashboard() {
 
   function handleTokenExpired(): void {
     clearAuthenticatedState();
+    requiresLogin.value = true;
     errorState.value = { code: "TOKEN_EXPIRED" };
   }
 
-  function handleManualLogout(): void {
+  async function handleManualLogout(): Promise<void> {
     clearAuthenticatedState();
     errorState.value = null;
+    requiresLogin.value = false;
+    await refreshData();
   }
 
   async function refreshData(): Promise<void> {
-    if (!authToken.value) {
-      return;
-    }
-
     loading.value = true;
     errorState.value = null;
 
     try {
       storages.value = await fetchStorageData(authToken.value);
       refreshedAt.value = new Date();
+      requiresLogin.value = false;
     } catch (error) {
       if (error instanceof StorageApiError) {
         if (error.code === "TOKEN_EXPIRED") {
@@ -275,7 +282,11 @@ export function useStorageDashboard() {
           return;
         }
         if (error.code === "UNAUTHORIZED") {
-          clearAuthenticatedState();
+          if (authToken.value) {
+            clearAuthSession();
+          }
+          clearStorageData();
+          requiresLogin.value = true;
         }
         errorState.value = {
           code: error.code,
@@ -302,10 +313,12 @@ export function useStorageDashboard() {
     try {
       const result = await login(credentials.value);
       persistAuth(result.token, result.username);
+      requiresLogin.value = false;
 
       try {
         storages.value = await fetchStorageData(result.token);
         refreshedAt.value = new Date();
+        requiresLogin.value = false;
       } catch (error) {
         if (error instanceof StorageApiError) {
           if (error.code === "TOKEN_EXPIRED") {
@@ -314,6 +327,7 @@ export function useStorageDashboard() {
           }
           if (error.code === "UNAUTHORIZED") {
             clearAuthenticatedState();
+            requiresLogin.value = true;
           }
         }
         throw error;
@@ -334,9 +348,7 @@ export function useStorageDashboard() {
   }
 
   onMounted(async () => {
-    if (authToken.value) {
-      await refreshData();
-    }
+    await refreshData();
   });
 
   watch(
@@ -355,6 +367,9 @@ export function useStorageDashboard() {
     authUsername,
     currentLocale,
     isAuthenticated,
+    isAnonymousAccess,
+    showData,
+    requiresLogin,
     storageCount,
     totalItemKinds,
     totalErrors,
