@@ -16,18 +16,47 @@
  */
 package cn.nm.lms.carpetlmsaddition.mixin.block.util;
 
+import java.util.Iterator;
+import java.util.Set;
+import java.util.UUID;
+
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.vault.VaultServerData;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.Shadow;
+
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 
 @Mixin(VaultServerData.class)
 public abstract class VaultMaxBlacklistSizeMixin {
-    @ModifyConstant(method = "addToRewardedPlayers", constant = @Constant(intValue = 128, ordinal = 0))
-    private int changeBlacklistLimit$LMS(int _unusedOriginal) {
-        return Settings.vaultMaxBlacklistSize;
+    @Shadow
+    @Final
+    private Set<UUID> rewardedPlayers;
+
+    @Shadow
+    protected abstract void markChanged();
+
+    @WrapMethod(method = "addToRewardedPlayers")
+    public void wAddToRewardedPlayers(final Player player, Operation<Void> original) {
+
+        if (Settings.vaultMaxBlacklistSize < 0) {
+            original.call(player);
+            return;
+        }
+        this.rewardedPlayers.add(player.getUUID());
+        if (this.rewardedPlayers.size() > Settings.vaultMaxBlacklistSize) {
+            Iterator<UUID> iterator = this.rewardedPlayers.iterator();
+            if (iterator.hasNext()) {
+                iterator.next();
+                iterator.remove();
+            }
+        }
+
+        this.markChanged();
     }
 }

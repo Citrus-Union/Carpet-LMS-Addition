@@ -115,8 +115,8 @@ public final class Settings {
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
     public static boolean unbreakableBuddingAmethyst = false;
 
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, validators = {Validators.NonNegativeNumber.class})
-    public static int vaultMaxBlacklistSize = 128;
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    public static int vaultMaxBlacklistSize = -1;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.BUGFIX})
     public static boolean zombifiedPiglinSpawnFix = false;

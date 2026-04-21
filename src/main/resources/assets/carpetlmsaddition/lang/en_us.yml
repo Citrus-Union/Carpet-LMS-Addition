@@ -143,6 +143,9 @@ carpet:
       desc: Set the hardness of budding amethyst to be the same as bedrock
     vaultMaxBlacklistSize:
       desc: Set the maximum number of players stored in the vault's blacklist
+      extra:
+        "<0": Use vanilla behavior
+        "0": Keep no players in the blacklist (removed immediately after each trigger)
     zombifiedPiglinSpawnFix:
       desc: >-
         When spawning zombified piglins in nether gates during random ticks,
