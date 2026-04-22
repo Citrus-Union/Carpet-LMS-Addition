@@ -33,6 +33,9 @@ carpet:
     commandCleanGetItemBot:
       name: 取物假人检查命令
       desc: 启用 "/cleanGetItemBot" 命令
+    websiteGetItem:
+      name: 网页取物 API
+      desc: 启用储存网页的 getItem API
     getItemBotPrefix:
       name: 取物假人前缀
       desc: 设置自动取物假人的命名前缀

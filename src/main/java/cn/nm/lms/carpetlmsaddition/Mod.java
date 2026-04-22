@@ -38,7 +38,7 @@ import cn.nm.lms.carpetlmsaddition.rule.Bootstrap;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.runtime.RecipeBookHelper;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.runtime.RecipeRuleHelper;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.SetupCommands;
-import cn.nm.lms.carpetlmsaddition.rule.util.storage.Website;
+import cn.nm.lms.carpetlmsaddition.rule.util.storage.website.Website;
 
 public class Mod implements ModInitializer, CarpetExtension {
     public static final String MOD_ID = "carpet-lms-addition";

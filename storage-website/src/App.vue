@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import AppHeader from "@/components/AppHeader.vue";
+import GetItemResultModal from "@/components/GetItemResultModal.vue";
 import StatsOverview from "@/components/StatsOverview.vue";
 import StorageList from "@/components/StorageList.vue";
 import { useStorageDashboard } from "@/composables/useStorageDashboard";
@@ -29,6 +30,16 @@ const {
   refreshData,
   handleLogin,
   handleManualLogout,
+  getItemModalVisible,
+  getItemLoading,
+  getItemResult,
+  getItemErrorMessage,
+  getItemCopyMessage,
+  getItemManualCopyBotName,
+  getItemManualCopyText,
+  handleGetItem,
+  closeGetItemModal,
+  copyGetItemCommand,
 } = useStorageDashboard();
 
 const refreshedAtLabel = computed(() => formatRefreshedAt(refreshedAt.value));
@@ -73,8 +84,22 @@ const loginErrorMessage = computed(() =>
           :get-item-display-name="getItemDisplayName"
           :flatten-positions="flattenPositions"
           :get-dimension-label="getDimensionLabel"
+          :on-get-item="handleGetItem"
         />
       </template>
     </div>
+
+    <GetItemResultModal
+      :visible="getItemModalVisible"
+      :loading="getItemLoading"
+      :error-message="getItemErrorMessage"
+      :copy-message="getItemCopyMessage"
+      :manual-copy-bot-name="getItemManualCopyBotName"
+      :manual-copy-text="getItemManualCopyText"
+      :result="getItemResult"
+      :get-item-display-name="getItemDisplayName"
+      @close="closeGetItemModal"
+      @copy="copyGetItemCommand"
+    />
   </main>
 </template>

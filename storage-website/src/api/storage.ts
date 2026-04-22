@@ -129,7 +129,8 @@ export type StorageApiErrorCode =
   | "HTTP_ERROR"
   | "INVALID_PAYLOAD"
   | "TOKEN_EXPIRED"
-  | "UNAUTHORIZED";
+  | "UNAUTHORIZED"
+  | "FORBIDDEN";
 
 export interface StorageCredentials {
   username: string;
@@ -139,6 +140,21 @@ export interface StorageCredentials {
 export interface LoginResponse {
   username: string;
   token: string;
+}
+
+export interface GetItemBotResult {
+  botName: string;
+  count: number;
+  spawnCommand: string;
+  killCommand: string;
+  inventoryCommand: string;
+}
+
+export interface GetItemResponse {
+  itemId: string;
+  total: number;
+  bots: GetItemBotResult[];
+  lines: string[];
 }
 
 export class StorageApiError extends Error {
@@ -162,6 +178,35 @@ function parseErrorMessage(payload: unknown): string | undefined {
     return payload.message;
   }
   return undefined;
+}
+
+function isGetItemBotResult(payload: unknown): payload is GetItemBotResult {
+  if (!isRecord(payload)) {
+    return false;
+  }
+
+  return (
+    typeof payload.botName === "string" &&
+    typeof payload.count === "number" &&
+    typeof payload.spawnCommand === "string" &&
+    typeof payload.killCommand === "string" &&
+    typeof payload.inventoryCommand === "string"
+  );
+}
+
+function isGetItemResponse(payload: unknown): payload is GetItemResponse {
+  if (!isRecord(payload)) {
+    return false;
+  }
+
+  return (
+    typeof payload.itemId === "string" &&
+    typeof payload.total === "number" &&
+    Array.isArray(payload.bots) &&
+    payload.bots.every(isGetItemBotResult) &&
+    Array.isArray(payload.lines) &&
+    payload.lines.every((line) => typeof line === "string")
+  );
 }
 
 export async function login(
@@ -255,5 +300,73 @@ export async function fetchStorageData(
     throw new StorageApiError("INVALID_PAYLOAD");
   }
 
+  return payload;
+}
+
+export async function requestGetItem(
+  itemId: string,
+  count: number,
+  token?: string | null,
+): Promise<GetItemResponse> {
+  if (import.meta.env.DEV) {
+    return Promise.resolve({
+      itemId,
+      total: count,
+      bots: [
+        {
+          botName: "bot_getitem_1",
+          count,
+          spawnCommand: "/player bot_getitem_1 spawn",
+          killCommand: "/player bot_getitem_1 kill",
+          inventoryCommand: "/player bot_getitem_1 inventory",
+        },
+      ],
+      lines: [
+        `bot_getitem_1: ${itemId} x${count}`,
+        `getItem done: ${itemId} x${count}`,
+      ],
+    });
+  }
+
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  let response: Response;
+  try {
+    response = await fetch("/api/storage/getItem", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ itemId, count }),
+    });
+  } catch {
+    throw new StorageApiError("NETWORK_ERROR");
+  }
+
+  if (!response.ok) {
+    let detail: string | undefined;
+    try {
+      const payload: unknown = await response.json();
+      detail = parseErrorMessage(payload);
+    } catch {
+      // ignore parsing errors
+    }
+    if (response.status === 401) {
+      throw new StorageApiError("UNAUTHORIZED", response.status, detail);
+    }
+    if (response.status === 403) {
+      throw new StorageApiError("FORBIDDEN", response.status, detail);
+    }
+    throw new StorageApiError("HTTP_ERROR", response.status, detail);
+  }
+
+  const payload: unknown = await response.json();
+  if (!isGetItemResponse(payload)) {
+    throw new StorageApiError("INVALID_PAYLOAD");
+  }
   return payload;
 }

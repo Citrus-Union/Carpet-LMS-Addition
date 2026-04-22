@@ -22,6 +22,8 @@ carpet:
       desc: Enable "/getItem <item> <count>" command
     commandCleanGetItemBot:
       desc: Enable "/cleanGetItemBot" command
+    websiteGetItem:
+      desc: Enable getItem API for storage website
     getItemBotPrefix:
       desc: Set the naming prefix for auto item-fetch bots
       extra:

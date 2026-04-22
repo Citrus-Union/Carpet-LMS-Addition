@@ -146,6 +146,9 @@ public final class Settings {
     public static String commandCleanGetItemBot = "false";
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE})
+    public static boolean websiteGetItem = false;
+
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE})
     public static String getItemBotPrefix = "bot_getitem_";
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},

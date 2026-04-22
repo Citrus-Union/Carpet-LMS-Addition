@@ -12,6 +12,7 @@ interface Props {
   getItemDisplayName: (itemId: string) => string;
   flattenPositions: (item: StorageItem) => FlattenedPosition[];
   getDimensionLabel: (dimension: string) => string;
+  onGetItem: (itemId: string) => void | Promise<void>;
 }
 
 type SortMode = "itemIdAsc" | "itemIdDesc" | "countAsc" | "countDesc";
@@ -44,6 +45,10 @@ const props = defineProps({
   },
   getDimensionLabel: {
     type: Function as PropType<Props["getDimensionLabel"]>,
+    required: true,
+  },
+  onGetItem: {
+    type: Function as PropType<Props["onGetItem"]>,
     required: true,
   },
 });
@@ -349,7 +354,15 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                       {{ getItemDisplayName(row.itemId) }}
                     </td>
                     <td class="px-3 py-2 font-mono text-xs text-slate-200">
-                      {{ row.itemId }}
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="truncate">{{ row.itemId }}</span>
+                        <button
+                          class="shrink-0 rounded-md border border-cyan-700/70 px-2 py-1 text-[11px] text-cyan-300 transition hover:border-cyan-400 hover:text-cyan-200"
+                          @click="props.onGetItem(row.itemId)"
+                        >
+                          {{ t("actions.getItem") }}
+                        </button>
+                      </div>
                     </td>
                     <td class="px-3 py-2 text-slate-100">
                       {{ row.item.count }}

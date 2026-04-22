@@ -3,6 +3,8 @@ import { useI18n } from "vue-i18n";
 
 import {
   fetchStorageData,
+  requestGetItem,
+  type GetItemResponse,
   login,
   StorageApiError,
   type StorageCredentials,
@@ -22,6 +24,7 @@ type DashboardErrorCode =
   | "HTTP_ERROR"
   | "INVALID_PAYLOAD"
   | "UNAUTHORIZED"
+  | "FORBIDDEN"
   | "TOKEN_EXPIRED"
   | "CREDENTIALS_REQUIRED"
   | "UNKNOWN";
@@ -58,6 +61,14 @@ export function useStorageDashboard() {
   );
   const requiresLogin = ref(false);
   const errorState = ref<DashboardErrorState | null>(null);
+  const getItemModalVisible = ref(false);
+  const getItemLoading = ref(false);
+  const getItemResult = ref<GetItemResponse | null>(null);
+  const getItemErrorMessage = ref("");
+  const getItemCopyMessage = ref("");
+  const getItemManualCopyBotName = ref("");
+  const getItemManualCopyText = ref("");
+  let copyMessageTimer: number | null = null;
 
   const currentLocale = computed<AppLocale>(() =>
     locale.value === "zh-CN" ? "zh-CN" : "en-US",
@@ -128,6 +139,10 @@ export function useStorageDashboard() {
         return t("errors.unauthorizedDatabaseData");
       }
       return t("errors.unauthorized");
+    }
+
+    if (errorState.value.code === "FORBIDDEN") {
+      return t("errors.forbidden");
     }
 
     if (errorState.value.code === "CREDENTIALS_REQUIRED") {
@@ -252,6 +267,136 @@ export function useStorageDashboard() {
   function clearAuthenticatedState(): void {
     clearAuthSession();
     clearStorageData();
+  }
+
+  function clearGetItemCopyMessage(): void {
+    getItemCopyMessage.value = "";
+    if (copyMessageTimer !== null) {
+      window.clearTimeout(copyMessageTimer);
+      copyMessageTimer = null;
+    }
+  }
+
+  function openGetItemModal(): void {
+    getItemModalVisible.value = true;
+    getItemResult.value = null;
+    getItemErrorMessage.value = "";
+    getItemManualCopyBotName.value = "";
+    getItemManualCopyText.value = "";
+    clearGetItemCopyMessage();
+  }
+
+  function closeGetItemModal(): void {
+    getItemModalVisible.value = false;
+    getItemLoading.value = false;
+    getItemResult.value = null;
+    getItemErrorMessage.value = "";
+    getItemManualCopyBotName.value = "";
+    getItemManualCopyText.value = "";
+    clearGetItemCopyMessage();
+  }
+
+  function getGetItemErrorMessage(error: StorageApiError): string {
+    if (error.code === "FORBIDDEN") {
+      if (error.detail === "Website getItem is disabled") {
+        return t("errors.websiteGetItemDisabled");
+      }
+      return t("errors.forbidden");
+    }
+
+    if (error.code === "UNAUTHORIZED") {
+      if (error.detail === "Token expired") {
+        return t("errors.tokenExpired");
+      }
+      if (error.detail === "Invalid token") {
+        return t("errors.invalidToken");
+      }
+      return t("errors.unauthorized");
+    }
+
+    if (error.code === "NETWORK_ERROR") {
+      return t("errors.network");
+    }
+
+    if (error.code === "HTTP_ERROR") {
+      if (error.detail) {
+        return error.detail;
+      }
+      return t("errors.http", { status: error.status ?? "-" });
+    }
+
+    if (error.code === "INVALID_PAYLOAD") {
+      return t("errors.invalidPayload");
+    }
+
+    if (error.code === "TOKEN_EXPIRED") {
+      return t("errors.tokenExpired");
+    }
+
+    return t("errors.unknown");
+  }
+
+  async function copyGetItemCommand(
+    botName: string,
+    command: string,
+  ): Promise<void> {
+    getItemManualCopyBotName.value = botName;
+    getItemManualCopyText.value = command;
+
+    try {
+      if (!navigator.clipboard?.writeText) {
+        throw new Error("Clipboard API unavailable");
+      }
+      await navigator.clipboard.writeText(command);
+      getItemCopyMessage.value = t("status.copied");
+    } catch {
+      getItemCopyMessage.value = t("status.copyFailed");
+    }
+
+    if (copyMessageTimer !== null) {
+      window.clearTimeout(copyMessageTimer);
+    }
+    copyMessageTimer = window.setTimeout(() => {
+      getItemCopyMessage.value = "";
+      copyMessageTimer = null;
+    }, 1500);
+  }
+
+  async function handleGetItem(itemId: string): Promise<void> {
+    const raw = window.prompt(t("getItem.inputPrompt", { itemId }), "1");
+    if (raw === null) {
+      return;
+    }
+
+    const count = Number.parseInt(raw.trim(), 10);
+    if (!Number.isInteger(count) || count < 1) {
+      window.alert(t("getItem.invalidCount"));
+      return;
+    }
+
+    openGetItemModal();
+    getItemLoading.value = true;
+    try {
+      const result = await requestGetItem(itemId, count, authToken.value);
+      getItemResult.value = result;
+      refreshData().catch(() => {
+        // ignore refresh failure in getItem flow
+      });
+    } catch (error) {
+      if (error instanceof StorageApiError) {
+        if (error.code === "TOKEN_EXPIRED") {
+          handleTokenExpired();
+        } else if (error.code === "UNAUTHORIZED" && authToken.value) {
+          clearAuthSession();
+          requiresLogin.value = true;
+        }
+        getItemErrorMessage.value = getGetItemErrorMessage(error);
+      } else {
+        getItemErrorMessage.value = t("errors.unknown");
+      }
+    } finally {
+      getItemLoading.value = false;
+    }
   }
 
   function handleTokenExpired(): void {
@@ -382,5 +527,15 @@ export function useStorageDashboard() {
     refreshData,
     handleLogin,
     handleManualLogout,
+    getItemModalVisible,
+    getItemLoading,
+    getItemResult,
+    getItemErrorMessage,
+    getItemCopyMessage,
+    getItemManualCopyBotName,
+    getItemManualCopyText,
+    handleGetItem,
+    closeGetItemModal,
+    copyGetItemCommand,
   };
 }
