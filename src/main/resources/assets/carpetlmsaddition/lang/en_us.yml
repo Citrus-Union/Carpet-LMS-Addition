@@ -29,6 +29,8 @@ carpet:
         "1": 'Example: if prefix is "bot_getitem_", names are "bot_getitem_1", "bot_getitem_2", ...'
     getItemDelayMs:
       desc: Set the wait time between each container-fetch call in getItem (milliseconds)
+    getItemCooldownSeconds:
+      desc: Set per-player cooldown between getItem requests (seconds, matched by player name, 0 = disabled)
     getItemMaxCount:
       desc: Set the maximum item count accepted by getItem in a single request (0 = unlimited)
     getItemMaxBots:

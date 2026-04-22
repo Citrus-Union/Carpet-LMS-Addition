@@ -52,11 +52,12 @@ public final class CommandGetItem implements BaseCommandWithContext {
                     ItemInput itemInput = ItemArgument.getItem(ctx, "item");
                     Item item = Utils.itemFromInput(itemInput);
                     int count = IntegerArgumentType.getInteger(ctx, "count");
-                    return executeGetItem(source, item, count);
+                    String playerName = source.getTextName();
+                    return executeGetItem(source, item, count, playerName);
                 }))));
     }
 
-    private int executeGetItem(CommandSourceStack source, Item item, int count) {
+    private int executeGetItem(CommandSourceStack source, Item item, int count, String playerName) {
         int maxCount = Settings.getItemMaxCount;
         if (count < 1) {
             source.sendFailure(Component.literal("Count must be at least 1"));
@@ -68,7 +69,7 @@ public final class CommandGetItem implements BaseCommandWithContext {
         }
         source.sendSuccess(() -> Component.literal("getItem started in background"), false);
         try {
-            AsyncTasks.run(() -> runGetItemAsync(source, item, count));
+            AsyncTasks.run(() -> runGetItemAsync(source, item, count, playerName));
             return 0;
         } catch (Throwable throwable) {
             source.sendFailure(Component.literal(buildFailureMessage(throwable)));
@@ -97,9 +98,9 @@ public final class CommandGetItem implements BaseCommandWithContext {
             false);
     }
 
-    private void runGetItemAsync(CommandSourceStack source, Item item, int count) {
+    private void runGetItemAsync(CommandSourceStack source, Item item, int count, String playerName) {
         try {
-            Map<String, Map<Item, Integer>> result = GetItem.getItem(item, count);
+            Map<String, Map<Item, Integer>> result = GetItem.getItem(item, count, playerName);
             source.getServer().execute(() -> sendResult(source, item, result));
         } catch (Throwable throwable) {
             source.getServer().execute(() -> source.sendFailure(Component.literal(buildFailureMessage(throwable))));
