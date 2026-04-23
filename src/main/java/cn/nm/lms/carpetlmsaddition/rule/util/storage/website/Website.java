@@ -17,9 +17,9 @@
 package cn.nm.lms.carpetlmsaddition.rule.util.storage.website;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
@@ -43,6 +43,8 @@ public class Website {
     private static final Gson GSON = new Gson();
     private static final Path CONFIG_JSON_PATH = GetPaths.getLmsWorldPath().resolve("checkStorageConfig.json");
     private static final Path SECRET_PATH = GetPaths.getLmsConfigSecretPath().resolve("storage");
+    private static final Path CUSTOM_STORAGE_WEBSITE_PATH = GetPaths.getLmsWorldPath().resolve("customStorageWebsite");
+    private static final String CUSTOM_STORAGE_INDEX_HTML = "This storage viewer is to be customized.<br>这是待修改的仓储查看";
     private static HttpServer app;
     private static int autoUpdateDataTicks = 0;
     private static int lastAutoUpdateInterval = 0;
@@ -179,34 +181,112 @@ public class Website {
             return;
         }
 
-        String resource = "websites/storage" + file;
-        byte[] content = readResource(resource);
-        if (content == null && !file.contains(".")) {
-            resource = "websites/storage/index.html";
-            content = readResource(resource);
-        }
-        if (content == null) {
-            write(exchange, 404, "text/plain; charset=utf-8", "Not Found".getBytes(StandardCharsets.UTF_8));
-            return;
+        String resolvedFile = file;
+        byte[] content;
+        if (isCustomWebsiteEnabled()) {
+            if (!ensureCustomWebsiteReady()) {
+                write(exchange, 404, "text/plain; charset=utf-8", "Not Found".getBytes(StandardCharsets.UTF_8));
+                return;
+            }
+            content = readCustomResource(resolveCustomResourcePath(file));
+            if (content == null && !file.contains(".")) {
+                resolvedFile = "/index.html";
+                content = readCustomResource(resolveCustomResourcePath(resolvedFile));
+            }
+            if (content == null) {
+                write(exchange, 404, "text/plain; charset=utf-8", "Not Found".getBytes(StandardCharsets.UTF_8));
+                return;
+            }
+        } else {
+            String resource = "websites/storage" + file;
+            content = readBundledResource(resource);
+            if (content == null && !file.contains(".")) {
+                resolvedFile = "/index.html";
+                resource = "websites/storage/index.html";
+                content = readBundledResource(resource);
+            }
+            if (content == null) {
+                write(exchange, 404, "text/plain; charset=utf-8", "Not Found".getBytes(StandardCharsets.UTF_8));
+                return;
+            }
         }
 
-        String contentType = "application/octet-stream";
-        if (resource.endsWith(".html")) {
-            contentType = "text/html; charset=utf-8";
-        } else if (resource.endsWith(".css")) {
-            contentType = "text/css; charset=utf-8";
-        } else if (resource.endsWith(".js")) {
-            contentType = "application/javascript; charset=utf-8";
-        } else if (resource.endsWith(".json")) {
-            contentType = "application/json; charset=utf-8";
-        }
-        write(exchange, 200, contentType, content);
+        write(exchange, 200, getContentType(resolvedFile), content);
     }
 
-    private static byte[] readResource(String resource) throws IOException {
-        try (InputStream in = Website.class.getClassLoader().getResourceAsStream(resource)) {
-            return in == null ? null : in.readAllBytes();
+    private static String getContentType(String file) {
+        if (file.endsWith(".html")) {
+            return "text/html; charset=utf-8";
         }
+        if (file.endsWith(".css")) {
+            return "text/css; charset=utf-8";
+        }
+        if (file.endsWith(".js")) {
+            return "application/javascript; charset=utf-8";
+        }
+        if (file.endsWith(".json")) {
+            return "application/json; charset=utf-8";
+        }
+        return "application/octet-stream";
+    }
+
+    private static boolean ensureCustomWebsiteReady() {
+        try {
+            AsyncFileIo.createDirectories(CUSTOM_STORAGE_WEBSITE_PATH);
+            Path customIndexHtmlPath = CUSTOM_STORAGE_WEBSITE_PATH.resolve("index.html");
+            if (!AsyncFileIo.exists(customIndexHtmlPath)) {
+                AsyncFileIo.writeString(customIndexHtmlPath, CUSTOM_STORAGE_INDEX_HTML);
+            }
+            return true;
+        } catch (IOException e) {
+            Mod.LOGGER.warn("Failed to prepare custom storage website directory: {}", CUSTOM_STORAGE_WEBSITE_PATH, e);
+            return false;
+        }
+    }
+
+    private static Path resolveCustomResourcePath(String file) {
+        String normalizedFile = file.startsWith("/") ? file.substring(1) : file;
+        Path root = CUSTOM_STORAGE_WEBSITE_PATH.normalize();
+        Path resolved = root.resolve(normalizedFile).normalize();
+        if (!resolved.startsWith(root)) {
+            return null;
+        }
+        return resolved;
+    }
+
+    private static byte[] readCustomResource(Path filePath) {
+        if (filePath == null || !AsyncFileIo.exists(filePath)) {
+            return null;
+        }
+        try {
+            return Files.readAllBytes(filePath);
+        } catch (IOException e) {
+            Mod.LOGGER.warn("Failed to read custom website file: {}", filePath, e);
+            return null;
+        }
+    }
+
+    private static byte[] readBundledResource(String resource) {
+        try {
+            Path resourcePath = Mod.getModContainer().findPath(resource).orElse(null);
+            return resourcePath == null ? null : Files.readAllBytes(resourcePath);
+        } catch (IOException e) {
+            Mod.LOGGER.warn("Failed to read website resource: {}", resource, e);
+            return null;
+        }
+    }
+
+    private static boolean isCustomWebsiteEnabled() {
+        try {
+            JsonElement customWebsite =
+                JsonParser.parseString(AsyncFileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject().get("customWebsite");
+            if (customWebsite != null && customWebsite.isJsonPrimitive()
+                && customWebsite.getAsJsonPrimitive().isBoolean()) {
+                return customWebsite.getAsBoolean();
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
     }
 
     private static void handleLoginAsync(HttpExchange exchange, String body) {

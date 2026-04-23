@@ -53,6 +53,10 @@ public class Mod implements ModInitializer, CarpetExtension {
         return ModInfoHolder.NAME;
     }
 
+    public static ModContainer getModContainer() {
+        return ModInfoHolder.CONTAINER;
+    }
+
     @Override
     public void onInitialize() {
         LOGGER.info("{} version {}", getModName(), getVersion());
