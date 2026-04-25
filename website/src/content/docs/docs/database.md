@@ -6,8 +6,10 @@ description: Password database
 ## Setup
 
 ```mysql
-USE example; -- config by user
+USE example;
+```
 
+```mysql
 CREATE TABLE IF NOT EXISTS users
 (
     id         INT AUTO_INCREMENT PRIMARY KEY,

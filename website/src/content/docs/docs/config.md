@@ -27,6 +27,7 @@ description: Runtime JSON files under config/ and world/
 {
   "port": 7000,
   "autoStartWebsite": false,
+  "customWebsite": false,
   "noPassword": false,
   "expireDay": 0,
   "storageList": ["example.json"]
@@ -35,6 +36,8 @@ description: Runtime JSON files under config/ and world/
 
 - `noPassword: false`: `/api/storage/getData` requires `Authorization: Bearer <token>`.
 - `noPassword: true`: `/api/storage/getData` can be accessed without token.
+- `customWebsite: false`: use the built-in storage website.
+- `customWebsite: true`: load files from `world/carpetlmsaddition/customStorageWebsite/` (the mod ensures `index.html` exists automatically).
 
 ## checkStorageList
 
