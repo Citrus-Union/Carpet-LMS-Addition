@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, type PropType } from "vue";
+import { computed, ref, watch, type PropType } from "vue";
 import { useI18n } from "vue-i18n";
 
 import type { FlattenedPosition } from "@/composables/useStorageDashboard";
@@ -55,10 +55,51 @@ const props = defineProps({
 
 const { t } = useI18n();
 
+const ACTIVE_STORAGE_NAME_KEY = "storageWebsite.activeStorageName";
 const expandedItemKeys = ref<Set<string>>(new Set());
 const expandedErrorKeys = ref<Set<string>>(new Set());
 const sortModeByStorage = ref<Record<string, SortMode>>({});
 const searchQueryByStorage = ref<Record<string, string>>({});
+const activeStorageName = ref("");
+
+const activeStorage = computed<StorageResponse | null>(() => {
+  return (
+    props.storages.find(
+      (storage) => storage.name === activeStorageName.value,
+    ) ?? null
+  );
+});
+
+function getPersistedActiveStorageName(): string {
+  return window.localStorage.getItem(ACTIVE_STORAGE_NAME_KEY) ?? "";
+}
+
+function persistActiveStorageName(value: string): void {
+  if (!value) {
+    window.localStorage.removeItem(ACTIVE_STORAGE_NAME_KEY);
+    return;
+  }
+  window.localStorage.setItem(ACTIVE_STORAGE_NAME_KEY, value);
+}
+
+function pickActiveStorageName(storages: StorageResponse[]): string {
+  if (storages.length === 0) {
+    return "";
+  }
+
+  const storageNames = new Set(storages.map((storage) => storage.name));
+  if (activeStorageName.value && storageNames.has(activeStorageName.value)) {
+    return activeStorageName.value;
+  }
+
+  const persisted = getPersistedActiveStorageName();
+  if (persisted && storageNames.has(persisted)) {
+    return persisted;
+  }
+
+  const firstStorage = storages.at(0);
+  return firstStorage ? firstStorage.name : "";
+}
 
 watch(
   () => props.storages,
@@ -76,9 +117,26 @@ watch(
     });
     sortModeByStorage.value = nextSortModeByStorage;
     searchQueryByStorage.value = nextSearchQueryByStorage;
+
+    const nextActiveStorageName = pickActiveStorageName(storages);
+    activeStorageName.value = nextActiveStorageName;
+    persistActiveStorageName(nextActiveStorageName);
   },
-  { deep: true },
+  { deep: true, immediate: true },
 );
+
+function selectStorage(storageName: string): void {
+  if (activeStorageName.value === storageName) {
+    return;
+  }
+
+  activeStorageName.value = storageName;
+  persistActiveStorageName(storageName);
+}
+
+function isActiveStorage(storageName: string): boolean {
+  return activeStorageName.value === storageName;
+}
 
 function getItemKey(storageName: string, itemId: string): string {
   return `${storageName}::${itemId}`;
@@ -236,9 +294,30 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
   </section>
 
   <section v-else class="space-y-4">
+    <div
+      v-if="storages.length > 1"
+      class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/70 p-2"
+    >
+      <div class="flex min-w-max gap-2">
+        <button
+          v-for="storage in storages"
+          :key="storage.name"
+          class="rounded-lg border px-4 py-2 text-sm transition"
+          :class="
+            isActiveStorage(storage.name)
+              ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200'
+              : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-cyan-500 hover:text-cyan-300'
+          "
+          @click="selectStorage(storage.name)"
+        >
+          {{ storage.name }}
+        </button>
+      </div>
+    </div>
+
     <article
-      v-for="storage in storages"
-      :key="storage.name"
+      v-if="activeStorage"
+      :key="activeStorage.name"
       class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70"
     >
       <header class="border-b border-slate-800 bg-slate-900/90 px-5 py-4">
@@ -246,14 +325,14 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
           class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
         >
           <h2 class="text-lg font-semibold text-slate-100">
-            {{ storage.name }}
+            {{ activeStorage.name }}
           </h2>
           <input
-            :value="getSearchQuery(storage.name)"
+            :value="getSearchQuery(activeStorage.name)"
             class="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-100 outline-none ring-cyan-500 placeholder:text-slate-500 focus:ring-2 md:w-72"
             :placeholder="t('storage.searchPlaceholder')"
             type="text"
-            @input="onSearchInput(storage.name, $event)"
+            @input="onSearchInput(activeStorage.name, $event)"
           />
         </div>
       </header>
@@ -264,7 +343,7 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
             {{ t("section.items") }}
           </h3>
           <div
-            v-if="Object.keys(storage.data.items).length === 0"
+            v-if="Object.keys(activeStorage.data.items).length === 0"
             class="text-sm text-slate-400"
           >
             {{ t("storage.noItems") }}
@@ -288,22 +367,22 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                         <button
                           class="text-xs transition hover:text-cyan-300"
                           :class="
-                            isSortModeActive(storage.name, 'itemIdAsc')
+                            isSortModeActive(activeStorage.name, 'itemIdAsc')
                               ? 'text-cyan-300'
                               : 'text-slate-500'
                           "
-                          @click="setSortMode(storage.name, 'itemIdAsc')"
+                          @click="setSortMode(activeStorage.name, 'itemIdAsc')"
                         >
                           ↑
                         </button>
                         <button
                           class="text-xs transition hover:text-cyan-300"
                           :class="
-                            isSortModeActive(storage.name, 'itemIdDesc')
+                            isSortModeActive(activeStorage.name, 'itemIdDesc')
                               ? 'text-cyan-300'
                               : 'text-slate-500'
                           "
-                          @click="setSortMode(storage.name, 'itemIdDesc')"
+                          @click="setSortMode(activeStorage.name, 'itemIdDesc')"
                         >
                           ↓
                         </button>
@@ -317,22 +396,22 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                         <button
                           class="text-xs transition hover:text-cyan-300"
                           :class="
-                            isSortModeActive(storage.name, 'countAsc')
+                            isSortModeActive(activeStorage.name, 'countAsc')
                               ? 'text-cyan-300'
                               : 'text-slate-500'
                           "
-                          @click="setSortMode(storage.name, 'countAsc')"
+                          @click="setSortMode(activeStorage.name, 'countAsc')"
                         >
                           ↑
                         </button>
                         <button
                           class="text-xs transition hover:text-cyan-300"
                           :class="
-                            isSortModeActive(storage.name, 'countDesc')
+                            isSortModeActive(activeStorage.name, 'countDesc')
                               ? 'text-cyan-300'
                               : 'text-slate-500'
                           "
-                          @click="setSortMode(storage.name, 'countDesc')"
+                          @click="setSortMode(activeStorage.name, 'countDesc')"
                         >
                           ↓
                         </button>
@@ -346,7 +425,7 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
               </thead>
               <tbody class="divide-y divide-slate-800">
                 <template
-                  v-for="row in getVisibleItemRows(storage)"
+                  v-for="row in getVisibleItemRows(activeStorage)"
                   :key="row.itemId"
                 >
                   <tr class="bg-slate-900/40">
@@ -370,10 +449,10 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                     <td class="px-3 py-2 text-slate-300">
                       <button
                         class="rounded-md border border-slate-600 px-2 py-1 text-xs transition hover:border-cyan-400 hover:text-cyan-300"
-                        @click="toggleExpanded(storage.name, row.itemId)"
+                        @click="toggleExpanded(activeStorage.name, row.itemId)"
                       >
                         {{
-                          isExpanded(storage.name, row.itemId)
+                          isExpanded(activeStorage.name, row.itemId)
                             ? t("actions.collapse")
                             : t("actions.expand")
                         }}
@@ -381,7 +460,7 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                     </td>
                   </tr>
                   <tr
-                    v-if="isExpanded(storage.name, row.itemId)"
+                    v-if="isExpanded(activeStorage.name, row.itemId)"
                     class="bg-slate-900/20"
                   >
                     <td colspan="4" class="px-3 py-3">
@@ -396,7 +475,7 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                           v-for="(point, pointIndex) in flattenPositions(
                             row.item,
                           )"
-                          :key="`${storage.name}-${row.itemId}-${pointIndex}`"
+                          :key="`${activeStorage.name}-${row.itemId}-${pointIndex}`"
                           class="rounded-md border border-slate-700 bg-slate-900/50 px-3 py-2"
                         >
                           <p class="text-xs text-slate-300">
@@ -427,30 +506,30 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
               {{ t("section.errors") }}
             </h3>
             <button
-              v-if="storage.data.errors.length > 0"
+              v-if="activeStorage.data.errors.length > 0"
               class="rounded-md border border-slate-600 px-2 py-1 text-xs transition hover:border-cyan-400 hover:text-cyan-300"
-              @click="toggleErrorExpanded(storage.name)"
+              @click="toggleErrorExpanded(activeStorage.name)"
             >
               {{
-                isErrorExpanded(storage.name)
+                isErrorExpanded(activeStorage.name)
                   ? t("actions.collapse")
                   : t("actions.expand")
               }}
             </button>
           </div>
           <div
-            v-if="storage.data.errors.length === 0"
+            v-if="activeStorage.data.errors.length === 0"
             class="text-sm text-slate-400"
           >
             {{ t("storage.noErrors") }}
           </div>
           <ul
-            v-else-if="isErrorExpanded(storage.name)"
+            v-else-if="isErrorExpanded(activeStorage.name)"
             class="grid gap-2 md:grid-cols-2"
           >
             <li
-              v-for="(error, index) in storage.data.errors"
-              :key="`${storage.name}-${index}`"
+              v-for="(error, index) in activeStorage.data.errors"
+              :key="`${activeStorage.name}-${index}`"
               class="rounded-lg border border-amber-700/40 bg-amber-950/20 px-3 py-2 text-sm text-amber-200"
             >
               {{ getDimensionLabel(error.dimension) }} ({{ error.pos.x }}
