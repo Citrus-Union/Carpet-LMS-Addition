@@ -16,11 +16,15 @@
  */
 package cn.nm.lms.carpetlmsaddition.bot;
 
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -33,6 +37,7 @@ public final class FakePlayerSpawner {
     private static final long SPAWN_POLL_INTERVAL_MILLIS = 50L;
     private static final int SPAWN_TIMEOUT_TICKS = 120;
     private static final ThreadLocal<Integer> SILENCE_DEPTH = ThreadLocal.withInitial(() -> 0);
+    private static final Set<UUID> SILENT_LOGOUT_PLAYERS = ConcurrentHashMap.newKeySet();
 
     private FakePlayerSpawner() {}
 
@@ -99,6 +104,7 @@ public final class FakePlayerSpawner {
 
     public static void silenceLogout(EntityPlayerMPFake fakePlayer) {
         MinecraftServer server = fakePlayer.level().getServer();
+        markSilentLogout(fakePlayer);
         Utils.runOnServerThread(server, () -> callWithSilence(true, () -> {
             logout(fakePlayer);
             return null;
@@ -107,6 +113,27 @@ public final class FakePlayerSpawner {
 
     public static boolean isSilenceEnabled() {
         return SILENCE_DEPTH.get() > 0;
+    }
+
+    public static void enterSilenceScope() {
+        SILENCE_DEPTH.set(SILENCE_DEPTH.get() + 1);
+    }
+
+    public static void exitSilenceScope() {
+        int depth = SILENCE_DEPTH.get() - 1;
+        if (depth <= 0) {
+            SILENCE_DEPTH.remove();
+        } else {
+            SILENCE_DEPTH.set(depth);
+        }
+    }
+
+    public static boolean shouldSilencePlayer(ServerPlayer player) {
+        return isSilenceEnabled() || SILENT_LOGOUT_PLAYERS.contains(player.getUUID());
+    }
+
+    public static void unmarkSilentLogout(ServerPlayer player) {
+        SILENT_LOGOUT_PLAYERS.remove(player.getUUID());
     }
 
     public static void runWithSilenceScope(boolean silence, Runnable runnable) {
@@ -124,20 +151,19 @@ public final class FakePlayerSpawner {
         }
     }
 
+    private static void markSilentLogout(ServerPlayer player) {
+        SILENT_LOGOUT_PLAYERS.add(player.getUUID());
+    }
+
     private static <T> T callWithSilence(boolean silence, Supplier<T> supplier) {
         if (!silence) {
             return supplier.get();
         }
-        SILENCE_DEPTH.set(SILENCE_DEPTH.get() + 1);
+        enterSilenceScope();
         try {
             return supplier.get();
         } finally {
-            int depth = SILENCE_DEPTH.get() - 1;
-            if (depth <= 0) {
-                SILENCE_DEPTH.remove();
-            } else {
-                SILENCE_DEPTH.set(depth);
-            }
+            exitSilenceScope();
         }
     }
 }

@@ -23,10 +23,7 @@ import java.util.UUID;
 
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.world.level.storage.LevelResource;
-
-import org.jspecify.annotations.NonNull;
 
 import cn.nm.lms.carpetlmsaddition.lib.PlayerUtils;
 import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
@@ -35,12 +32,7 @@ public final class OfflineInvCheck {
     private OfflineInvCheck() {}
 
     static boolean isInventoryEmpty(MinecraftServer server, String name) {
-        ResolveResult resolved = resolve(server, name);
-        if (resolved.isOnlineProfile()) {
-            return false;
-        }
-
-        UUID uuid = resolved.uuid();
+        UUID uuid = UUIDUtil.createOfflinePlayerUUID(name);
         Path playerDat = GetPaths.getWorldPath(LevelResource.PLAYER_DATA_DIR).resolve(uuid.toString() + ".dat");
         if (!Files.exists(playerDat)) {
             return true;
@@ -51,22 +43,5 @@ public final class OfflineInvCheck {
         } catch (IOException e) {
             return true;
         }
-    }
-
-    @NonNull
-    private static ResolveResult resolve(MinecraftServer server, @NonNull String name) {
-        UUID offlineUuid = UUIDUtil.createOfflinePlayerUUID(name);
-        UUID resolvedUuid = OldUsersConverter.convertMobOwnerIfNecessary(server, name);
-        if (resolvedUuid != null) {
-            // If a name resolves to a UUID different from the offline UUID, treat it as an online/premium profile.
-            if (!resolvedUuid.equals(offlineUuid)) {
-                return new ResolveResult(offlineUuid, true);
-            }
-            return new ResolveResult(resolvedUuid, false);
-        }
-        return new ResolveResult(offlineUuid, false);
-    }
-
-    private record ResolveResult(UUID uuid, boolean isOnlineProfile) {
     }
 }

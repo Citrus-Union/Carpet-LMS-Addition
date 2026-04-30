@@ -16,31 +16,24 @@
  */
 package cn.nm.lms.carpetlmsaddition.bot;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
 
 import carpet.CarpetServer;
 import carpet.fakes.ServerPlayerInterface;
 import carpet.patches.EntityPlayerMPFake;
 
-import cn.nm.lms.carpetlmsaddition.lib.PlayerUtils;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
-import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 
 public final class CleanGetItemBot {
     private CleanGetItemBot() {}
@@ -56,31 +49,12 @@ public final class CleanGetItemBot {
         }
 
         String prefix = GetItemBotHelper.getBotPrefix();
-        Path playerDataDir = GetPaths.getWorldPath(LevelResource.PLAYER_DATA_DIR);
         Set<String> onlineNames = Utils.runOnServerThread(server, () -> server.getPlayerList().getPlayers().stream()
             .map(ServerPlayer::getScoreboardName).collect(Collectors.toSet()));
 
         return IntStream.rangeClosed(1, GetItemBotHelper.BOT_SCAN_LIMIT).parallel().mapToObj(i -> prefix + i)
-            .filter(name -> !onlineNames.contains(name)).filter(name -> hasOfflineItems(name, playerDataDir)).toList();
-    }
-
-    private static boolean hasOfflineData(String playerName, Path playerDataDir) {
-        UUID uuid = UUIDUtil.createOfflinePlayerUUID(playerName);
-        Path playerDat = playerDataDir.resolve(uuid.toString() + ".dat");
-        return Files.isRegularFile(playerDat);
-    }
-
-    private static boolean hasOfflineItems(String playerName, Path playerDataDir) {
-        if (!hasOfflineData(playerName, playerDataDir)) {
-            return false;
-        }
-        UUID uuid = UUIDUtil.createOfflinePlayerUUID(playerName);
-        Path playerDat = playerDataDir.resolve(uuid.toString() + ".dat");
-        try {
-            return !PlayerUtils.isInventoryEmpty(playerDat);
-        } catch (Exception e) {
-            return false;
-        }
+            .filter(name -> !onlineNames.contains(name)).filter(name -> !OfflineInvCheck.isInventoryEmpty(server, name))
+            .toList();
     }
 
     public static List<String> cleanBots(ServerPlayer player, int max) {

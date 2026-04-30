@@ -22,6 +22,8 @@
     "furnace.ShulkerBoxFurnaceMixin",
     "recipe.RecipeManagerMixin",
     "util.FakePlayerSilencePlayerListMixin",
+    "util.FakePlayerSilenceServerGamePacketListenerMixin",
+    "util.carpet.EntityPlayerMPFakeOfflineProfileMixin",
     "util.carpet.EntityPlayerMPFakeSilenceMixin",
     "util.chunk.loader.helmet.ChunkMapTrackingInvokerMixin",
     "util.chunk.loader.helmet.ServerPlayerHelmetTickMixin",

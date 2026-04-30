@@ -17,6 +17,7 @@
 package cn.nm.lms.carpetlmsaddition.mixin.util;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,10 +33,13 @@ import cn.nm.lms.carpetlmsaddition.bot.FakePlayerSpawner;
 
 @Mixin(PlayerList.class)
 public class FakePlayerSilencePlayerListMixin {
+    private static final ThreadLocal<Integer> carpetlmsaddition$SILENT_PLAYER_LIST_DEPTH =
+        ThreadLocal.withInitial(() -> 0);
+
     @Inject(method = "broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V", at = @At("HEAD"),
         cancellable = true)
     private void carpetlmsaddition$silenceBroadcast(Component message, boolean overlay, CallbackInfo ci) {
-        if (FakePlayerSpawner.isSilenceEnabled()) {
+        if (carpetlmsaddition$shouldSilence()) {
             ci.cancel();
         }
     }
@@ -43,6 +47,28 @@ public class FakePlayerSilencePlayerListMixin {
     @WrapWithCondition(method = "placeNewPlayer", at = @At(value = "INVOKE", remap = false,
         target = "Lorg/slf4j/Logger;info(Ljava/lang/String;[Ljava/lang/Object;)V"))
     private boolean carpetlmsaddition$silenceLoginLog(Logger instance, String format, Object[] args) {
-        return !FakePlayerSpawner.isSilenceEnabled();
+        return !carpetlmsaddition$shouldSilence();
+    }
+
+    @Inject(method = "remove", at = @At("HEAD"))
+    private void carpetlmsaddition$enterSilentRemove(ServerPlayer player, CallbackInfo ci) {
+        if (FakePlayerSpawner.shouldSilencePlayer(player)) {
+            carpetlmsaddition$SILENT_PLAYER_LIST_DEPTH.set(carpetlmsaddition$SILENT_PLAYER_LIST_DEPTH.get() + 1);
+        }
+    }
+
+    @Inject(method = "remove", at = @At("RETURN"))
+    private void carpetlmsaddition$exitSilentRemove(ServerPlayer player, CallbackInfo ci) {
+        int depth = carpetlmsaddition$SILENT_PLAYER_LIST_DEPTH.get();
+        if (depth <= 1) {
+            carpetlmsaddition$SILENT_PLAYER_LIST_DEPTH.remove();
+        } else {
+            carpetlmsaddition$SILENT_PLAYER_LIST_DEPTH.set(depth - 1);
+        }
+        FakePlayerSpawner.unmarkSilentLogout(player);
+    }
+
+    private static boolean carpetlmsaddition$shouldSilence() {
+        return FakePlayerSpawner.isSilenceEnabled() || carpetlmsaddition$SILENT_PLAYER_LIST_DEPTH.get() > 0;
     }
 }
