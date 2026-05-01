@@ -19,13 +19,14 @@ package cn.nm.lms.carpetlmsaddition.rule.util.storage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -36,6 +37,7 @@ import org.jspecify.annotations.Nullable;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncFileIo;
+import cn.nm.lms.carpetlmsaddition.lib.ItemRegistryCompat;
 import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 
 final class StorageJsonService {
@@ -52,7 +54,7 @@ final class StorageJsonService {
         }
 
         try {
-            AsyncFileIo.createDirectories(Storage.storageDataPath);
+            AsyncFileIo.createParentDirectories(Storage.storageDataPath);
             AsyncFileIo.createDirectories(Storage.storageDir);
         } catch (IOException e) {
             Mod.LOGGER.warn("Failed to create storage dirs: {}, {}", Storage.storageDataPath, Storage.storageDir);
@@ -76,7 +78,7 @@ final class StorageJsonService {
             String storageFileName = element.getAsString();
             Path storageFile = Storage.storageDir.resolve(storageFileName);
             if (!ensureStorageFileExists(storageFile)) {
-                Mod.LOGGER.warn("Failed to prepare storage file: {}", storageFileName);
+                Mod.LOGGER.warn("Storage file not found: {}", storageFile);
                 continue;
             }
 
@@ -95,50 +97,88 @@ final class StorageJsonService {
         return new Storage.PreparedInputs(storageList.size(), inputs);
     }
 
-    static void saveToFile(Path savePath, Map<Item, Storage.ItemCount> items, List<Storage.Position> errors)
-        throws IOException {
-        AsyncFileIo.writeString(savePath, toOutputJson(items, errors));
+    static void saveToFile(Path savePath, JsonElement output) throws IOException {
+        AsyncFileIo.writeString(savePath, Storage.PRETTY_GSON.toJson(output));
     }
 
-    private static String toOutputJson(Map<Item, Storage.ItemCount> items, List<Storage.Position> errors) {
+    static JsonObject toOutputJsonObject(Map<Item, Storage.ItemCount> items, List<Storage.Position> errors) {
         JsonObject root = new JsonObject();
 
         JsonObject itemsObject = new JsonObject();
         items.forEach((item, itemCount) -> {
             Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
             JsonObject oneItem = new JsonObject();
-            oneItem.addProperty("count", itemCount.count);
-
-            JsonObject positionsByDimension = new JsonObject();
-            Map<String, JsonArray> groupedPositions = new HashMap<>();
+            oneItem.addProperty("c", itemCount.count);
+            JsonArray overworldPositions = new JsonArray();
+            JsonArray netherPositions = new JsonArray();
+            JsonArray endPositions = new JsonArray();
             itemCount.positionsCount.forEach((position, positionCount) -> {
-                String dimension = Storage.dimensionToSting.get(position.dimension);
-                if (dimension == null) {
-                    return;
+                JsonArray onePosition = new JsonArray();
+                onePosition.add(position.pos.getX());
+                onePosition.add(position.pos.getY());
+                onePosition.add(position.pos.getZ());
+                onePosition.add(positionCount);
+                JsonArray targetArray =
+                    getDimensionArray(position.dimension, overworldPositions, netherPositions, endPositions);
+                if (targetArray != null) {
+                    targetArray.add(onePosition);
                 }
-
-                JsonArray oneDimensionArray = groupedPositions.computeIfAbsent(dimension, key -> new JsonArray());
-                JsonObject onePosition = new JsonObject();
-                JsonObject pos = new JsonObject();
-                pos.addProperty("x", position.pos.getX());
-                pos.addProperty("y", position.pos.getY());
-                pos.addProperty("z", position.pos.getZ());
-                onePosition.add("pos", pos);
-                onePosition.addProperty("count", positionCount);
-                oneDimensionArray.add(onePosition);
             });
 
-            groupedPositions.forEach(positionsByDimension::add);
-            oneItem.add("positionsByDimension", positionsByDimension);
-            itemsObject.add(itemId.toString(), oneItem);
+            if (!overworldPositions.isEmpty()) {
+                oneItem.add("0", overworldPositions);
+            }
+            if (!netherPositions.isEmpty()) {
+                oneItem.add("-1", netherPositions);
+            }
+            if (!endPositions.isEmpty()) {
+                oneItem.add("1", endPositions);
+            }
+            itemsObject.add(ItemRegistryCompat.compactItemId(itemId.toString()), oneItem);
         });
-        root.add("items", itemsObject);
+        root.add("i", itemsObject);
 
-        JsonArray errorsArray = new JsonArray();
-        errors.forEach(position -> errorsArray.add(position.toJson()));
-        root.add("errors", errorsArray);
+        JsonObject errorsObject = new JsonObject();
+        JsonArray overworldErrors = new JsonArray();
+        JsonArray netherErrors = new JsonArray();
+        JsonArray endErrors = new JsonArray();
+        errors.forEach(position -> {
+            JsonArray oneError = new JsonArray();
+            oneError.add(position.pos.getX());
+            oneError.add(position.pos.getY());
+            oneError.add(position.pos.getZ());
+            JsonArray targetArray = getDimensionArray(position.dimension, overworldErrors, netherErrors, endErrors);
+            if (targetArray != null) {
+                targetArray.add(oneError);
+            }
+        });
+        if (!overworldErrors.isEmpty()) {
+            errorsObject.add("0", overworldErrors);
+        }
+        if (!netherErrors.isEmpty()) {
+            errorsObject.add("-1", netherErrors);
+        }
+        if (!endErrors.isEmpty()) {
+            errorsObject.add("1", endErrors);
+        }
+        root.add("e", errorsObject);
 
-        return Storage.PRETTY_GSON.toJson(root);
+        return root;
+    }
+
+    private static JsonArray getDimensionArray(ResourceKey<Level> dimension, JsonArray overworldArray,
+        JsonArray netherArray, JsonArray endArray) {
+        String dimensionString = Storage.dimensionToSting.get(dimension);
+        if ("overworld".equals(dimensionString)) {
+            return overworldArray;
+        }
+        if ("nether".equals(dimensionString)) {
+            return netherArray;
+        }
+        if ("end".equals(dimensionString)) {
+            return endArray;
+        }
+        return null;
     }
 
     private static boolean ensureDefaultConfigExists() {
@@ -158,7 +198,7 @@ final class StorageJsonService {
 
         try {
             AsyncFileIo.createDirectories(GetPaths.getLmsWorldPath());
-            writePrettyJson(Storage.configJsonPath, defaultConfig);
+            AsyncFileIo.writeString(Storage.configJsonPath, Storage.PRETTY_GSON.toJson(defaultConfig));
             Mod.LOGGER.info("Generated default storage config: {}", Storage.configJsonPath);
             return true;
         } catch (IOException e) {
@@ -171,31 +211,28 @@ final class StorageJsonService {
         if (AsyncFileIo.exists(storageFile)) {
             return true;
         }
+        if (!"example.json".equals(storageFile.getFileName().toString())) {
+            return false;
+        }
 
         try {
             AsyncFileIo.createParentDirectories(storageFile);
             JsonObject defaultStorage = new JsonObject();
-            if ("example.json".equals(storageFile.getFileName().toString())) {
-                JsonArray overworld = new JsonArray();
-                JsonArray examplePos = new JsonArray();
-                examplePos.add(0);
-                examplePos.add(0);
-                examplePos.add(0);
-                overworld.add(examplePos);
-                defaultStorage.add("overworld", overworld);
-                defaultStorage.add("end", new JsonArray());
-                defaultStorage.add("nether", new JsonArray());
-            }
-            writePrettyJson(storageFile, defaultStorage);
-            Mod.LOGGER.info("Generated empty storage list file: {}", storageFile);
+            JsonArray overworld = new JsonArray();
+            JsonArray examplePos = new JsonArray();
+            examplePos.add(0);
+            examplePos.add(0);
+            examplePos.add(0);
+            overworld.add(examplePos);
+            defaultStorage.add("overworld", overworld);
+            defaultStorage.add("end", new JsonArray());
+            defaultStorage.add("nether", new JsonArray());
+            AsyncFileIo.writeString(storageFile, Storage.PRETTY_GSON.toJson(defaultStorage));
+            Mod.LOGGER.info("Generated default storage list file: {}", storageFile);
             return true;
         } catch (IOException e) {
             return false;
         }
-    }
-
-    private static void writePrettyJson(Path path, JsonElement jsonElement) throws IOException {
-        AsyncFileIo.writeString(path, Storage.PRETTY_GSON.toJson(jsonElement));
     }
 
     private static @Nullable JsonObject readConfigJsonObject() {

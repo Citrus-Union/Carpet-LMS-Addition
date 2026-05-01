@@ -25,6 +25,13 @@ import org.jspecify.annotations.Nullable;
 public final class ItemRegistryCompat {
     private ItemRegistryCompat() {}
 
+    public static String compactItemId(String itemId) {
+        if (itemId.startsWith("minecraft:")) {
+            return itemId.substring("minecraft:".length());
+        }
+        return itemId;
+    }
+
     @Nullable
     public static Item getItem(Identifier itemId) {
         //#if MC>=12102

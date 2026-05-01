@@ -20,84 +20,40 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import org.jspecify.annotations.Nullable;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 
 public class GenerateResponse {
-    private static final Path storageDataPath = GetPaths.getLmsWorldDataPath().resolve("checkStorageData");
+    private static final Path storageDataPath = GetPaths.getLmsWorldDataPath().resolve("checkStorageData.json");
 
     public static CompletableFuture<String> generateJsonResponseAsync() {
         return AsyncTasks.supply(() -> {
-            JsonArray storageList = readStorageListFromConfig();
-            if (storageList == null) {
-                return "[]";
-            }
-
-            JsonArray result = buildResponseArray(storageList);
+            String result = readMergedResponse();
             if (result != null) {
-                return result.toString();
+                return result;
             }
-
-            Storage.checkStorage();
-            result = buildResponseArray(storageList);
-            if (result != null) {
-                return result.toString();
-            }
-
             return "[]";
         });
     }
 
-    private static @Nullable JsonArray readStorageListFromConfig() {
+    private static String readMergedResponse() {
         try {
-            JsonObject config = JsonParser.parseString(Files.readString(Storage.configJsonPath)).getAsJsonObject();
-            if (!config.has("storageList") || !config.get("storageList").isJsonArray()) {
-                Mod.LOGGER.warn("Missing or invalid storageList in {}", Storage.configJsonPath);
+            if (!Files.exists(storageDataPath)) {
                 return null;
             }
-            return config.getAsJsonArray("storageList");
+            JsonElement root = JsonParser.parseString(Files.readString(storageDataPath));
+            if (!root.isJsonArray()) {
+                Mod.LOGGER.warn("Invalid merged storage data file format: {}", storageDataPath);
+                return null;
+            }
+            return root.toString();
         } catch (Exception e) {
-            Mod.LOGGER.warn("Failed to read storageList config: {}", Storage.configJsonPath);
+            Mod.LOGGER.warn("Failed to read merged storage data file: {}", storageDataPath);
             return null;
         }
-    }
-
-    private static @Nullable JsonArray buildResponseArray(JsonArray storageList) {
-        JsonArray response = new JsonArray();
-        for (JsonElement element : storageList) {
-            if (!element.isJsonPrimitive() || !element.getAsJsonPrimitive().isString()) {
-                Mod.LOGGER.warn("Skip invalid storage entry: {}", element);
-                return null;
-            }
-
-            String storageFileName = element.getAsString();
-            Path dataFile = storageDataPath.resolve(storageFileName);
-            if (!Files.exists(dataFile)) {
-                Mod.LOGGER.warn("Storage data file not found: {}", dataFile);
-                return null;
-            }
-
-            try {
-                JsonElement data = JsonParser.parseString(Files.readString(dataFile));
-                JsonObject oneStorage = new JsonObject();
-                String name = storageFileName.endsWith(".json")
-                    ? storageFileName.substring(0, storageFileName.length() - 5) : storageFileName;
-                oneStorage.addProperty("name", name);
-                oneStorage.add("data", data);
-                response.add(oneStorage);
-            } catch (Exception e) {
-                Mod.LOGGER.warn("Failed to read storage data file: {}", dataFile);
-                return null;
-            }
-        }
-        return response;
     }
 }

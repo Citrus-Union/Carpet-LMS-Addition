@@ -49,10 +49,10 @@ import me.fallenbreath.conditionalmixin.api.annotation.Restriction;
  * </p>
  */
 @Restriction(require = @Condition("carpet-sgu-addition"))
-@Mixin(value = EntityPlayerMPFake.class, priority = 1500)
+@Mixin(value = EntityPlayerMPFake.class, priority = 1500, remap = false)
 public class EntityPlayerMPFakeSguCompatMixin {
     @Dynamic("Method betterCreateFake is added by carpet-sgu-addition")
-    @WrapOperation(method = "betterCreateFake", remap = false, at = @At(value = "INVOKE",
+    @WrapOperation(method = "betterCreateFake", remap = false, at = @At(value = "INVOKE", remap = false,
         target = "Ljava/util/concurrent/CompletableFuture;whenCompleteAsync(Ljava/util/function/BiConsumer;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;"))
     private static <T> CompletableFuture<T> carpetlmsaddition$propagateSilenceToSguAsync(CompletableFuture<T> instance,
         BiConsumer<? super T, ? super Throwable> action, Executor executor, Operation<CompletableFuture<T>> original) {

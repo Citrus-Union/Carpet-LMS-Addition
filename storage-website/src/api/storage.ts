@@ -81,37 +81,42 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function isPosition(value: unknown): boolean {
-  if (!isRecord(value)) {
-    return false;
-  }
-
+function isNumberArray(value: unknown, length: number): value is number[] {
   return (
-    typeof value.x === "number" &&
-    typeof value.y === "number" &&
-    typeof value.z === "number"
+    Array.isArray(value) &&
+    value.length === length &&
+    value.every((item) => typeof item === "number")
   );
 }
 
-function isErrorPosition(value: unknown): value is StorageErrorPosition {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  return typeof value.dimension === "string" && isPosition(value.pos);
+function isPointWithCount(
+  value: unknown,
+): value is [number, number, number, number] {
+  return isNumberArray(value, 4);
 }
 
-function isStorageResponse(value: unknown): value is StorageResponse {
-  if (!isRecord(value) || typeof value.name !== "string") {
-    return false;
-  }
+function isPointOnly(value: unknown): value is [number, number, number] {
+  return isNumberArray(value, 3);
+}
 
-  const data = value.data;
-  if (!isRecord(data) || !isRecord(data.items) || !Array.isArray(data.errors)) {
-    return false;
+function decodeDimensionKey(key: string): string | null {
+  if (key === "0") {
+    return "overworld";
   }
+  if (key === "-1") {
+    return "nether";
+  }
+  if (key === "1") {
+    return "end";
+  }
+  return null;
+}
 
-  return data.errors.every(isErrorPosition);
+function normalizeItemId(itemId: string): string {
+  if (itemId.includes(":")) {
+    return itemId;
+  }
+  return `minecraft:${itemId}`;
 }
 
 function isLoginResponse(payload: unknown): payload is LoginResponse {
@@ -194,19 +199,149 @@ function isGetItemBotResult(payload: unknown): payload is GetItemBotResult {
   );
 }
 
-function isGetItemResponse(payload: unknown): payload is GetItemResponse {
+function isCompactBotResult(
+  payload: unknown,
+): payload is { n: string; i: string; c: number } {
   if (!isRecord(payload)) {
     return false;
   }
 
   return (
-    typeof payload.itemId === "string" &&
-    typeof payload.total === "number" &&
-    Array.isArray(payload.bots) &&
-    payload.bots.every(isGetItemBotResult) &&
-    Array.isArray(payload.lines) &&
-    payload.lines.every((line) => typeof line === "string")
+    typeof payload.n === "string" &&
+    typeof payload.i === "string" &&
+    typeof payload.c === "number"
   );
+}
+
+function isCompactGetItemResponse(
+  payload: unknown,
+): payload is Array<{ n: string; i: string; c: number }> {
+  return Array.isArray(payload) && payload.every(isCompactBotResult);
+}
+
+function decodeCompactStorage(payload: unknown): StorageResponse[] | null {
+  if (!Array.isArray(payload)) {
+    return null;
+  }
+
+  const storages: StorageResponse[] = [];
+  for (const oneStorage of payload) {
+    if (!isRecord(oneStorage) || typeof oneStorage.n !== "string") {
+      return null;
+    }
+    if (
+      !isRecord(oneStorage.d) ||
+      !isRecord(oneStorage.d.i) ||
+      !isRecord(oneStorage.d.e)
+    ) {
+      return null;
+    }
+
+    const items: StorageResponse["data"]["items"] = {};
+    for (const [rawItemId, rawItem] of Object.entries(oneStorage.d.i)) {
+      if (!isRecord(rawItem) || typeof rawItem.c !== "number") {
+        return null;
+      }
+      const itemId = normalizeItemId(rawItemId);
+
+      const positionsByDimension: Record<
+        string,
+        { pos: { x: number; y: number; z: number }; count: number }[]
+      > = {};
+      for (const dimKey of ["0", "-1", "1"] as const) {
+        const rawPoints = rawItem[dimKey];
+        const dimName = decodeDimensionKey(dimKey);
+        if (dimName == null) {
+          return null;
+        }
+        if (rawPoints == null) {
+          positionsByDimension[dimName] = [];
+          continue;
+        }
+        if (!Array.isArray(rawPoints)) {
+          return null;
+        }
+        const decodedPoints = [];
+        for (const onePoint of rawPoints) {
+          if (!isPointWithCount(onePoint)) {
+            return null;
+          }
+          const [x, y, z, c] = onePoint;
+          decodedPoints.push({
+            pos: { x, y, z },
+            count: c,
+          });
+        }
+        positionsByDimension[dimName] = decodedPoints;
+      }
+
+      items[itemId] = {
+        count: rawItem.c,
+        positionsByDimension,
+      };
+    }
+
+    const errors: StorageErrorPosition[] = [];
+    for (const dimKey of ["0", "-1", "1"] as const) {
+      const rawErrors = oneStorage.d.e[dimKey];
+      const dimName = decodeDimensionKey(dimKey);
+      if (dimName == null) {
+        return null;
+      }
+      if (rawErrors == null) {
+        continue;
+      }
+      if (!Array.isArray(rawErrors)) {
+        return null;
+      }
+      for (const oneError of rawErrors) {
+        if (!isPointOnly(oneError)) {
+          return null;
+        }
+        const [x, y, z] = oneError;
+        errors.push({
+          dimension: dimName,
+          pos: { x, y, z },
+        });
+      }
+    }
+
+    storages.push({
+      name: oneStorage.n,
+      data: {
+        items,
+        errors,
+      },
+    });
+  }
+
+  return storages;
+}
+
+function decodeCompactGetItem(
+  payload: unknown,
+  requestedItemId: string,
+): GetItemResponse | null {
+  if (!isCompactGetItemResponse(payload)) {
+    return null;
+  }
+
+  const total = payload.reduce((sum, one) => sum + one.c, 0);
+  return {
+    itemId: requestedItemId,
+    total,
+    bots: payload.map((bot) => ({
+      botName: bot.n,
+      count: bot.c,
+      spawnCommand: `/player ${bot.n} spawn`,
+      killCommand: `/player ${bot.n} kill`,
+      inventoryCommand: `/player ${bot.n} inventory`,
+    })),
+    lines: [
+      ...payload.map((bot) => `${bot.n}: ${normalizeItemId(bot.i)} x${bot.c}`),
+      `getItem done: ${requestedItemId} x${total}`,
+    ],
+  };
 }
 
 export async function login(
@@ -296,11 +431,12 @@ export async function fetchStorageData(
   }
 
   const payload: unknown = await response.json();
-  if (!Array.isArray(payload) || !payload.every(isStorageResponse)) {
+  const decoded = decodeCompactStorage(payload);
+  if (decoded == null) {
     throw new StorageApiError("INVALID_PAYLOAD");
   }
 
-  return payload;
+  return decoded;
 }
 
 export async function requestGetItem(
@@ -341,7 +477,7 @@ export async function requestGetItem(
     response = await fetch("/api/storage/getItem", {
       method: "POST",
       headers,
-      body: JSON.stringify({ itemId, count }),
+      body: JSON.stringify({ i: itemId, c: count }),
     });
   } catch {
     throw new StorageApiError("NETWORK_ERROR");
@@ -365,8 +501,9 @@ export async function requestGetItem(
   }
 
   const payload: unknown = await response.json();
-  if (!isGetItemResponse(payload)) {
+  const decoded = decodeCompactGetItem(payload, itemId);
+  if (decoded == null || !decoded.bots.every(isGetItemBotResult)) {
     throw new StorageApiError("INVALID_PAYLOAD");
   }
-  return payload;
+  return decoded;
 }

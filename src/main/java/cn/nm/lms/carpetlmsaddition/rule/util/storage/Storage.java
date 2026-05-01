@@ -34,6 +34,7 @@ import carpet.CarpetServer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
@@ -49,7 +50,7 @@ public class Storage {
     static final Map<ResourceKey<Level>, String> dimensionToSting =
         Map.of(Level.END, "end", Level.OVERWORLD, "overworld", Level.NETHER, "nether");
     static final Path storageDir = GetPaths.getLmsWorldPath().resolve("checkStorageList");
-    static final Path storageDataPath = GetPaths.getLmsWorldDataPath().resolve("checkStorageData");
+    static final Path storageDataPath = GetPaths.getLmsWorldDataPath().resolve("checkStorageData.json");
 
     public static String checkStorage() {
         MinecraftServer server = CarpetServer.minecraft_server;
@@ -73,17 +74,27 @@ public class Storage {
         Count count = new Count();
         List<ConfiguredStorageSnapshots> storages = doCollectConfiguredStorageSnapshots(server);
         count.total = storages.size();
+        JsonArray response = new JsonArray();
 
         for (ConfiguredStorageSnapshots storage : storages) {
             try {
                 HashMap<Item, ItemCount> items = new HashMap<>();
                 StorageItemStackProcessor.processSnapshots(storage.snapshots, items);
-                Path savePath = storageDataPath.resolve(storage.fileName);
-                StorageJsonService.saveToFile(savePath, items, storage.errors);
+                JsonObject oneStorage = new JsonObject();
+                String name = storage.fileName.endsWith(".json")
+                    ? storage.fileName.substring(0, storage.fileName.length() - 5) : storage.fileName;
+                oneStorage.addProperty("n", name);
+                oneStorage.add("d", StorageJsonService.toOutputJsonObject(items, storage.errors));
+                response.add(oneStorage);
                 count.success++;
             } catch (Exception e) {
                 Mod.LOGGER.warn("Failed to process storage file: {}", storage.fileName);
             }
+        }
+        try {
+            StorageJsonService.saveToFile(storageDataPath, response);
+        } catch (Exception e) {
+            Mod.LOGGER.warn("Failed to write merged storage data file: {}", storageDataPath, e);
         }
 
         return count.praseResult();

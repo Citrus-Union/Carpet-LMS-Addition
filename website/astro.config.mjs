@@ -33,6 +33,10 @@ export default defineConfig({
           label: "Config",
           link: "/docs/config",
         },
+        {
+          label: "Web API",
+          link: "/docs/web-api",
+        },
       ],
       components: {
         Head: "./src/components/Head.astro",

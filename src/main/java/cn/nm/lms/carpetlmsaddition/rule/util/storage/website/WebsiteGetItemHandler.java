@@ -34,7 +34,7 @@ import cn.nm.lms.carpetlmsaddition.rule.Settings;
 final class WebsiteGetItemHandler {
     private WebsiteGetItemHandler() {}
 
-    static GetItemResponse process(String body, String playerName) {
+    static List<GetItemBotResult> process(String body, String playerName) {
         GetItemRequest request = parseRequest(body);
         if (request.count < 1) {
             throw new WebsiteApiException(400, "Count must be at least 1");
@@ -78,19 +78,19 @@ final class WebsiteGetItemHandler {
             throw new WebsiteApiException(400, "Invalid request body");
         }
         JsonObject object = root.getAsJsonObject();
-        JsonElement itemIdElement = object.get("itemId");
-        JsonElement countElement = object.get("count");
+        JsonElement itemIdElement = object.get("i");
+        JsonElement countElement = object.get("c");
         if (itemIdElement == null || !itemIdElement.isJsonPrimitive()
             || !itemIdElement.getAsJsonPrimitive().isString()) {
-            throw new WebsiteApiException(400, "itemId is required");
+            throw new WebsiteApiException(400, "i is required");
         }
         if (countElement == null || !countElement.isJsonPrimitive() || !countElement.getAsJsonPrimitive().isNumber()) {
-            throw new WebsiteApiException(400, "count is required");
+            throw new WebsiteApiException(400, "c is required");
         }
 
         String itemId = itemIdElement.getAsString().trim();
         if (itemId.isEmpty()) {
-            throw new WebsiteApiException(400, "itemId is required");
+            throw new WebsiteApiException(400, "i is required");
         }
         int count;
         try {
@@ -113,37 +113,16 @@ final class WebsiteGetItemHandler {
         }
     }
 
-    private static GetItemResponse toResponse(String itemId, Item item, Map<String, Map<Item, Integer>> result) {
+    private static List<GetItemBotResult> toResponse(String itemId, Item item, Map<String, Map<Item, Integer>> result) {
         List<GetItemBotResult> bots = new ArrayList<>();
-        List<String> lines = new ArrayList<>();
-        int total = 0;
+        String compactItemId = ItemRegistryCompat.compactItemId(itemId);
 
         for (Map.Entry<String, Map<Item, Integer>> entry : result.entrySet()) {
             String botName = entry.getKey();
             int got = entry.getValue().getOrDefault(item, 0);
-            total += got;
-            String spawnCommand = "/player " + botName + " spawn";
-            String killCommand = "/player " + botName + " kill";
-            String inventoryCommand = "/player " + botName + " inventory";
-            bots.add(new GetItemBotResult(botName, got, spawnCommand, killCommand, inventoryCommand));
-            lines.add(botName + ": " + itemId + " x" + got);
+            bots.add(new GetItemBotResult(botName, compactItemId, got));
         }
-        lines.add("getItem done: " + itemId + " x" + total);
-        return new GetItemResponse(itemId, total, bots, lines);
-    }
-
-    static final class GetItemResponse {
-        String itemId;
-        int total;
-        List<GetItemBotResult> bots;
-        List<String> lines;
-
-        GetItemResponse(String itemId, int total, List<GetItemBotResult> bots, List<String> lines) {
-            this.itemId = itemId;
-            this.total = total;
-            this.bots = bots;
-            this.lines = lines;
-        }
+        return bots;
     }
 
     private static final class GetItemRequest {
@@ -156,19 +135,15 @@ final class WebsiteGetItemHandler {
         }
     }
 
-    private static final class GetItemBotResult {
-        String botName;
-        int count;
-        String spawnCommand;
-        String killCommand;
-        String inventoryCommand;
+    static final class GetItemBotResult {
+        String n;
+        String i;
+        int c;
 
-        GetItemBotResult(String botName, int count, String spawnCommand, String killCommand, String inventoryCommand) {
-            this.botName = botName;
-            this.count = count;
-            this.spawnCommand = spawnCommand;
-            this.killCommand = killCommand;
-            this.inventoryCommand = inventoryCommand;
+        GetItemBotResult(String botName, String itemId, int count) {
+            this.n = botName;
+            this.i = itemId;
+            this.c = count;
         }
     }
 }
