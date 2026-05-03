@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -44,6 +45,7 @@ import carpet.patches.EntityPlayerMPFake;
 
 import org.jspecify.annotations.Nullable;
 
+import cn.nm.lms.carpetlmsaddition.lib.ChatEventCompat;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.storage.Storage;
@@ -74,6 +76,26 @@ public class GetItem {
         worker.setDaemon(true);
         worker.start();
         return future.join();
+    }
+
+    public static Component buildBotResultLine(String botName, Item item, int got) {
+        String spawnCommand = "/player " + botName + " spawn";
+        String killCommand = "/player " + botName + " kill";
+        String inventoryCommand = "/player " + botName + " inventory";
+        Component itemName = Utils.itemDisplayName(item);
+
+        Component up =
+            Component.literal("[↑]").withStyle(style -> style.withClickEvent(ChatEventCompat.runCommand(spawnCommand))
+                .withHoverEvent(ChatEventCompat.showText(Component.literal("spawn"))));
+        Component down =
+            Component.literal("[↓]").withStyle(style -> style.withClickEvent(ChatEventCompat.runCommand(killCommand))
+                .withHoverEvent(ChatEventCompat.showText(Component.literal("kill"))));
+        Component openInventory = Component.literal("[O]")
+            .withStyle(style -> style.withClickEvent(ChatEventCompat.runCommand(inventoryCommand))
+                .withHoverEvent(ChatEventCompat.showText(Component.literal("inventory"))));
+
+        return Component.literal(botName).append(up).append(down).append(openInventory).append(Component.literal(": "))
+            .append(itemName.copy()).append(Component.literal(" x" + got));
     }
 
     private static void checkRateLimit(@Nullable String playerName) {

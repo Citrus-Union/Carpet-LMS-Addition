@@ -20,8 +20,18 @@ description: Runtime JSON files under config/ and world/
 }
 ```
 
-- `noPassword: false`: `/api/storage/getData` requires `Authorization: Bearer <token>`.
-- `noPassword: true`: `/api/storage/getData` can be accessed without token.
+- `noPassword: false`:
+  - `/api/storage/getData` requires `Authorization: Bearer <token>`.
+  - `/api/storage/getItem` requires `Authorization: Bearer <token>`.
+  - `/api/storage/sendGetItemResult` requires `Authorization: Bearer <token>`.
+- `noPassword: true`:
+  - `/api/storage/getData` can be accessed without token.
+  - `/api/storage/getItem` can be accessed without token.
+  - `/api/storage/sendGetItemResult` still requires `Authorization: Bearer <token>`.
+- If a token is provided:
+  - `/api/storage/getData` and `/api/storage/getItem` try to validate it first.
+  - When `noPassword: true` and token validation fails, these two APIs fall back to anonymous access.
+  - `/api/storage/sendGetItemResult` never falls back to anonymous access.
 - `customWebsite: false`: use the built-in storage website.
 - `customWebsite: true`: load files from `world/carpetlmsaddition/customStorageWebsite/` (the mod ensures `index.html` exists automatically).
 

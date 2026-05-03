@@ -4,7 +4,9 @@ import { useI18n } from "vue-i18n";
 import {
   fetchStorageData,
   requestGetItem,
+  requestSendGetItemResult,
   type GetItemResponse,
+  type SendGetItemEntry,
   login,
   StorageApiError,
   type StorageCredentials,
@@ -20,6 +22,7 @@ import type {
 const STORAGE_WEBSITE_AUTH_TOKEN_KEY = "storageWebsite.authToken";
 const STORAGE_WEBSITE_AUTH_USERNAME_KEY = "storageWebsite.authUsername";
 const AGGREGATE_STORAGE_NAME = "__aggregate__";
+const SEND_ALL_BOT_KEY = "__all__";
 
 type DashboardErrorCode =
   | "NETWORK_ERROR"
@@ -68,6 +71,7 @@ export function useStorageDashboard() {
   const getItemResult = ref<GetItemResponse | null>(null);
   const getItemErrorMessage = ref("");
   const getItemCopyMessage = ref("");
+  const getItemSendingBotName = ref("");
   const getItemManualCopyBotName = ref("");
   const getItemManualCopyText = ref("");
   let copyMessageTimer: number | null = null;
@@ -76,6 +80,9 @@ export function useStorageDashboard() {
     locale.value === "zh-CN" ? "zh-CN" : "en-US",
   );
   const isAuthenticated = computed<boolean>(() => Boolean(authToken.value));
+  const canSendGetItemResult = computed<boolean>(() =>
+    Boolean(authToken.value),
+  );
   const isAnonymousAccess = computed<boolean>(
     () => !requiresLogin.value && !isAuthenticated.value,
   );
@@ -340,6 +347,18 @@ export function useStorageDashboard() {
     }
   }
 
+  function showGetItemNotice(message: string): void {
+    getItemCopyMessage.value = message;
+
+    if (copyMessageTimer !== null) {
+      window.clearTimeout(copyMessageTimer);
+    }
+    copyMessageTimer = window.setTimeout(() => {
+      getItemCopyMessage.value = "";
+      copyMessageTimer = null;
+    }, 1500);
+  }
+
   function openGetItemModal(): void {
     getItemModalVisible.value = true;
     getItemResult.value = null;
@@ -347,6 +366,7 @@ export function useStorageDashboard() {
     getItemManualCopyBotName.value = "";
     getItemManualCopyText.value = "";
     clearGetItemCopyMessage();
+    getItemSendingBotName.value = "";
   }
 
   function closeGetItemModal(): void {
@@ -357,6 +377,7 @@ export function useStorageDashboard() {
     getItemManualCopyBotName.value = "";
     getItemManualCopyText.value = "";
     clearGetItemCopyMessage();
+    getItemSendingBotName.value = "";
   }
 
   function getGetItemErrorMessage(error: StorageApiError): string {
@@ -399,6 +420,19 @@ export function useStorageDashboard() {
     return t("errors.unknown");
   }
 
+  function getSendGetItemResultMessage(error: StorageApiError): string {
+    if (error.code === "HTTP_ERROR") {
+      if (error.detail === "Target player is not online") {
+        return t("errors.targetPlayerOffline");
+      }
+      if (error.detail === "Minecraft server is not initialized") {
+        return t("errors.serverNotReady");
+      }
+    }
+
+    return getGetItemErrorMessage(error);
+  }
+
   async function copyGetItemCommand(
     botName: string,
     command: string,
@@ -411,18 +445,10 @@ export function useStorageDashboard() {
         throw new Error("Clipboard API unavailable");
       }
       await navigator.clipboard.writeText(command);
-      getItemCopyMessage.value = t("status.copied");
+      showGetItemNotice(t("status.copied"));
     } catch {
-      getItemCopyMessage.value = t("status.copyFailed");
+      showGetItemNotice(t("status.copyFailed"));
     }
-
-    if (copyMessageTimer !== null) {
-      window.clearTimeout(copyMessageTimer);
-    }
-    copyMessageTimer = window.setTimeout(() => {
-      getItemCopyMessage.value = "";
-      copyMessageTimer = null;
-    }, 1500);
   }
 
   async function handleGetItem(itemId: string): Promise<void> {
@@ -459,6 +485,80 @@ export function useStorageDashboard() {
       }
     } finally {
       getItemLoading.value = false;
+    }
+  }
+
+  async function sendGetItemResultToPlayer(
+    botName: string,
+    itemId: string,
+    count: number,
+  ): Promise<void> {
+    if (!authToken.value) {
+      return;
+    }
+
+    getItemSendingBotName.value = botName;
+    clearGetItemCopyMessage();
+
+    try {
+      const entries: SendGetItemEntry[] = [{ itemId, count, botName }];
+      const result = await requestSendGetItemResult(entries, authToken.value);
+      showGetItemNotice(
+        result.success ? t("status.sendSucceeded") : t("errors.unknown"),
+      );
+    } catch (error) {
+      if (error instanceof StorageApiError) {
+        if (error.code === "TOKEN_EXPIRED") {
+          handleTokenExpired();
+        } else if (error.code === "UNAUTHORIZED" && authToken.value) {
+          clearAuthSession();
+          requiresLogin.value = true;
+        }
+        showGetItemNotice(getSendGetItemResultMessage(error));
+      } else {
+        showGetItemNotice(t("errors.unknown"));
+      }
+    } finally {
+      getItemSendingBotName.value = "";
+    }
+  }
+
+  async function sendAllGetItemResultsToPlayer(): Promise<void> {
+    if (!authToken.value || !getItemResult.value) {
+      return;
+    }
+
+    const entries: SendGetItemEntry[] = getItemResult.value.bots.map((bot) => ({
+      itemId: getItemResult.value!.itemId,
+      count: bot.count,
+      botName: bot.botName,
+    }));
+    if (entries.length === 0) {
+      return;
+    }
+
+    getItemSendingBotName.value = SEND_ALL_BOT_KEY;
+    clearGetItemCopyMessage();
+
+    try {
+      const result = await requestSendGetItemResult(entries, authToken.value);
+      showGetItemNotice(
+        result.success ? t("status.sendSucceeded") : t("errors.unknown"),
+      );
+    } catch (error) {
+      if (error instanceof StorageApiError) {
+        if (error.code === "TOKEN_EXPIRED") {
+          handleTokenExpired();
+        } else if (error.code === "UNAUTHORIZED" && authToken.value) {
+          clearAuthSession();
+          requiresLogin.value = true;
+        }
+        showGetItemNotice(getSendGetItemResultMessage(error));
+      } else {
+        showGetItemNotice(t("errors.unknown"));
+      }
+    } finally {
+      getItemSendingBotName.value = "";
     }
   }
 
@@ -575,6 +675,7 @@ export function useStorageDashboard() {
     authUsername,
     currentLocale,
     isAuthenticated,
+    canSendGetItemResult,
     isAnonymousAccess,
     showData,
     requiresLogin,
@@ -596,9 +697,12 @@ export function useStorageDashboard() {
     getItemResult,
     getItemErrorMessage,
     getItemCopyMessage,
+    getItemSendingBotName,
     getItemManualCopyBotName,
     getItemManualCopyText,
     handleGetItem,
+    sendGetItemResultToPlayer,
+    sendAllGetItemResultsToPlayer,
     closeGetItemModal,
     copyGetItemCommand,
   };

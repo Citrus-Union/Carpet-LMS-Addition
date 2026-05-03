@@ -31,6 +31,14 @@ public final class ChatEventCompat {
         //#endif
     }
 
+    public static ClickEvent suggestCommand(String command) {
+        //#if MC>=12105
+        return new ClickEvent.SuggestCommand(command);
+        //#else
+        //$$ return new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command);
+        //#endif
+    }
+
     public static HoverEvent showText(Component text) {
         //#if MC>=12105
         return new HoverEvent.ShowText(text);

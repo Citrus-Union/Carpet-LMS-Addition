@@ -21,7 +21,11 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
+
+import carpet.CarpetServer;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,6 +33,7 @@ import com.google.gson.JsonParser;
 
 import cn.nm.lms.carpetlmsaddition.bot.GetItem;
 import cn.nm.lms.carpetlmsaddition.lib.ItemRegistryCompat;
+import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 
 final class WebsiteGetItemHandler {
@@ -67,6 +72,37 @@ final class WebsiteGetItemHandler {
         return toResponse(itemId.toString(), item, result);
     }
 
+    static SendGetItemResultResponse sendResultLine(String body, String playerName) {
+        if (playerName == null || playerName.isBlank()) {
+            throw new WebsiteApiException(401, "Invalid token");
+        }
+
+        List<SendGetItemResultRequest> requests = parseSendRequests(body);
+        if (requests.isEmpty()) {
+            throw new WebsiteApiException(400, "At least one send entry is required");
+        }
+
+        MinecraftServer server = CarpetServer.minecraft_server;
+        if (server == null) {
+            throw new WebsiteApiException(503, "Minecraft server is not initialized");
+        }
+
+        Boolean sent = Utils.runOnServerThread(server, () -> {
+            ServerPlayer player = server.getPlayerList().getPlayerByName(playerName);
+            if (player == null) {
+                return Boolean.FALSE;
+            }
+            for (SendGetItemResultRequest request : requests) {
+                player.sendSystemMessage(GetItem.buildBotResultLine(request.botName, request.item, request.count));
+            }
+            return Boolean.TRUE;
+        });
+        if (!sent.booleanValue()) {
+            throw new WebsiteApiException(404, "Target player is not online");
+        }
+        return new SendGetItemResultResponse(true, "Sent to player");
+    }
+
     private static GetItemRequest parseRequest(String body) {
         JsonElement root;
         try {
@@ -99,6 +135,68 @@ final class WebsiteGetItemHandler {
             throw new WebsiteApiException(400, "count must be a valid integer");
         }
         return new GetItemRequest(itemId, count);
+    }
+
+    private static List<SendGetItemResultRequest> parseSendRequests(String body) {
+        JsonElement root;
+        try {
+            root = JsonParser.parseString(body);
+        } catch (Exception e) {
+            throw new WebsiteApiException(400, "Invalid request body");
+        }
+        if (!root.isJsonArray()) {
+            throw new WebsiteApiException(400, "Invalid request body");
+        }
+        List<SendGetItemResultRequest> requests = new ArrayList<>();
+        for (JsonElement element : root.getAsJsonArray()) {
+            if (!element.isJsonObject()) {
+                throw new WebsiteApiException(400, "Invalid request body");
+            }
+            JsonObject object = element.getAsJsonObject();
+            JsonElement itemIdElement = object.get("i");
+            JsonElement countElement = object.get("c");
+            JsonElement botNameElement = object.get("n");
+            if (itemIdElement == null || !itemIdElement.isJsonPrimitive()
+                || !itemIdElement.getAsJsonPrimitive().isString()) {
+                throw new WebsiteApiException(400, "i is required");
+            }
+            if (countElement == null || !countElement.isJsonPrimitive()
+                || !countElement.getAsJsonPrimitive().isNumber()) {
+                throw new WebsiteApiException(400, "c is required");
+            }
+            if (botNameElement == null || !botNameElement.isJsonPrimitive()
+                || !botNameElement.getAsJsonPrimitive().isString()) {
+                throw new WebsiteApiException(400, "n is required");
+            }
+
+            String itemId = itemIdElement.getAsString().trim();
+            String botName = botNameElement.getAsString().trim();
+            if (itemId.isEmpty()) {
+                throw new WebsiteApiException(400, "i is required");
+            }
+            if (botName.isEmpty()) {
+                throw new WebsiteApiException(400, "n is required");
+            }
+            int count;
+            try {
+                count = countElement.getAsInt();
+            } catch (Exception e) {
+                throw new WebsiteApiException(400, "count must be a valid integer");
+            }
+            if (count < 1) {
+                throw new WebsiteApiException(400, "Count must be at least 1");
+            }
+            Identifier itemIdValue = parseItemId(itemId);
+            if (itemIdValue == null) {
+                throw new WebsiteApiException(400, "Invalid itemId");
+            }
+            Item item = ItemRegistryCompat.getItem(itemIdValue);
+            if (item == null) {
+                throw new WebsiteApiException(400, "Invalid itemId");
+            }
+            requests.add(new SendGetItemResultRequest(item, count, botName));
+        }
+        return requests;
     }
 
     private static Identifier parseItemId(String rawItemId) {
@@ -135,6 +233,18 @@ final class WebsiteGetItemHandler {
         }
     }
 
+    private static final class SendGetItemResultRequest {
+        final Item item;
+        final int count;
+        final String botName;
+
+        SendGetItemResultRequest(Item item, int count, String botName) {
+            this.item = item;
+            this.count = count;
+            this.botName = botName;
+        }
+    }
+
     static final class GetItemBotResult {
         String n;
         String i;
@@ -144,6 +254,16 @@ final class WebsiteGetItemHandler {
             this.n = botName;
             this.i = itemId;
             this.c = count;
+        }
+    }
+
+    static final class SendGetItemResultResponse {
+        boolean success;
+        String message;
+
+        SendGetItemResultResponse(boolean success, String message) {
+            this.success = success;
+            this.message = message;
         }
     }
 }

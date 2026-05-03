@@ -15,6 +15,7 @@ const {
   authUsername,
   currentLocale,
   isAuthenticated,
+  canSendGetItemResult,
   isAnonymousAccess,
   showData,
   requiresLogin,
@@ -35,9 +36,12 @@ const {
   getItemResult,
   getItemErrorMessage,
   getItemCopyMessage,
+  getItemSendingBotName,
   getItemManualCopyBotName,
   getItemManualCopyText,
   handleGetItem,
+  sendGetItemResultToPlayer,
+  sendAllGetItemResultsToPlayer,
   closeGetItemModal,
   copyGetItemCommand,
 } = useStorageDashboard();
@@ -94,12 +98,16 @@ const loginErrorMessage = computed(() =>
       :loading="getItemLoading"
       :error-message="getItemErrorMessage"
       :copy-message="getItemCopyMessage"
+      :sending-bot-name="getItemSendingBotName"
+      :can-send-to-player="canSendGetItemResult"
       :manual-copy-bot-name="getItemManualCopyBotName"
       :manual-copy-text="getItemManualCopyText"
       :result="getItemResult"
       :get-item-display-name="getItemDisplayName"
       @close="closeGetItemModal"
       @copy="copyGetItemCommand"
+      @send="sendGetItemResultToPlayer"
+      @send-all="sendAllGetItemResultsToPlayer"
     />
   </main>
 </template>

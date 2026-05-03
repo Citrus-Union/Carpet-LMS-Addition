@@ -8,6 +8,8 @@ interface Props {
   loading: boolean;
   errorMessage: string;
   copyMessage: string;
+  sendingBotName: string;
+  canSendToPlayer: boolean;
   manualCopyBotName: string;
   manualCopyText: string;
   result: GetItemResponse | null;
@@ -19,6 +21,8 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
   close: [];
   copy: [botName: string, command: string];
+  send: [botName: string, itemId: string, count: number];
+  sendAll: [];
 }>();
 
 const { t } = useI18n();
@@ -66,9 +70,23 @@ const { t } = useI18n();
       </div>
 
       <div v-else-if="props.result" class="space-y-3">
-        <p class="text-sm text-slate-200">
-          {{ t("getItem.resultTotal", { total: props.result.total }) }}
-        </p>
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-sm text-slate-200">
+            {{ t("getItem.resultTotal", { total: props.result.total }) }}
+          </p>
+          <button
+            v-if="props.canSendToPlayer"
+            class="rounded-md border border-slate-600 px-2 py-1 text-xs text-slate-200 transition hover:border-emerald-400 hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="props.sendingBotName === '__all__'"
+            @click="emit('sendAll')"
+          >
+            {{
+              props.sendingBotName === "__all__"
+                ? t("actions.sendingAllToPlayer")
+                : t("actions.sendAllToPlayer")
+            }}
+          </button>
+        </div>
 
         <ul class="max-h-[50vh] space-y-2 overflow-y-auto">
           <li
@@ -100,6 +118,20 @@ const { t } = useI18n();
                 @click="emit('copy', bot.botName, bot.inventoryCommand)"
               >
                 {{ t("actions.copyInventory") }}
+              </button>
+              <button
+                v-if="props.canSendToPlayer"
+                class="rounded-md border border-slate-600 px-2 py-1 text-xs text-slate-200 transition hover:border-emerald-400 hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
+                :disabled="props.sendingBotName === bot.botName"
+                @click="
+                  emit('send', bot.botName, props.result.itemId, bot.count)
+                "
+              >
+                {{
+                  props.sendingBotName === bot.botName
+                    ? t("actions.sendingToPlayer")
+                    : t("actions.sendToPlayer")
+                }}
               </button>
             </div>
             <div

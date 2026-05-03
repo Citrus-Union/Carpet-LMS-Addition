@@ -162,6 +162,17 @@ export interface GetItemResponse {
   lines: string[];
 }
 
+export interface SendGetItemResultResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface SendGetItemEntry {
+  itemId: string;
+  count: number;
+  botName: string;
+}
+
 export class StorageApiError extends Error {
   code: StorageApiErrorCode;
   status?: number;
@@ -196,6 +207,16 @@ function isGetItemBotResult(payload: unknown): payload is GetItemBotResult {
     typeof payload.spawnCommand === "string" &&
     typeof payload.killCommand === "string" &&
     typeof payload.inventoryCommand === "string"
+  );
+}
+
+function isSendGetItemResultResponse(
+  payload: unknown,
+): payload is SendGetItemResultResponse {
+  return (
+    isRecord(payload) &&
+    typeof payload.success === "boolean" &&
+    typeof payload.message === "string"
   );
 }
 
@@ -506,4 +527,60 @@ export async function requestGetItem(
     throw new StorageApiError("INVALID_PAYLOAD");
   }
   return decoded;
+}
+
+export async function requestSendGetItemResult(
+  entries: SendGetItemEntry[],
+  token: string,
+): Promise<SendGetItemResultResponse> {
+  if (import.meta.env.DEV) {
+    return Promise.resolve({
+      success: true,
+      message: "Sent to player",
+    });
+  }
+
+  let response: Response;
+  try {
+    response = await fetch("/api/storage/sendGetItemResult", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(
+        entries.map((entry) => ({
+          i: entry.itemId,
+          c: entry.count,
+          n: entry.botName,
+        })),
+      ),
+    });
+  } catch {
+    throw new StorageApiError("NETWORK_ERROR");
+  }
+
+  if (!response.ok) {
+    let detail: string | undefined;
+    try {
+      const payload: unknown = await response.json();
+      detail = parseErrorMessage(payload);
+    } catch {
+      // ignore parsing errors
+    }
+    if (response.status === 401) {
+      throw new StorageApiError("UNAUTHORIZED", response.status, detail);
+    }
+    if (response.status === 403) {
+      throw new StorageApiError("FORBIDDEN", response.status, detail);
+    }
+    throw new StorageApiError("HTTP_ERROR", response.status, detail);
+  }
+
+  const payload: unknown = await response.json();
+  if (!isSendGetItemResultResponse(payload)) {
+    throw new StorageApiError("INVALID_PAYLOAD");
+  }
+  return payload;
 }

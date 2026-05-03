@@ -156,6 +156,17 @@ public class Website {
             return;
         }
 
+        if ("/api/storage/sendGetItemResult".equals(path)) {
+            if (!"POST".equals(method)) {
+                writeJson(exchange, 405, new WebsiteMessageResp("405", "Method Not Allowed"));
+                return;
+            }
+            String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
+            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            handleSendGetItemResultAsync(exchange, authHeader, body);
+            return;
+        }
+
         if ("/api/login".equals(path)) {
             if (!"POST".equals(method)) {
                 writeJson(exchange, 405, new WebsiteMessageResp("405", "Method Not Allowed"));
@@ -361,6 +372,39 @@ public class Website {
                 writeJson(exchange, 200, resp);
             } catch (Exception e) {
                 Mod.LOGGER.warn("Failed to write website getItem response", e);
+                try {
+                    writeJson(exchange, 500, new WebsiteMessageResp("500", "Unknown error"));
+                } catch (Exception ignored) {
+                    exchange.close();
+                }
+            }
+        });
+    }
+
+    private static void handleSendGetItemResultAsync(HttpExchange exchange, String authHeader, String body) {
+        AsyncTasks.supply(() -> {
+            WebsiteAuth.AuthResult auth = WebsiteAuth.resolve(authHeader, false, SECRET_PATH);
+            if (auth.errorMessage != null) {
+                throw new WebsiteApiException(401, auth.errorMessage);
+            }
+            return WebsiteGetItemHandler.sendResultLine(body, auth.username);
+        }).whenComplete((resp, throwable) -> {
+            try {
+                if (throwable != null) {
+                    Throwable cause = throwable instanceof RuntimeException && throwable.getCause() != null
+                        ? throwable.getCause() : throwable;
+                    if (cause instanceof WebsiteApiException apiException) {
+                        writeJson(exchange, apiException.status,
+                            new WebsiteMessageResp(String.valueOf(apiException.status), apiException.getMessage()));
+                        return;
+                    }
+                    Mod.LOGGER.warn("Failed to handle send getItem result request", throwable);
+                    writeJson(exchange, 500, new WebsiteMessageResp("500", "Unknown error"));
+                    return;
+                }
+                writeJson(exchange, 200, resp);
+            } catch (Exception e) {
+                Mod.LOGGER.warn("Failed to write send getItem result response", e);
                 try {
                     writeJson(exchange, 500, new WebsiteMessageResp("500", "Unknown error"));
                 } catch (Exception ignored) {

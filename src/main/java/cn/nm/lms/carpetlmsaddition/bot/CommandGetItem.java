@@ -32,7 +32,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import carpet.utils.CommandHelper;
 
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
-import cn.nm.lms.carpetlmsaddition.lib.ChatEventCompat;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommandWithContext;
@@ -90,7 +89,7 @@ public final class CommandGetItem implements BaseCommandWithContext {
             int got = entry.getValue().getOrDefault(item, 0);
             total += got;
             String botName = entry.getKey();
-            source.sendSuccess(() -> buildBotResultLine(botName, itemName, got), false);
+            source.sendSuccess(() -> GetItem.buildBotResultLine(botName, item, got), false);
         }
         int totalResult = total;
         source.sendSuccess(
@@ -110,24 +109,5 @@ public final class CommandGetItem implements BaseCommandWithContext {
     private String buildFailureMessage(Throwable throwable) {
         String msg = throwable.getMessage();
         return "getItem failed: " + (msg == null ? "unknown" : msg);
-    }
-
-    private Component buildBotResultLine(String botName, Component itemName, int got) {
-        String spawnCommand = "/player " + botName + " spawn";
-        String killCommand = "/player " + botName + " kill";
-        String inventoryCommand = "/player " + botName + " inventory";
-
-        Component up =
-            Component.literal("[↑]").withStyle(style -> style.withClickEvent(ChatEventCompat.runCommand(spawnCommand))
-                .withHoverEvent(ChatEventCompat.showText(Component.literal("spawn"))));
-        Component down =
-            Component.literal("[↓]").withStyle(style -> style.withClickEvent(ChatEventCompat.runCommand(killCommand))
-                .withHoverEvent(ChatEventCompat.showText(Component.literal("kill"))));
-        Component openInventory = Component.literal("[O]")
-            .withStyle(style -> style.withClickEvent(ChatEventCompat.runCommand(inventoryCommand))
-                .withHoverEvent(ChatEventCompat.showText(Component.literal("inventory"))));
-
-        return Component.literal(botName).append(up).append(down).append(openInventory).append(Component.literal(": "))
-            .append(itemName.copy()).append(Component.literal(" x" + got));
     }
 }
