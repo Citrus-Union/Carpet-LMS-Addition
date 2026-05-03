@@ -286,7 +286,7 @@ public class GetItem {
 
             Vec3 spawnPos = new Vec3(target.pos().getX() + 0.5, target.pos().getY() + 0.5, target.pos().getZ() + 0.5);
             EntityPlayerMPFake fakePlayer =
-                FakePlayerSpawner.spawnSurvivalFakeWithName(server, botName, target.dimension(), spawnPos, true);
+                FakePlayerSpawner.spawnSurvivalFakeWithName(server, botName, target.dimension(), spawnPos, true, true);
 
             return new SpawnedFake(fakePlayer, botName, index);
         }

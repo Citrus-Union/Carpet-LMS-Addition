@@ -37,44 +37,42 @@ public final class FakePlayerSpawner {
     private static final long SPAWN_POLL_INTERVAL_MILLIS = 50L;
     private static final int SPAWN_TIMEOUT_TICKS = 120;
     private static final ThreadLocal<Integer> SILENCE_DEPTH = ThreadLocal.withInitial(() -> 0);
+    private static final Set<String> FORCE_OFFLINE_PROFILE_PLAYERS = ConcurrentHashMap.newKeySet();
     private static final Set<UUID> SILENT_LOGOUT_PLAYERS = ConcurrentHashMap.newKeySet();
 
-    private FakePlayerSpawner() {}
-
     public static EntityPlayerMPFake spawnSurvivalFakeWithName(MinecraftServer server, String botName,
-        ResourceKey<Level> dimension, Vec3 spawnPos) {
-        return spawnSurvivalFakeWithName(server, botName, dimension, spawnPos, false);
+        ResourceKey<Level> dimension, Vec3 spawnPos, boolean silence, boolean forceOffline) {
+        return spawnSurvivalFakeWithName(server, botName, dimension, spawnPos, 0F, 0F, silence, forceOffline);
     }
 
     public static EntityPlayerMPFake spawnSurvivalFakeWithName(MinecraftServer server, String botName,
-        ResourceKey<Level> dimension, Vec3 spawnPos, float yaw, float pitch) {
-        return spawnSurvivalFakeWithName(server, botName, dimension, spawnPos, yaw, pitch, false);
-    }
-
-    public static EntityPlayerMPFake spawnSurvivalFakeWithName(MinecraftServer server, String botName,
-        ResourceKey<Level> dimension, Vec3 spawnPos, boolean silence) {
-        return spawnSurvivalFakeWithName(server, botName, dimension, spawnPos, 0F, 0F, silence);
-    }
-
-    public static EntityPlayerMPFake spawnSurvivalFakeWithName(MinecraftServer server, String botName,
-        ResourceKey<Level> dimension, Vec3 spawnPos, float yaw, float pitch, boolean silence) {
+        ResourceKey<Level> dimension, Vec3 spawnPos, float yaw, float pitch, boolean silence, boolean forceOffline) {
         boolean nameOnline =
             Utils.runOnServerThread(server, () -> server.getPlayerList().getPlayerByName(botName) != null);
         if (nameOnline) {
             throw new IllegalStateException("Fake player already online: " + botName);
         }
 
-        boolean created = Utils.runOnServerThread(server, () -> callWithSilence(silence, () -> EntityPlayerMPFake
-            .createFake(botName, server, spawnPos, yaw, pitch, dimension, GameType.SURVIVAL, false)));
-        if (!created) {
-            throw new IllegalStateException("Unable to spawn fake player: " + botName);
+        if (forceOffline) {
+            FORCE_OFFLINE_PROFILE_PLAYERS.add(botName);
         }
+        try {
+            boolean created = Utils.runOnServerThread(server, () -> callWithSilence(silence, () -> EntityPlayerMPFake
+                .createFake(botName, server, spawnPos, yaw, pitch, dimension, GameType.SURVIVAL, false)));
+            if (!created) {
+                throw new IllegalStateException("Unable to spawn fake player: " + botName);
+            }
 
-        EntityPlayerMPFake fakePlayer = awaitFakePlayerOnline(server, botName);
-        if (fakePlayer == null) {
-            throw new IllegalStateException("Timed out waiting for fake player online: " + botName);
+            EntityPlayerMPFake fakePlayer = awaitFakePlayerOnline(server, botName);
+            if (fakePlayer == null) {
+                throw new IllegalStateException("Timed out waiting for fake player online: " + botName);
+            }
+            return fakePlayer;
+        } finally {
+            if (forceOffline) {
+                FORCE_OFFLINE_PROFILE_PLAYERS.remove(botName);
+            }
         }
-        return fakePlayer;
     }
 
     private static EntityPlayerMPFake awaitFakePlayerOnline(MinecraftServer server, String botName) {
@@ -130,6 +128,10 @@ public final class FakePlayerSpawner {
 
     public static boolean shouldSilencePlayer(ServerPlayer player) {
         return isSilenceEnabled() || SILENT_LOGOUT_PLAYERS.contains(player.getUUID());
+    }
+
+    public static boolean shouldForceOfflineProfile(String playerName) {
+        return FORCE_OFFLINE_PROFILE_PLAYERS.contains(playerName);
     }
 
     public static void unmarkSilentLogout(ServerPlayer player) {

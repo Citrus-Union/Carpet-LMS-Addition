@@ -112,7 +112,7 @@ public final class CleanGetItemBot {
 
         EntityPlayerMPFake spawn(String name) {
             return FakePlayerSpawner.spawnSurvivalFakeWithName(this.server, name, this.dimension, spawnPos, yaw, pitch,
-                true);
+                true, true);
         }
     }
 }

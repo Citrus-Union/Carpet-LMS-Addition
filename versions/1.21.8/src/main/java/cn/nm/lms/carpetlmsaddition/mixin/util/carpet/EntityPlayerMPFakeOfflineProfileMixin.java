@@ -16,12 +16,10 @@
  */
 package cn.nm.lms.carpetlmsaddition.mixin.util.carpet;
 
-import java.util.UUID;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.item.component.ResolvableProfile;
 
 import com.mojang.authlib.GameProfile;
 
@@ -35,29 +33,29 @@ import carpet.patches.EntityPlayerMPFake;
 
 import cn.nm.lms.carpetlmsaddition.bot.FakePlayerSpawner;
 
-// <=1.21.8 counterpart:
-// versions/1.21.8/src/main/java/cn/nm/lms/carpetlmsaddition/mixin/util/carpet/EntityPlayerMPFakeOfflineProfileMixin.java
+// >=1.21.9 counterpart:
+// src/main/java/cn/nm/lms/carpetlmsaddition/mixin/util/carpet/EntityPlayerMPFakeOfflineProfileMixin.java
 @Mixin(EntityPlayerMPFake.class)
 public class EntityPlayerMPFakeOfflineProfileMixin {
     @WrapOperation(method = "createFake", at = @At(value = "INVOKE",
-        target = "Lnet/minecraft/server/players/OldUsersConverter;convertMobOwnerIfNecessary(Lnet/minecraft/server/MinecraftServer;Ljava/lang/String;)Ljava/util/UUID;"))
-    private static UUID carpetlmsaddition$skipOnlineLookupForOfflineProfile(MinecraftServer server, String username,
-        Operation<UUID> original) {
+        target = "Lnet/minecraft/server/players/GameProfileCache;get(Ljava/lang/String;)Ljava/util/Optional;"))
+    private static Optional<GameProfile> carpetlmsaddition$skipOnlineLookupForOfflineProfile(
+        net.minecraft.server.players.GameProfileCache instance, String username,
+        Operation<Optional<GameProfile>> original) {
         if (!FakePlayerSpawner.shouldForceOfflineProfile(username)) {
-            return original.call(server, username);
+            return original.call(instance, username);
         }
-        return UUIDUtil.createOfflinePlayerUUID(username);
+        return Optional.of(new GameProfile(UUIDUtil.createOfflinePlayerUUID(username), username));
     }
 
     @WrapOperation(method = "fetchGameProfile", at = @At(value = "INVOKE",
-        target = "Lnet/minecraft/world/item/component/ResolvableProfile;resolveProfile(Lnet/minecraft/server/players/ProfileResolver;)Ljava/util/concurrent/CompletableFuture;"))
-    private static CompletableFuture<GameProfile> carpetlmsaddition$skipOnlineSkinLookupForOfflineProfile(
-        ResolvableProfile instance, net.minecraft.server.players.ProfileResolver resolver,
-        Operation<CompletableFuture<GameProfile>> original) {
-        String username = instance.partialProfile().name();
-        if (username == null || !FakePlayerSpawner.shouldForceOfflineProfile(username)) {
-            return original.call(instance, resolver);
+        target = "Lnet/minecraft/world/level/block/entity/SkullBlockEntity;fetchGameProfile(Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;"))
+    private static CompletableFuture<Optional<GameProfile>> carpetlmsaddition$skipOnlineSkinLookupForOfflineProfile(
+        String username, Operation<CompletableFuture<Optional<GameProfile>>> original) {
+        if (!FakePlayerSpawner.shouldForceOfflineProfile(username)) {
+            return original.call(username);
         }
-        return CompletableFuture.completedFuture(instance.partialProfile());
+        return CompletableFuture
+            .completedFuture(Optional.of(new GameProfile(UUIDUtil.createOfflinePlayerUUID(username), username)));
     }
 }
