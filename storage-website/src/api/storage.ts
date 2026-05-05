@@ -196,6 +196,24 @@ function parseErrorMessage(payload: unknown): string | undefined {
   return undefined;
 }
 
+async function throwResponseStorageError(response: Response): Promise<never> {
+  let detail: string | undefined;
+  try {
+    const payload: unknown = await response.json();
+    detail = parseErrorMessage(payload);
+  } catch {
+    // ignore parsing errors
+  }
+
+  if (response.status === 401) {
+    throw new StorageApiError("UNAUTHORIZED", response.status, detail);
+  }
+  if (response.status === 403) {
+    throw new StorageApiError("FORBIDDEN", response.status, detail);
+  }
+  throw new StorageApiError("HTTP_ERROR", response.status, detail);
+}
+
 function isGetItemBotResult(payload: unknown): payload is GetItemBotResult {
   if (!isRecord(payload)) {
     return false;
@@ -505,20 +523,7 @@ export async function requestGetItem(
   }
 
   if (!response.ok) {
-    let detail: string | undefined;
-    try {
-      const payload: unknown = await response.json();
-      detail = parseErrorMessage(payload);
-    } catch {
-      // ignore parsing errors
-    }
-    if (response.status === 401) {
-      throw new StorageApiError("UNAUTHORIZED", response.status, detail);
-    }
-    if (response.status === 403) {
-      throw new StorageApiError("FORBIDDEN", response.status, detail);
-    }
-    throw new StorageApiError("HTTP_ERROR", response.status, detail);
+    await throwResponseStorageError(response);
   }
 
   const payload: unknown = await response.json();
@@ -562,20 +567,7 @@ export async function requestSendGetItemResult(
   }
 
   if (!response.ok) {
-    let detail: string | undefined;
-    try {
-      const payload: unknown = await response.json();
-      detail = parseErrorMessage(payload);
-    } catch {
-      // ignore parsing errors
-    }
-    if (response.status === 401) {
-      throw new StorageApiError("UNAUTHORIZED", response.status, detail);
-    }
-    if (response.status === 403) {
-      throw new StorageApiError("FORBIDDEN", response.status, detail);
-    }
-    throw new StorageApiError("HTTP_ERROR", response.status, detail);
+    await throwResponseStorageError(response);
   }
 
   const payload: unknown = await response.json();

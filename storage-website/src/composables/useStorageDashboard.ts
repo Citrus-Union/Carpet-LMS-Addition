@@ -304,13 +304,12 @@ export function useStorageDashboard() {
       return itemId;
     }
 
-    const normalized = itemId.replace(":", ".");
-    const translationCandidates = [`item.${normalized}`, `block.${normalized}`];
-    for (const key of translationCandidates) {
-      const translatedName = mojangMap.value[key];
-      if (translatedName) {
-        return translatedName;
-      }
+    const key = itemId.startsWith("minecraft:")
+      ? itemId.slice("minecraft:".length)
+      : itemId;
+    const translatedName = mojangMap.value[key];
+    if (translatedName) {
+      return translatedName;
     }
     return itemId;
   }
