@@ -56,12 +56,14 @@ const props = defineProps({
 const { t } = useI18n();
 
 const ACTIVE_STORAGE_NAME_KEY = "storageWebsite.activeStorageName";
+const SHOW_ITEM_ID_KEY = "storageWebsite.showItemId";
 const AGGREGATE_STORAGE_NAME = "__aggregate__";
 const expandedItemKeys = ref<Set<string>>(new Set());
 const expandedErrorKeys = ref<Set<string>>(new Set());
 const sortModeByStorage = ref<Record<string, SortMode>>({});
 const searchQueryByStorage = ref<Record<string, string>>({});
 const activeStorageName = ref("");
+const showItemId = ref(getPersistedShowItemId());
 
 const activeStorage = computed<StorageResponse | null>(() => {
   return (
@@ -75,12 +77,20 @@ function getPersistedActiveStorageName(): string {
   return window.localStorage.getItem(ACTIVE_STORAGE_NAME_KEY) ?? "";
 }
 
+function getPersistedShowItemId(): boolean {
+  return window.localStorage.getItem(SHOW_ITEM_ID_KEY) === "true";
+}
+
 function persistActiveStorageName(value: string): void {
   if (!value) {
     window.localStorage.removeItem(ACTIVE_STORAGE_NAME_KEY);
     return;
   }
   window.localStorage.setItem(ACTIVE_STORAGE_NAME_KEY, value);
+}
+
+function persistShowItemId(value: boolean): void {
+  window.localStorage.setItem(SHOW_ITEM_ID_KEY, String(value));
 }
 
 function pickActiveStorageName(storages: StorageResponse[]): string {
@@ -214,9 +224,17 @@ function onSearchInput(storageName: string, event: Event): void {
   setSearchQuery(storageName, value);
 }
 
+function onShowItemIdChange(event: Event): void {
+  const value = (event.target as HTMLInputElement).checked;
+  showItemId.value = value;
+  persistShowItemId(value);
+}
+
 function normalizeSearchText(value: string): string {
   return value.replace(/\s+/g, "").toLowerCase();
 }
+
+const expandedRowColspan = computed(() => (showItemId.value ? 4 : 3));
 
 function sortItemRows(rows: ItemRow[], mode: SortMode): ItemRow[] {
   const sorted = [...rows];
@@ -306,11 +324,11 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
       v-if="storages.length > 1"
       class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/70 p-2"
     >
-      <div class="flex min-w-max gap-2">
+      <div class="flex min-w-max gap-1.5 sm:gap-2">
         <button
           v-for="storage in storages"
           :key="storage.name"
-          class="rounded-lg border px-4 py-2 text-sm transition"
+          class="rounded-lg border px-3 py-1.5 text-xs transition sm:px-4 sm:py-2 sm:text-sm"
           :class="
             isActiveStorage(storage.name)
               ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200'
@@ -328,24 +346,41 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
       :key="activeStorage.name"
       class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70"
     >
-      <header class="border-b border-slate-800 bg-slate-900/90 px-5 py-4">
+      <header
+        class="border-b border-slate-800 bg-slate-900/90 px-4 py-4 sm:px-5"
+      >
         <div
-          class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
+          class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
         >
           <h2 class="text-lg font-semibold text-slate-100">
             {{ getStorageDisplayName(activeStorage.name) }}
           </h2>
-          <input
-            :value="getSearchQuery(activeStorage.name)"
-            class="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-100 outline-none ring-cyan-500 placeholder:text-slate-500 focus:ring-2 md:w-72"
-            :placeholder="t('storage.searchPlaceholder')"
-            type="text"
-            @input="onSearchInput(activeStorage.name, $event)"
-          />
+          <div
+            class="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-center"
+          >
+            <input
+              :value="getSearchQuery(activeStorage.name)"
+              class="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none ring-cyan-500 placeholder:text-slate-500 focus:ring-2 md:w-72"
+              :placeholder="t('storage.searchPlaceholder')"
+              type="text"
+              @input="onSearchInput(activeStorage.name, $event)"
+            />
+            <label
+              class="inline-flex items-center gap-2 text-sm text-slate-300"
+            >
+              <input
+                :checked="showItemId"
+                class="h-4 w-4 rounded border-slate-600 bg-slate-950 text-cyan-500"
+                type="checkbox"
+                @change="onShowItemIdChange"
+              />
+              <span>{{ t("labels.showItemId") }}</span>
+            </label>
+          </div>
         </div>
       </header>
 
-      <div class="space-y-5 p-5">
+      <div class="space-y-5 p-4 sm:p-5">
         <section class="space-y-3">
           <h3 class="text-sm font-semibold tracking-wide text-slate-300">
             {{ t("section.items") }}
@@ -361,14 +396,14 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
             class="overflow-x-auto rounded-lg border border-slate-800"
           >
             <table
-              class="min-w-full divide-y divide-slate-800 text-left text-sm"
+              class="min-w-full divide-y divide-slate-800 text-left text-xs sm:text-sm"
             >
               <thead class="bg-slate-900/95 text-slate-300">
                 <tr>
-                  <th class="px-3 py-2 font-medium">
+                  <th class="px-2 py-2 font-medium sm:px-3">
                     {{ t("table.itemName") }}
                   </th>
-                  <th class="px-3 py-2 font-medium">
+                  <th v-if="showItemId" class="px-2 py-2 font-medium sm:px-3">
                     <span class="inline-flex items-center gap-2">
                       {{ t("table.itemId") }}
                       <span class="inline-flex gap-1">
@@ -397,7 +432,7 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                       </span>
                     </span>
                   </th>
-                  <th class="px-3 py-2 font-medium">
+                  <th class="px-2 py-2 font-medium sm:px-3">
                     <span class="inline-flex items-center gap-2">
                       {{ t("table.totalCount") }}
                       <span class="inline-flex gap-1">
@@ -426,7 +461,7 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                       </span>
                     </span>
                   </th>
-                  <th class="px-3 py-2 font-medium">
+                  <th class="px-2 py-2 font-medium sm:px-3">
                     {{ t("table.details") }}
                   </th>
                 </tr>
@@ -437,12 +472,13 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                   :key="row.itemId"
                 >
                   <tr class="bg-slate-900/40">
-                    <td class="px-3 py-2 text-slate-100">
-                      {{ getItemDisplayName(row.itemId) }}
-                    </td>
-                    <td class="px-3 py-2 font-mono text-xs text-slate-200">
-                      <div class="flex items-center justify-between gap-2">
-                        <span class="truncate">{{ row.itemId }}</span>
+                    <td class="px-2 py-2 text-slate-100 sm:px-3">
+                      <div
+                        class="flex flex-wrap items-center justify-between gap-2"
+                      >
+                        <span class="min-w-0 flex-1">
+                          {{ getItemDisplayName(row.itemId) }}
+                        </span>
                         <button
                           class="shrink-0 rounded-md border border-cyan-700/70 px-2 py-1 text-[11px] text-cyan-300 transition hover:border-cyan-400 hover:text-cyan-200"
                           @click="props.onGetItem(row.itemId)"
@@ -451,10 +487,18 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                         </button>
                       </div>
                     </td>
-                    <td class="px-3 py-2 text-slate-100">
+                    <td
+                      v-if="showItemId"
+                      class="px-2 py-2 font-mono text-[11px] text-slate-200 sm:px-3 sm:text-xs"
+                    >
+                      <span class="block max-w-36 truncate sm:max-w-48">
+                        {{ row.itemId }}
+                      </span>
+                    </td>
+                    <td class="px-2 py-2 text-slate-100 sm:px-3">
                       {{ row.item.count }}
                     </td>
-                    <td class="px-3 py-2 text-slate-300">
+                    <td class="px-2 py-2 text-slate-300 sm:px-3">
                       <button
                         class="rounded-md border border-slate-600 px-2 py-1 text-xs transition hover:border-cyan-400 hover:text-cyan-300"
                         @click="toggleExpanded(activeStorage.name, row.itemId)"
@@ -471,7 +515,7 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                     v-if="isExpanded(activeStorage.name, row.itemId)"
                     class="bg-slate-900/20"
                   >
-                    <td colspan="4" class="px-3 py-3">
+                    <td :colspan="expandedRowColspan" class="px-2 py-3 sm:px-3">
                       <div
                         v-if="flattenPositions(row.item).length === 0"
                         class="text-xs text-slate-400"

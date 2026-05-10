@@ -33,6 +33,7 @@ export const messages = {
       lastRefreshed: "最近刷新",
       loggedInAs: "已登录用户",
       anonymousAccess: "当前为免登录访问模式",
+      showItemId: "显示物品 ID",
     },
     stats: {
       storageCount: "仓库数量",
@@ -133,6 +134,7 @@ export const messages = {
       lastRefreshed: "Last refreshed",
       loggedInAs: "Logged in as",
       anonymousAccess: "Anonymous access mode is enabled",
+      showItemId: "Show Item ID",
     },
     stats: {
       storageCount: "Storages",
