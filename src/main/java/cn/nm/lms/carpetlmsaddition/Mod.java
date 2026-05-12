@@ -22,6 +22,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.logging.LogUtils;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -30,8 +31,7 @@ import net.fabricmc.loader.api.ModContainer;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.rule.Bootstrap;
@@ -43,7 +43,7 @@ import cn.nm.lms.carpetlmsaddition.rule.util.storage.website.Website;
 public class Mod implements ModInitializer, CarpetExtension {
     public static final String MOD_ID = "carpet-lms-addition";
     public static final String COMPACT_NAME = "carpetlmsaddition";
-    public static final Logger LOGGER = LogManager.getLogger(getModName());
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public static String getVersion() {
         return ModInfoHolder.VERSION;
