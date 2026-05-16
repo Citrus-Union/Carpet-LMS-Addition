@@ -35,7 +35,6 @@ import cn.nm.lms.carpetlmsaddition.lib.AsyncFileIo;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
-import cn.nm.lms.carpetlmsaddition.rule.util.storage.GenerateResponse;
 import cn.nm.lms.carpetlmsaddition.rule.util.storage.Storage;
 import cn.nm.lms.carpetlmsaddition.safety.Password;
 
@@ -46,8 +45,6 @@ public class Website {
     private static final Path CUSTOM_STORAGE_WEBSITE_PATH = GetPaths.getLmsWorldPath().resolve("customStorageWebsite");
     private static final String CUSTOM_STORAGE_INDEX_HTML = "This storage viewer is to be customized.<br>这是待修改的仓储查看";
     private static HttpServer app;
-    private static int autoUpdateDataTicks = 0;
-    private static int lastAutoUpdateInterval = 0;
 
     public static boolean isServerRunning() {
         return app != null;
@@ -64,7 +61,6 @@ public class Website {
             app.setExecutor(AsyncTasks.executor());
             app.createContext("/", Website::handle);
             app.start();
-            resetAutoUpdateDataState();
             Mod.LOGGER.info("Started Storage Website Server in port {}", port);
         } catch (IOException e) {
             app = null;
@@ -76,37 +72,7 @@ public class Website {
         if (app != null) {
             app.stop(0);
             app = null;
-            resetAutoUpdateDataState();
             Mod.LOGGER.info("Stopped Storage Website Server");
-        }
-    }
-
-    public static void tickAutoUpdateData() {
-        if (!isServerRunning()) {
-            resetAutoUpdateDataState();
-            return;
-        }
-
-        int interval = Settings.checkStorageAutoUpdateDataInterval;
-        if (interval <= 0) {
-            resetAutoUpdateDataState();
-            return;
-        }
-        if (interval != lastAutoUpdateInterval) {
-            autoUpdateDataTicks = 0;
-            lastAutoUpdateInterval = interval;
-        }
-
-        autoUpdateDataTicks++;
-        if (autoUpdateDataTicks < interval) {
-            return;
-        }
-
-        autoUpdateDataTicks = 0;
-        try {
-            Storage.checkStorage();
-        } catch (Exception e) {
-            Mod.LOGGER.warn("Failed to auto update checkStorage data", e);
         }
     }
 
@@ -114,11 +80,6 @@ public class Website {
         if (isAutoStartWebsiteEnabled()) {
             startServer();
         }
-    }
-
-    private static void resetAutoUpdateDataState() {
-        autoUpdateDataTicks = 0;
-        lastAutoUpdateInterval = 0;
     }
 
     private static void handle(HttpExchange exchange) throws IOException {
@@ -327,14 +288,13 @@ public class Website {
     }
 
     private static void handleGetDataAsync(HttpExchange exchange) {
-        GenerateResponse.generateJsonResponseAsync().whenComplete((dataJson, throwable) -> {
+        AsyncTasks.supply(Storage::generateStorageDataJson).whenComplete((data, throwable) -> {
             try {
                 if (throwable != null) {
                     Mod.LOGGER.warn("Failed to generate storage data response", throwable);
                     writeJson(exchange, 500, new WebsiteMessageResp("500", "Unknown error"));
                     return;
                 }
-                JsonElement data = JsonParser.parseString(dataJson);
                 writeJson(exchange, 200, data);
             } catch (Exception e) {
                 Mod.LOGGER.warn("Failed to write getData response", e);

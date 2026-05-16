@@ -50,11 +50,14 @@ public class Storage {
     static final Map<ResourceKey<Level>, String> dimensionToSting =
         Map.of(Level.END, "end", Level.OVERWORLD, "overworld", Level.NETHER, "nether");
     static final Path storageDir = GetPaths.getLmsWorldPath().resolve("checkStorageList");
-    static final Path storageDataPath = GetPaths.getLmsWorldDataPath().resolve("checkStorageData.json");
 
-    public static String checkStorage() {
+    public static void prepareDefaultFilesOnWorldLoad() {
+        StorageJsonService.prepareDefaultFilesOnWorldLoad();
+    }
+
+    public static JsonArray generateStorageDataJson() {
         MinecraftServer server = CarpetServer.minecraft_server;
-        return Utils.runOnServerThread(server, () -> doCheckStorage(server));
+        return Utils.runOnServerThread(server, () -> doGenerateStorageDataJson(server));
     }
 
     public static List<ContainerSnapshot> collectConfiguredContainerSnapshots() {
@@ -70,10 +73,8 @@ public class Storage {
         return Utils.runOnServerThread(server, () -> doCollectConfiguredStorageSnapshots(server));
     }
 
-    private static String doCheckStorage(MinecraftServer server) {
-        Count count = new Count();
+    private static JsonArray doGenerateStorageDataJson(MinecraftServer server) {
         List<ConfiguredStorageSnapshots> storages = doCollectConfiguredStorageSnapshots(server);
-        count.total = storages.size();
         JsonArray response = new JsonArray();
 
         for (ConfiguredStorageSnapshots storage : storages) {
@@ -86,18 +87,12 @@ public class Storage {
                 oneStorage.addProperty("n", name);
                 oneStorage.add("d", StorageJsonService.toOutputJsonObject(items, storage.errors));
                 response.add(oneStorage);
-                count.success++;
             } catch (Exception e) {
-                Mod.LOGGER.warn("Failed to process storage file: {}", storage.fileName);
+                Mod.LOGGER.warn("Failed to process storage file: {}", storage.fileName, e);
             }
         }
-        try {
-            StorageJsonService.saveToFile(storageDataPath, response);
-        } catch (Exception e) {
-            Mod.LOGGER.warn("Failed to write merged storage data file: {}", storageDataPath, e);
-        }
 
-        return count.praseResult();
+        return response;
     }
 
     private static List<ConfiguredStorageSnapshots> doCollectConfiguredStorageSnapshots(MinecraftServer server) {
@@ -198,15 +193,6 @@ public class Storage {
         PreparedInputs(int total, List<PreparedStorage> inputs) {
             this.total = total;
             this.inputs = inputs;
-        }
-    }
-
-    static final class Count {
-        int success = 0;
-        int total = 0;
-
-        String praseResult() {
-            return String.format("CheckStorage finished, success: %d, total: %d", this.success, this.total);
         }
     }
 

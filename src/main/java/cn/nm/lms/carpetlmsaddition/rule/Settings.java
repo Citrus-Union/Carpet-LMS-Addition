@@ -118,15 +118,7 @@ public final class Settings {
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
         LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})
-    public static String commandCheckStorageData = "false";
-
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
-        validators = {Validators.NonNegativeNumber.class})
-    public static int checkStorageAutoUpdateDataInterval = 0;
-
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
-        LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})
-    public static String commandCheckStorageServer = "false";
+    public static String commandStorageWebsite = "false";
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE},
         validators = {Validators.CommandLevel.class})
