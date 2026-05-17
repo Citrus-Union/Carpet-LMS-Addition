@@ -23,6 +23,9 @@ carpet:
     commandGetItem:
       name: 取物命令
       desc: 启用 "/getItem <item> <count>" 命令
+    commandGetStorageData:
+      name: 仓库数据查询命令
+      desc: 启用 "/getStorageData" 和 "/getStorageData <id>" 命令
     commandCleanGetItemBot:
       name: 取物假人检查命令
       desc: 启用 "/cleanGetItemBot" 命令

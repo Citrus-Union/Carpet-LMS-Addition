@@ -60,6 +60,11 @@ public class Storage {
         return Utils.runOnServerThread(server, () -> doGenerateStorageDataJson(server));
     }
 
+    public static Map<Item, Integer> generateStorageItemCounts() {
+        MinecraftServer server = CarpetServer.minecraft_server;
+        return Utils.runOnServerThread(server, () -> doGenerateStorageItemCounts(server));
+    }
+
     public static List<ContainerSnapshot> collectConfiguredContainerSnapshots() {
         List<ContainerSnapshot> snapshots = new ArrayList<>();
         for (ConfiguredStorageSnapshots storageSnapshots : collectConfiguredStorageSnapshots()) {
@@ -93,6 +98,25 @@ public class Storage {
         }
 
         return response;
+    }
+
+    private static Map<Item, Integer> doGenerateStorageItemCounts(MinecraftServer server) {
+        List<ConfiguredStorageSnapshots> storages = doCollectConfiguredStorageSnapshots(server);
+        HashMap<Item, ItemCount> items = new HashMap<>();
+
+        for (ConfiguredStorageSnapshots storage : storages) {
+            try {
+                StorageItemStackProcessor.processSnapshots(storage.snapshots, items);
+            } catch (Exception e) {
+                Mod.LOGGER.warn("Failed to process storage file: {}", storage.fileName, e);
+            }
+        }
+
+        HashMap<Item, Integer> counts = new HashMap<>();
+        items.forEach((item, itemCount) -> {
+            counts.put(item, itemCount.count);
+        });
+        return counts;
     }
 
     private static List<ConfiguredStorageSnapshots> doCollectConfiguredStorageSnapshots(MinecraftServer server) {

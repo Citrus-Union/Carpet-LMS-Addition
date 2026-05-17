@@ -72,3 +72,53 @@ Other runtime failures still use the normal command failure text:
 ```text
 getItem failed: <message>
 ```
+
+## getStorageData
+
+```mcfunction
+/getStorageData
+/getStorageData <id>
+```
+
+Command rule:
+
+- `commandGetStorageData` must allow the command source to use `/getStorageData`.
+
+Field notes:
+
+- `id`: Minecraft item argument, for example `minecraft:diamond`.
+
+Behavior notes:
+
+- The command scans all configured storage files and merges matching item counts across them.
+- Shulker box contents follow the same recursive counting behavior as the storage website data.
+- Invalid configured storage entries are logged and skipped by the existing storage scanner.
+
+## getStorageData NBT result
+
+`/getStorageData` sends an NBT list. Each entry describes the cumulative count of one item across all configured storage files.
+
+Example:
+
+```snbt
+[
+  {
+    id: "minecraft:diamond",
+    count: 100
+  }
+]
+```
+
+`/getStorageData <id>` sends one NBT compound for the requested item:
+
+```snbt
+{
+  id: "minecraft:diamond",
+  count: 100
+}
+```
+
+Field notes:
+
+- `id`: item registry id.
+- `count`: cumulative item count across all configured storage files. If the requested item exists but is not present in storage, the single-item result uses `0`.

@@ -130,6 +130,10 @@ public final class Settings {
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
         LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})
+    public static String commandGetStorageData = "false";
+
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
+        LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})
     public static String commandCleanGetItemBot = "false";
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE})

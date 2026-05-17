@@ -15,6 +15,8 @@ carpet:
       desc: Enable "/setPassword" command
     commandGetItem:
       desc: Enable "/getItem <item> <count>" command
+    commandGetStorageData:
+      desc: Enable "/getStorageData" and "/getStorageData <id>" command
     commandCleanGetItemBot:
       desc: Enable "/cleanGetItemBot" command
     entityTeleportCrossDimension:
