@@ -14,16 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.lib.check;
+package cn.nm.lms.carpetlmsaddition.rule.block.dispenser.bartering;
 
-import org.jspecify.annotations.NonNull;
-
-public class CheckName {
-    public static boolean checkName(String input, @NonNull String setting, @NonNull String defaultName) {
-        return switch (setting) {
-            case "false" -> false;
-            case "true" -> defaultName.equalsIgnoreCase(input);
-            default -> setting.equalsIgnoreCase(input);
-        };
-    }
+public enum DispenserBarteringSetting {
+    FALSE, INGOT, BLOCK, SHULKER_BOX
 }

@@ -29,12 +29,17 @@ import cn.nm.lms.carpetlmsaddition.rule.Settings;
 public class DispenserBarteringInit {
     public static void init() {
         DispenserBlock.registerBehavior(Items.GOLD_INGOT,
-            new DispenserBarteringBehavior(() -> getDispenserBarteringLevel() >= 1, new DefaultDispenseItemBehavior()));
+            new DispenserBarteringBehavior(
+                () -> Settings.dispenserBartering.compareTo(DispenserBarteringSetting.INGOT) >= 0,
+                new DefaultDispenseItemBehavior()));
         DispenserBlock.registerBehavior(Items.GOLD_BLOCK,
-            new DispenserBarteringBehavior(() -> getDispenserBarteringLevel() >= 2, new DefaultDispenseItemBehavior()));
+            new DispenserBarteringBehavior(
+                () -> Settings.dispenserBartering.compareTo(DispenserBarteringSetting.BLOCK) >= 0,
+                new DefaultDispenseItemBehavior()));
 
-        DispenserBarteringBehavior shulkerBehavior =
-            new DispenserBarteringBehavior(() -> getDispenserBarteringLevel() >= 3, new ShulkerBoxDispenseBehavior());
+        DispenserBarteringBehavior shulkerBehavior = new DispenserBarteringBehavior(
+            () -> Settings.dispenserBartering.compareTo(DispenserBarteringSetting.SHULKER_BOX) >= 0,
+            new ShulkerBoxDispenseBehavior());
         DispenserBlock.registerBehavior(Items.SHULKER_BOX, shulkerBehavior);
         for (Item item : BuiltInRegistries.ITEM) {
             Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
@@ -43,14 +48,5 @@ public class DispenserBarteringInit {
                 DispenserBlock.registerBehavior(item, shulkerBehavior);
             }
         }
-    }
-
-    public static int getDispenserBarteringLevel() {
-        return switch (Settings.dispenserBartering) {
-            case "ingot" -> 1;
-            case "block" -> 2;
-            case "shulkerBox" -> 3;
-            default -> 0;
-        };
     }
 }

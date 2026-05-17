@@ -45,9 +45,9 @@ public abstract class LowHealthSpectatorMixin {
     @Unique
     private static void spectator(ServerPlayer player) {
         switch (Settings.lowHealthSpectatorMethod) {
-            case "vanilla" -> player.setGameMode(GameType.SPECTATOR);
-            case "mcdreforged" -> Mod.LOGGER.info("<{}> !!spec", player.getName().getString());
-            case "carpet-org-addition" -> {
+            case VANILLA -> player.setGameMode(GameType.SPECTATOR);
+            case MCDREFORGED -> Mod.LOGGER.info("<{}> !!spec", player.getName().getString());
+            case CARPET_ORG_ADDITION -> {
                 if (CheckMod.checkMod("carpet-org-addition", ">=1.38.0")) {
                     MinecraftServer server = player.level().getServer();
                     Commands commandManager = server.getCommands();
@@ -55,34 +55,15 @@ public abstract class LowHealthSpectatorMixin {
                         () -> commandManager.performPrefixedCommand(player.createCommandSourceStack(), "spectator"));
                 } else {
                     Mod.LOGGER.warn("Carpet Org Addition (>=1.38.0) not installed");
-                }
+                } ;
             }
-            case "kick" -> player.connection.disconnect(Component.nullToEmpty("Kicked by Carpet LMS Addition"));
-            default -> Mod.LOGGER.warn("Unknown lowHealthSpectatorMethod: {}", Settings.lowHealthSpectatorMethod);
+            case KICK -> player.connection.disconnect(Component.nullToEmpty("Kicked by Carpet LMS Addition"));
         }
-
     }
 
     @Unique
     private static boolean isInCooldown(long now, long last) {
         return now - last < Settings.lowHealthSpectatorCooldown;
-    }
-
-    @Unique
-    private static boolean isEnabled(UUID playerUUID) {
-        String value = Settings.lowHealthSpectator;
-        if ("true".equals(value)) {
-            return true;
-        }
-        if ("false".equals(value)) {
-            return false;
-        }
-
-        if ("custom".equals(value)) {
-            String configured = PlayerConfig.get(playerUUID, "lowHealthSpectator");
-            return Boolean.parseBoolean(configured);
-        }
-        return false;
     }
 
     @Inject(method = "hurtServer", at = @At("RETURN"))
@@ -98,7 +79,7 @@ public abstract class LowHealthSpectatorMixin {
         UUID playerUUID = player.getUUID();
         long last = COOLDOWN_MAP.getOrDefault(playerUUID, now - Settings.lowHealthSpectatorCooldown);
 
-        if (!isEnabled(playerUUID)) {
+        if (!PlayerConfig.isPlayerEnabled(Settings.lowHealthSpectator, playerUUID, "lowHealthSpectator")) {
             return;
         }
         if (isInCooldown(now, last)) {

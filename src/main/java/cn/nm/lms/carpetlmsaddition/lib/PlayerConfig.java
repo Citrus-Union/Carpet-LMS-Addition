@@ -64,4 +64,21 @@ public final class PlayerConfig {
     private static Path currentFile() {
         return GetPaths.getLmsWorldDataPath().resolve("playerConfig.json");
     }
+
+    public static boolean isPlayerEnabled(RuleSetting setting, UUID playerUUID, String configName) {
+        return switch (setting) {
+            case TRUE -> true;
+            case FALSE -> false;
+            case CUSTOM -> isPlayerSettingTrue(playerUUID, configName);
+        };
+    }
+
+    private static boolean isPlayerSettingTrue(UUID playerUUID, String configName) {
+        String configured = PlayerConfig.get(playerUUID, configName);
+        return Boolean.parseBoolean(configured);
+    }
+
+    public enum RuleSetting {
+        TRUE, FALSE, CUSTOM
+    }
 }

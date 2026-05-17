@@ -49,7 +49,7 @@ public final class ShulkerBoxFurnaceService {
 
     public static boolean tryTick(ServerLevel level, BlockPos pos, BlockState state,
         AbstractFurnaceBlockEntity entity) {
-        if ("false".equals(Settings.shulkerBoxFurnace)) {
+        if (ShulkerBoxFurnaceSetting.FALSE == Settings.shulkerBoxFurnace) {
             return false;
         }
 
@@ -58,7 +58,7 @@ public final class ShulkerBoxFurnaceService {
             return false;
         }
 
-        boolean strict = "strict".equals(Settings.shulkerBoxFurnace);
+        boolean strict = (ShulkerBoxFurnaceSetting.STRICT == Settings.shulkerBoxFurnace);
         boolean stateChanged = false;
         boolean wasLit = entity.litTimeRemaining > 0;
 
