@@ -43,30 +43,44 @@ import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 final class StorageJsonService {
     private StorageJsonService() {}
 
-    static Storage.PreparedInputs prepareInputs() {
-        if (!ensureDefaultConfigExists()) {
-            return Storage.PreparedInputs.EMPTY;
-        }
+    static void prepareDefaultFilesOnWorldLoad() {
+        ensureDefaultConfigExists();
 
+        JsonObject config = readConfigJsonObject();
+        if (config == null) {
+            return;
+        }
+        JsonArray storageList = getStorageList(config);
+        if (storageList == null) {
+            return;
+        }
+        for (JsonElement element : storageList) {
+            if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()
+                && "example.json".equals(element.getAsString())) {
+                ensureDefaultStorageExampleExists();
+                return;
+            }
+        }
+    }
+
+    static Storage.PreparedInputs prepareInputs() {
         JsonObject config = readConfigJsonObject();
         if (config == null) {
             return Storage.PreparedInputs.EMPTY;
         }
 
         try {
-            AsyncFileIo.createParentDirectories(Storage.storageDataPath);
             AsyncFileIo.createDirectories(Storage.storageDir);
         } catch (IOException e) {
-            Mod.LOGGER.warn("Failed to create storage dirs: {}, {}", Storage.storageDataPath, Storage.storageDir);
+            Mod.LOGGER.warn("Failed to create storage dir: {}", Storage.storageDir);
             return Storage.PreparedInputs.EMPTY;
         }
 
-        if (!config.has("storageList") || !config.get("storageList").isJsonArray()) {
-            Mod.LOGGER.warn("Missing or invalid storageList in {}", Storage.configJsonPath);
+        JsonArray storageList = getStorageList(config);
+        if (storageList == null) {
             return Storage.PreparedInputs.EMPTY;
         }
 
-        JsonArray storageList = config.getAsJsonArray("storageList");
         List<Storage.PreparedStorage> inputs = new ArrayList<>();
 
         for (JsonElement element : storageList) {
@@ -77,7 +91,7 @@ final class StorageJsonService {
 
             String storageFileName = element.getAsString();
             Path storageFile = Storage.storageDir.resolve(storageFileName);
-            if (!ensureStorageFileExists(storageFile)) {
+            if (!AsyncFileIo.exists(storageFile)) {
                 Mod.LOGGER.warn("Storage file not found: {}", storageFile);
                 continue;
             }
@@ -97,8 +111,12 @@ final class StorageJsonService {
         return new Storage.PreparedInputs(storageList.size(), inputs);
     }
 
-    static void saveToFile(Path savePath, JsonElement output) throws IOException {
-        AsyncFileIo.writeString(savePath, Storage.PRETTY_GSON.toJson(output));
+    private static @Nullable JsonArray getStorageList(JsonObject config) {
+        if (!config.has("storageList") || !config.get("storageList").isJsonArray()) {
+            Mod.LOGGER.warn("Missing or invalid storageList in {}", Storage.configJsonPath);
+            return null;
+        }
+        return config.getAsJsonArray("storageList");
     }
 
     static JsonObject toOutputJsonObject(Map<Item, Storage.ItemCount> items, List<Storage.Position> errors) {
@@ -207,12 +225,10 @@ final class StorageJsonService {
         }
     }
 
-    private static boolean ensureStorageFileExists(Path storageFile) {
+    private static boolean ensureDefaultStorageExampleExists() {
+        Path storageFile = Storage.storageDir.resolve("example.json");
         if (AsyncFileIo.exists(storageFile)) {
             return true;
-        }
-        if (!"example.json".equals(storageFile.getFileName().toString())) {
-            return false;
         }
 
         try {

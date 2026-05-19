@@ -23,11 +23,17 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.TextComponentTagVisitor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 
 import carpet.utils.CommandHelper;
 
@@ -47,28 +53,41 @@ public final class CommandGetItem implements BaseCommandWithContext {
         dispatcher.register(Commands.literal("getItem").requires(CommandGetItem::canUseGetItemCommand)
             .then(Commands.argument("item", ItemArgument.item(commandBuildContext))
                 .then(Commands.argument("count", IntegerArgumentType.integer(1)).executes(ctx -> {
-                    CommandSourceStack source = ctx.getSource();
-                    ItemInput itemInput = ItemArgument.getItem(ctx, "item");
-                    Item item = Utils.itemFromInput(itemInput);
-                    int count = IntegerArgumentType.getInteger(ctx, "count");
-                    String playerName = source.getTextName();
-                    return executeGetItem(source, item, count, playerName);
-                }))));
+                    return executeGetItem(ctx, false);
+                }).then(Commands.argument("nbt", StringArgumentType.word()).suggests((ctx, builder) -> {
+                    builder.suggest("nbt");
+                    return builder.buildFuture();
+                }).executes(ctx -> {
+                    return executeGetItem(ctx, true);
+                })))));
     }
 
-    private int executeGetItem(CommandSourceStack source, Item item, int count, String playerName) {
+    private int executeGetItem(CommandContext<CommandSourceStack> ctx, boolean nbt) {
+        CommandSourceStack source = ctx.getSource();
+        ItemInput itemInput = ItemArgument.getItem(ctx, "item");
+        Item item = Utils.itemFromInput(itemInput);
+        int count = IntegerArgumentType.getInteger(ctx, "count");
+        String playerName = source.getTextName();
         int maxCount = Settings.getItemMaxCount;
         if (count < 1) {
+            if (nbt) {
+                return getItemFailNbt(source, maxCount);
+            }
             source.sendFailure(Component.literal("Count must be at least 1"));
             return 0;
         }
         if (maxCount > 0 && count > maxCount) {
+            if (nbt) {
+                return getItemFailNbt(source, maxCount);
+            }
             source.sendFailure(Component.literal(String.format("Count must be between 1 and %d", maxCount)));
             return 0;
         }
-        source.sendSuccess(() -> Component.literal("getItem started in background"), false);
+        if (!nbt) {
+            source.sendSuccess(() -> Component.literal("getItem started in background"), false);
+        }
         try {
-            AsyncTasks.run(() -> runGetItemAsync(source, item, count, playerName));
+            AsyncTasks.run(() -> runGetItemAsync(source, item, count, playerName, nbt));
             return 0;
         } catch (Throwable throwable) {
             source.sendFailure(Component.literal(buildFailureMessage(throwable)));
@@ -76,7 +95,16 @@ public final class CommandGetItem implements BaseCommandWithContext {
         }
     }
 
-    private void sendResult(CommandSourceStack source, Item item, Map<String, Map<Item, Integer>> result) {
+    private int getItemFailNbt(CommandSourceStack source, int maxCount) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("maxCount", maxCount);
+        Component component = new TextComponentTagVisitor("").visit(tag);
+
+        source.sendFailure(component);
+        return 0;
+    }
+
+    private void sendResultText(CommandSourceStack source, Item item, Map<String, Map<Item, Integer>> result) {
         Component itemName = Utils.itemDisplayName(item);
         if (result.isEmpty()) {
             source.sendSuccess(
@@ -97,10 +125,42 @@ public final class CommandGetItem implements BaseCommandWithContext {
             false);
     }
 
-    private void runGetItemAsync(CommandSourceStack source, Item item, int count, String playerName) {
+    private void sendResultNbt(CommandSourceStack source, Map<String, Map<Item, Integer>> result) {
+        ListTag list = new ListTag();
+
+        for (Map.Entry<String, Map<Item, Integer>> outer : result.entrySet()) {
+            String name = outer.getKey();
+            for (Map.Entry<Item, Integer> inner : outer.getValue().entrySet()) {
+                Item item = inner.getKey();
+                int count = inner.getValue();
+
+                CompoundTag tag = new CompoundTag();
+
+                tag.putString("name", name);
+                tag.putString("id", BuiltInRegistries.ITEM.getKey(item).toString());
+                tag.putInt("count", count);
+
+                list.add(tag);
+            }
+        }
+
+        Component component = new TextComponentTagVisitor("").visit(list);
+
+        source.sendSuccess(() -> component, false);
+    }
+
+    private void sendResult(CommandSourceStack source, Item item, Map<String, Map<Item, Integer>> result, boolean nbt) {
+        if (nbt) {
+            sendResultNbt(source, result);
+        } else {
+            sendResultText(source, item, result);
+        }
+    }
+
+    private void runGetItemAsync(CommandSourceStack source, Item item, int count, String playerName, boolean nbt) {
         try {
             Map<String, Map<Item, Integer>> result = GetItem.getItem(item, count, playerName);
-            source.getServer().execute(() -> sendResult(source, item, result));
+            source.getServer().execute(() -> sendResult(source, item, result, nbt));
         } catch (Throwable throwable) {
             source.getServer().execute(() -> source.sendFailure(Component.literal(buildFailureMessage(throwable))));
         }

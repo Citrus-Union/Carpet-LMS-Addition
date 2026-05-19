@@ -20,7 +20,11 @@ import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 import carpet.api.settings.Validators;
 
+import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
+import cn.nm.lms.carpetlmsaddition.rule.block.dispenser.bartering.DispenserBarteringSetting;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.observer.RecipeRuleObserver;
+import cn.nm.lms.carpetlmsaddition.rule.recipe.smelting.ShulkerBoxFurnaceSetting;
+import cn.nm.lms.carpetlmsaddition.rule.util.helper.LowHealthSpectatorMethod;
 
 public final class Settings {
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
@@ -34,9 +38,8 @@ public final class Settings {
         validators = {Validators.CommandLevel.class})
     public static String commandLMSOthers = "ops";
 
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE},
-        options = {"false", "ingot", "block", "shulkerBox"})
-    public static String dispenserBartering = "false";
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE})
+    public static DispenserBarteringSetting dispenserBartering = DispenserBarteringSetting.FALSE;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE}, options = {"true", "false"},
         strict = false)
@@ -60,12 +63,11 @@ public final class Settings {
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE})
     public static boolean globalSlimeChunk = false;
 
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, options = {"true", "false", "custom"})
-    public static String lowHealthSpectator = "false";
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    public static PlayerConfig.RuleSetting lowHealthSpectator = PlayerConfig.RuleSetting.FALSE;
 
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL},
-        options = {"vanilla", "mcdreforged", "carpet-org-addition", "kick"})
-    public static String lowHealthSpectatorMethod = "vanilla";
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    public static LowHealthSpectatorMethod lowHealthSpectatorMethod = LowHealthSpectatorMethod.VANILLA;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL}, validators = {Validators.NonNegativeNumber.class})
     public static long lowHealthSpectatorCooldown = 200;
@@ -87,9 +89,8 @@ public final class Settings {
         validators = {Validators.CommandLevel.class})
     public static String playerCommandDropall = "false";
 
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE},
-        options = {"false", "force", "strict"})
-    public static String shulkerBoxFurnace = "false";
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE})
+    public static ShulkerBoxFurnaceSetting shulkerBoxFurnace = ShulkerBoxFurnaceSetting.FALSE;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
     public static int shulkerDupLowHealthFailChance = -1;
@@ -115,17 +116,12 @@ public final class Settings {
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.BUGFIX})
     public static boolean zombifiedPiglinSpawnFix = false;
 
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
-        LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})
-    public static String commandCheckStorageData = "false";
-
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
-        validators = {Validators.NonNegativeNumber.class})
-    public static int checkStorageAutoUpdateDataInterval = 0;
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.BUGFIX})
+    public static boolean largeBarrelFix = false;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
         LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})
-    public static String commandCheckStorageServer = "false";
+    public static String commandStorageWebsite = "false";
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE},
         validators = {Validators.CommandLevel.class})
@@ -134,6 +130,10 @@ public final class Settings {
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
         LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})
     public static String commandGetItem = "false";
+
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
+        LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})
+    public static String commandGetStorageData = "false";
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
         LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})

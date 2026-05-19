@@ -30,67 +30,47 @@ import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommand;
 import cn.nm.lms.carpetlmsaddition.rule.util.storage.website.Website;
 
-public final class CommandCheckStorage implements BaseCommand {
-    private static boolean canUseCheckStorageDataCommand(CommandSourceStack source) {
-        return CommandHelper.canUseCommand(source, Settings.commandCheckStorageData);
-    }
-
-    private static boolean canUseCheckStorageServerCommand(CommandSourceStack source) {
-        return CommandHelper.canUseCommand(source, Settings.commandCheckStorageServer);
-    }
-
-    private static boolean canUseAnyCheckStorageCommand(CommandSourceStack source) {
-        return canUseCheckStorageDataCommand(source) || canUseCheckStorageServerCommand(source);
+public final class CommandStorageWebsite implements BaseCommand {
+    private static boolean canUseStorageWebsiteCommand(CommandSourceStack source) {
+        return CommandHelper.canUseCommand(source, Settings.commandStorageWebsite);
     }
 
     @Override
     public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        LiteralArgumentBuilder<CommandSourceStack> stopServer = Commands.literal("stopServer")
-            .requires(CommandCheckStorage::canUseCheckStorageServerCommand).executes(ctx -> {
+        LiteralArgumentBuilder<CommandSourceStack> stop =
+            Commands.literal("stop").requires(CommandStorageWebsite::canUseStorageWebsiteCommand).executes(ctx -> {
                 CommandSourceStack source = ctx.getSource();
                 return executeServerActionAsync(source, "stopping", Website::stopServer);
             });
 
-        LiteralArgumentBuilder<CommandSourceStack> startServer = Commands.literal("startServer")
-            .requires(CommandCheckStorage::canUseCheckStorageServerCommand).executes(ctx -> {
+        LiteralArgumentBuilder<CommandSourceStack> start =
+            Commands.literal("start").requires(CommandStorageWebsite::canUseStorageWebsiteCommand).executes(ctx -> {
                 CommandSourceStack source = ctx.getSource();
                 return executeServerActionAsync(source, "starting", Website::startServer);
             });
 
-        LiteralArgumentBuilder<CommandSourceStack> serverStatus = Commands.literal("serverStatus")
-            .requires(CommandCheckStorage::canUseCheckStorageServerCommand).executes(ctx -> {
+        LiteralArgumentBuilder<CommandSourceStack> status =
+            Commands.literal("status").requires(CommandStorageWebsite::canUseStorageWebsiteCommand).executes(ctx -> {
                 CommandSourceStack source = ctx.getSource();
                 return executeServerStatus(source);
             });
 
-        LiteralArgumentBuilder<CommandSourceStack> updateData = Commands.literal("updateData")
-            .requires(CommandCheckStorage::canUseCheckStorageDataCommand).executes(ctx -> {
-                CommandSourceStack source = ctx.getSource();
-                return executeUpdateData(source);
-            });
-
-        dispatcher.register(Commands.literal("checkStorage").requires(CommandCheckStorage::canUseAnyCheckStorageCommand)
-            .then(updateData).then(startServer).then(stopServer).then(serverStatus));
-    }
-
-    private int executeUpdateData(CommandSourceStack source) {
-        String text = Storage.checkStorage();
-        source.sendSuccess(() -> Component.literal(text), false);
-        return 1;
+        dispatcher.register(Commands.literal("storageWebsite")
+            .requires(CommandStorageWebsite::canUseStorageWebsiteCommand).then(start).then(stop).then(status));
     }
 
     private int executeServerStatus(CommandSourceStack source) {
         String statusText = Website.isServerRunning() ? "running" : "stopped";
-        source.sendSuccess(() -> Component.literal("checkStorage server status: " + statusText), false);
+        source.sendSuccess(() -> Component.literal("storageWebsite status: " + statusText), false);
         return 1;
     }
 
     private int executeServerActionAsync(CommandSourceStack source, String action, Runnable task) {
-        source.sendSuccess(() -> Component.literal("checkStorage server " + action + " in background"), false);
+        source.sendSuccess(() -> Component.literal("storageWebsite " + action + " in background"), false);
         AsyncTasks.run(() -> {
             task.run();
             source.getServer().execute(
-                () -> source.sendSuccess(() -> Component.literal("checkStorage server " + action + " done"), false));
+                () -> source.sendSuccess(() -> Component.literal("storageWebsite " + action + " done"), false));
         });
         return 1;
     }

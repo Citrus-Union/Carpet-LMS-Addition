@@ -8,17 +8,9 @@ carpet:
       extra:
         "0": 设置为0时不回血
         "1": <0时不修改原版行为
-    commandCheckStorageData:
-      name: 仓库检查数据命令
-      desc: 启用 "/checkStorage updateData" 命令
-    checkStorageAutoUpdateDataInterval:
-      name: 仓库检查数据自动更新间隔
-      desc: 设置 checkStorage 自动更新数据的间隔（单位：gt）
-      extra:
-        "0": 设置为0时不自动更新
-    commandCheckStorageServer:
-      name: 仓库检查服务命令
-      desc: 启用 "/checkStorage serverStatus", "/checkStorage startServer" 和 "/checkStorage stopServer" 命令
+    commandStorageWebsite:
+      name: 仓库网页命令
+      desc: 启用 "/storageWebsite status", "/storageWebsite start" 和 "/storageWebsite stop" 命令
     commandLMSOthers:
       name: 管理他人LMS设置
       desc: 查看或修改其他玩家的 /lms 设置
@@ -31,6 +23,9 @@ carpet:
     commandGetItem:
       name: 取物命令
       desc: 启用 "/getItem <item> <count>" 命令
+    commandGetStorageData:
+      name: 仓库数据查询命令
+      desc: 启用 "/getStorageData" 和 "/getStorageData <id>" 命令
     commandCleanGetItemBot:
       name: 取物假人检查命令
       desc: 启用 "/cleanGetItemBot" 命令
@@ -172,3 +167,9 @@ carpet:
     zombifiedPiglinSpawnFix:
       name: 僵尸猪灵生成修复
       desc: 当僵尸猪人在地狱门上受随机刻而生成时，将会检测他的碰撞箱来判断是否可以生成
+    largeBarrelFix:
+      name: 大木桶修复
+      desc: 修复 Carpet TIS Addition 的 largeBarrel 规则在漏斗抽取时只访问单个小木桶的问题
+      extra:
+        "0": 需要同时安装 Carpet TIS Addition 并启用其 largeBarrel 规则
+        "1": 启用后，漏斗会从完整大木桶（54 格）中抽取物品，而不仅是漏斗上方那一半

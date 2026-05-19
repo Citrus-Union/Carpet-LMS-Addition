@@ -42,3 +42,6 @@ node_modules
 
 # gemini
 .gemini/
+
+# local TIS source clone (analysis only, not part of this mod)
+third-party/Carpet-TIS-Addition-src/

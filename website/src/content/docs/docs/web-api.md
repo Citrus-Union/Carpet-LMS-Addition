@@ -43,6 +43,7 @@ description: Storage website API reference
 ## GET /api/storage/getData
 
 - Method: `GET`
+- Data is generated from the current `checkStorageConfig.json` and `checkStorageList` files when the request is handled.
 - Response uses compact keys.
 - Dimension key mapping:
 - `"0"`: overworld

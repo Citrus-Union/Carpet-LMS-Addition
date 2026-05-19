@@ -13,6 +13,8 @@
     "block.util.VaultMaxBlacklistSizeMixin",
     "bug.ZombifiedPiglinSpawnFixMixin",
     "compat.sgu.EntityPlayerMPFakeSguCompatMixin",
+    "compat.tis.largebarrel.LargeBarrelHopperFixMixin",
+    "compat.tis.largebarrel.LargeBarrelLithiumCacheMixin",
     "entity.allay.AllayHealIntervalMixin",
     "entity.projectile.PearlIgnoreEntityCollisionMixin",
     "entity.projectile.PearlNoTpMixin",

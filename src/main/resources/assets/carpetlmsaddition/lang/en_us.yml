@@ -5,14 +5,8 @@ carpet:
       extra:
         "0": 0 represents no healing
         "1": <0 keeps vanilla behavior
-    commandCheckStorageData:
-      desc: Enable "/checkStorage updateData" command
-    checkStorageAutoUpdateDataInterval:
-      desc: "Set the checkStorage data auto update interval (unit: gt)"
-      extra:
-        "0": Set to 0 to disable automatic updates
-    commandCheckStorageServer:
-      desc: Enable "/checkStorage serverStatus", "/checkStorage startServer" and "/checkStorage stopServer" command
+    commandStorageWebsite:
+      desc: Enable "/storageWebsite status", "/storageWebsite start" and "/storageWebsite stop" command
     commandLMSOthers:
       desc: View or modify other players' /lms settings
     commandLMSSelf:
@@ -21,6 +15,8 @@ carpet:
       desc: Enable "/setPassword" command
     commandGetItem:
       desc: Enable "/getItem <item> <count>" command
+    commandGetStorageData:
+      desc: Enable "/getStorageData" and "/getStorageData <id>" command
     commandCleanGetItemBot:
       desc: Enable "/cleanGetItemBot" command
     entityTeleportCrossDimension:
@@ -143,3 +139,11 @@ carpet:
       desc: >-
         When spawning zombified piglins in nether gates during random ticks,
         game will check for its hitbox
+    largeBarrelFix:
+      name: largeBarrelFix
+      desc: >-
+        Fixes Carpet TIS Addition largeBarrel hoppers only pulling from the single barrel
+        half above the hopper instead of the full double-barrel inventory
+      extra:
+        "0": Requires Carpet TIS Addition with its largeBarrel rule enabled
+        "1": Hoppers use the combined 54-slot large barrel inventory when extracting items
