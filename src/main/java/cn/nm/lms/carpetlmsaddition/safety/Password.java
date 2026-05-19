@@ -185,10 +185,5 @@ public class Password {
         public CompletableFuture<Result> authenticateAsync(Path secret, int expireDay) {
             return Password.authenticateAsync(this.username, this.password, secret, expireDay);
         }
-
-        @Nullable
-        public String getUsername() {
-            return this.username;
-        }
     }
 }

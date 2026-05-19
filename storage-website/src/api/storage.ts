@@ -135,8 +135,7 @@ export type StorageApiErrorCode =
   | "INVALID_PAYLOAD"
   | "TOKEN_EXPIRED"
   | "UNAUTHORIZED"
-  | "FORBIDDEN"
-  | "RATE_LIMITED";
+  | "FORBIDDEN";
 
 export interface StorageCredentials {
   username: string;
@@ -207,16 +206,10 @@ async function throwResponseStorageError(response: Response): Promise<never> {
   }
 
   if (response.status === 401) {
-    if (detail === "Token expired") {
-      throw new StorageApiError("TOKEN_EXPIRED", response.status, detail);
-    }
     throw new StorageApiError("UNAUTHORIZED", response.status, detail);
   }
   if (response.status === 403) {
     throw new StorageApiError("FORBIDDEN", response.status, detail);
-  }
-  if (response.status === 429) {
-    throw new StorageApiError("RATE_LIMITED", response.status, detail);
   }
   throw new StorageApiError("HTTP_ERROR", response.status, detail);
 }
@@ -415,7 +408,20 @@ export async function login(
   }
 
   if (!response.ok) {
-    await throwResponseStorageError(response);
+    if (response.status === 401) {
+      let detail: string | undefined;
+      try {
+        const payload: unknown = await response.json();
+        detail = parseErrorMessage(payload);
+      } catch {
+        // ignore parsing errors and fallback to generic unauthorized text.
+      }
+      if (detail === "Token expired") {
+        throw new StorageApiError("TOKEN_EXPIRED", response.status, detail);
+      }
+      throw new StorageApiError("UNAUTHORIZED", response.status, detail);
+    }
+    throw new StorageApiError("HTTP_ERROR", response.status);
   }
 
   const payload: unknown = await response.json();
@@ -450,7 +456,17 @@ export async function fetchStorageData(
   }
 
   if (!response.ok) {
-    await throwResponseStorageError(response);
+    if (response.status === 401) {
+      let detail: string | undefined;
+      try {
+        const payload: unknown = await response.json();
+        detail = parseErrorMessage(payload);
+      } catch {
+        // ignore parsing errors and fallback to generic unauthorized text.
+      }
+      throw new StorageApiError("UNAUTHORIZED", response.status, detail);
+    }
+    throw new StorageApiError("HTTP_ERROR", response.status);
   }
 
   const payload: unknown = await response.json();

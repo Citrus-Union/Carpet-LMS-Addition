@@ -35,11 +35,9 @@ import com.mojang.brigadier.context.CommandContext;
 
 import carpet.utils.CommandHelper;
 
-import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommandWithContext;
-import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandRateLimitNbt;
 
 public final class CommandGetStorageData implements BaseCommandWithContext {
     private static boolean canUseGetStorageDataCommand(CommandSourceStack source) {
@@ -58,9 +56,6 @@ public final class CommandGetStorageData implements BaseCommandWithContext {
     }
 
     private static int executeGetAll(CommandSourceStack source) {
-        if (!checkRateLimit(source)) {
-            return 0;
-        }
         Map<Item, Integer> counts = Storage.generateStorageItemCounts();
         ListTag list = new ListTag();
 
@@ -74,27 +69,13 @@ public final class CommandGetStorageData implements BaseCommandWithContext {
     }
 
     private static int executeGetOne(CommandContext<CommandSourceStack> ctx) {
-        CommandSourceStack source = ctx.getSource();
-        if (!checkRateLimit(source)) {
-            return 0;
-        }
         Item item = Utils.itemFromInput(ItemArgument.getItem(ctx, "id"));
         int count = Storage.generateStorageItemCounts().getOrDefault(item, 0);
         CompoundTag tag = toResultTag(item, count);
 
         Component component = new TextComponentTagVisitor("").visit(tag);
-        source.sendSuccess(() -> component, false);
+        ctx.getSource().sendSuccess(() -> component, false);
         return 1;
-    }
-
-    private static boolean checkRateLimit(CommandSourceStack source) {
-        try {
-            Storage.checkGetDataRateLimit(source.getTextName());
-            return true;
-        } catch (NameRateLimiter.RateLimitException e) {
-            CommandRateLimitNbt.sendWaitSecond(source, e.waitSeconds());
-            return false;
-        }
     }
 
     private static CompoundTag toResultTag(Item item, int count) {

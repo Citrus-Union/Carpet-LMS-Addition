@@ -37,17 +37,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import org.jspecify.annotations.Nullable;
-
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
-import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
-import cn.nm.lms.carpetlmsaddition.rule.Settings;
 
 public class Storage {
-    private static final NameRateLimiter GET_DATA_RATE_LIMITER = new NameRateLimiter();
     static final Path configJsonPath = GetPaths.getLmsWorldPath().resolve("checkStorageConfig.json");
     static final Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
     static final Map<String, ResourceKey<Level>> stringToDimension =
@@ -68,10 +63,6 @@ public class Storage {
     public static Map<Item, Integer> generateStorageItemCounts() {
         MinecraftServer server = CarpetServer.minecraft_server;
         return Utils.runOnServerThread(server, () -> doGenerateStorageItemCounts(server));
-    }
-
-    public static void checkGetDataRateLimit(@Nullable String playerName) {
-        GET_DATA_RATE_LIMITER.check("getStorageData", playerName, Settings.getStorageDataCooldownSeconds);
     }
 
     public static List<ContainerSnapshot> collectConfiguredContainerSnapshots() {

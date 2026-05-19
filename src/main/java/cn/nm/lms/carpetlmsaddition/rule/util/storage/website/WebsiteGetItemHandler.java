@@ -33,7 +33,6 @@ import com.google.gson.JsonParser;
 
 import cn.nm.lms.carpetlmsaddition.bot.GetItem;
 import cn.nm.lms.carpetlmsaddition.lib.ItemRegistryCompat;
-import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 
@@ -63,8 +62,12 @@ final class WebsiteGetItemHandler {
         Map<String, Map<Item, Integer>> result;
         try {
             result = GetItem.getItem(item, request.count, playerName);
-        } catch (NameRateLimiter.RateLimitException e) {
-            throw new WebsiteApiException(429, e.getMessage());
+        } catch (IllegalStateException e) {
+            String message = e.getMessage();
+            if (message != null && message.contains("rate limited")) {
+                throw new WebsiteApiException(429, message);
+            }
+            throw e;
         }
         return toResponse(itemId.toString(), item, result);
     }

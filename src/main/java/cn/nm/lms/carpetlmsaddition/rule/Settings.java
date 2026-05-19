@@ -116,6 +116,9 @@ public final class Settings {
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.BUGFIX})
     public static boolean zombifiedPiglinSpawnFix = false;
 
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.BUGFIX})
+    public static boolean largeBarrelFix = false;
+
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.COMMAND, RuleCategory.SURVIVAL, RuleCategory.CREATIVE,
         LMSRuleCategory.STORAGE}, validators = {Validators.CommandLevel.class})
     public static String commandStorageWebsite = "false";
@@ -149,14 +152,6 @@ public final class Settings {
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
         validators = {Validators.NonNegativeNumber.class})
     public static int getItemCooldownSeconds = 0;
-
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
-        validators = {Validators.NonNegativeNumber.class})
-    public static int getStorageDataCooldownSeconds = 0;
-
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
-        validators = {Validators.NonNegativeNumber.class})
-    public static int websiteLoginCooldownSeconds = 0;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
         validators = {Validators.NonNegativeNumber.class})

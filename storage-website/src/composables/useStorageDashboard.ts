@@ -32,7 +32,6 @@ type DashboardErrorCode =
   | "FORBIDDEN"
   | "TOKEN_EXPIRED"
   | "CREDENTIALS_REQUIRED"
-  | "RATE_LIMITED"
   | "UNKNOWN";
 
 interface DashboardErrorState {
@@ -216,10 +215,6 @@ export function useStorageDashboard() {
       return t("errors.forbidden");
     }
 
-    if (errorState.value.code === "RATE_LIMITED") {
-      return getRateLimitMessage(errorState.value.detail);
-    }
-
     if (errorState.value.code === "CREDENTIALS_REQUIRED") {
       return t("errors.credentialsRequired");
     }
@@ -343,24 +338,6 @@ export function useStorageDashboard() {
     clearStorageData();
   }
 
-  function getRateLimitWaitSeconds(detail?: string): number | null {
-    const match = detail?.match(/wait (\d+)s/);
-    const rawSeconds = match?.[1];
-    if (rawSeconds == null) {
-      return null;
-    }
-    const seconds = Number.parseInt(rawSeconds, 10);
-    return Number.isFinite(seconds) ? seconds : null;
-  }
-
-  function getRateLimitMessage(detail?: string): string {
-    const seconds = getRateLimitWaitSeconds(detail);
-    if (seconds == null) {
-      return t("errors.rateLimitedGeneric");
-    }
-    return t("errors.rateLimited", { seconds });
-  }
-
   function clearGetItemCopyMessage(): void {
     getItemCopyMessage.value = "";
     if (copyMessageTimer !== null) {
@@ -422,10 +399,6 @@ export function useStorageDashboard() {
 
     if (error.code === "NETWORK_ERROR") {
       return t("errors.network");
-    }
-
-    if (error.code === "RATE_LIMITED") {
-      return getRateLimitMessage(error.detail);
     }
 
     if (error.code === "HTTP_ERROR") {

@@ -49,14 +49,8 @@ carpet:
       name: 取物容器调用间隔
       desc: 设置 getItem 中每次调用容器取物之间的等待时间（单位：毫秒）
     getItemCooldownSeconds:
-      name: 取物限速
-      desc: 设置同一玩家名两次 getItem 请求之间的冷却时间（单位：秒，0为关闭）
-    getStorageDataCooldownSeconds:
-      name: 仓库查询限速
-      desc: 设置同一玩家名两次仓库查询之间的冷却时间（单位：秒，0为关闭）
-    websiteLoginCooldownSeconds:
-      name: 网页登录限速
-      desc: 设置同一用户名两次网页登录请求之间的冷却时间（单位：秒，0为关闭）
+      name: 取物玩家限速
+      desc: 设置同一玩家名两次 getItem 请求之间的冷却时间（单位：秒，按玩家名匹配，0为关闭）
     getItemMaxCount:
       name: 取物单次最大数量
       desc: 设置 getItem 单次请求允许的最大物品数量（0为不限制）
@@ -173,3 +167,9 @@ carpet:
     zombifiedPiglinSpawnFix:
       name: 僵尸猪灵生成修复
       desc: 当僵尸猪人在地狱门上受随机刻而生成时，将会检测他的碰撞箱来判断是否可以生成
+    largeBarrelFix:
+      name: 大木桶修复
+      desc: 修复 Carpet TIS Addition 的 largeBarrel 规则在漏斗抽取时只访问单个小木桶的问题
+      extra:
+        "0": 需要同时安装 Carpet TIS Addition 并启用其 largeBarrel 规则
+        "1": 启用后，漏斗会从完整大木桶（54 格）中抽取物品，而不仅是漏斗上方那一半
