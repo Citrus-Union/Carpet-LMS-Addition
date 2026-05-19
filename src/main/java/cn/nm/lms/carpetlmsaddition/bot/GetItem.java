@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -45,14 +46,13 @@ import carpet.patches.EntityPlayerMPFake;
 import org.jspecify.annotations.Nullable;
 
 import cn.nm.lms.carpetlmsaddition.lib.ChatEventCompat;
-import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.storage.Storage;
 
 public class GetItem {
     private static final Object GET_ITEM_SERIAL_LOCK = new Object();
-    private static final NameRateLimiter RATE_LIMITER = new NameRateLimiter();
+    private static final Map<String, Long> LAST_CALL_MILLIS_BY_PLAYER_NAME = new ConcurrentHashMap<>();
 
     public static Map<String, Map<Item, Integer>> getItem(Item item, int count, @Nullable String playerName) {
         if (count <= 0) {
@@ -99,7 +99,23 @@ public class GetItem {
     }
 
     private static void checkRateLimit(@Nullable String playerName) {
-        RATE_LIMITER.check("getItem", playerName, Settings.getItemCooldownSeconds);
+        int cooldownSeconds = Settings.getItemCooldownSeconds;
+        if (cooldownSeconds <= 0) {
+            return;
+        }
+
+        String key = playerName == null ? "" : playerName;
+        long now = System.currentTimeMillis();
+        long cooldownMillis = cooldownSeconds * 1000L;
+        Long last = LAST_CALL_MILLIS_BY_PLAYER_NAME.get(key);
+        if (last != null && now - last < cooldownMillis) {
+            long elapsed = now - last;
+            long waitSeconds = (cooldownMillis - elapsed + 999L) / 1000L;
+            throw new IllegalStateException(
+                "getItem is rate limited for player \"" + key + "\", wait " + waitSeconds + "s");
+        }
+
+        LAST_CALL_MILLIS_BY_PLAYER_NAME.put(key, now);
     }
 
     private static ItemStack quickMove(AbstractContainerMenu screenHandler, int slotIndex, EntityPlayerMPFake player) {

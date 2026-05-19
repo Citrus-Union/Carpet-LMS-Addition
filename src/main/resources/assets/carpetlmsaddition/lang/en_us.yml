@@ -35,11 +35,7 @@ carpet:
     getItemDelayMs:
       desc: Set the wait time between each container-fetch call in getItem (milliseconds)
     getItemCooldownSeconds:
-      desc: Set per-player cooldown between getItem requests (seconds, 0 = disabled)
-    getStorageDataCooldownSeconds:
-      desc: Set per-player cooldown between storage data queries (seconds, 0 = disabled)
-    websiteLoginCooldownSeconds:
-      desc: Set per-username cooldown between website login requests (seconds, 0 = disabled)
+      desc: Set per-player cooldown between getItem requests (seconds, matched by player name, 0 = disabled)
     getItemMaxCount:
       desc: Set the maximum item count accepted by getItem in a single request (0 = unlimited)
     getItemMaxBots:
@@ -143,3 +139,11 @@ carpet:
       desc: >-
         When spawning zombified piglins in nether gates during random ticks,
         game will check for its hitbox
+    largeBarrelFix:
+      name: largeBarrelFix
+      desc: >-
+        Fixes Carpet TIS Addition largeBarrel hoppers only pulling from the single barrel
+        half above the hopper instead of the full double-barrel inventory
+      extra:
+        "0": Requires Carpet TIS Addition with its largeBarrel rule enabled
+        "1": Hoppers use the combined 54-slot large barrel inventory when extracting items

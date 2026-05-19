@@ -73,14 +73,6 @@ Other runtime failures still use the normal command failure text:
 getItem failed: <message>
 ```
 
-When `getItemCooldownSeconds` rate-limits NBT mode, the command sends a failure response with the remaining wait time:
-
-```snbt
-{
-  waitSecond: 5
-}
-```
-
 ## getStorageData
 
 ```mcfunction
@@ -101,7 +93,6 @@ Behavior notes:
 - The command scans all configured storage files and merges matching item counts across them.
 - Shulker box contents follow the same recursive counting behavior as the storage website data.
 - Invalid configured storage entries are logged and skipped by the existing storage scanner.
-- Rate limit behavior follows `getStorageDataCooldownSeconds` and is matched by the command source player name.
 
 ## getStorageData NBT result
 
@@ -124,14 +115,6 @@ Example:
 {
   id: "minecraft:diamond",
   count: 100
-}
-```
-
-When `getStorageDataCooldownSeconds` rate-limits the command, it sends a failure response with the remaining wait time:
-
-```snbt
-{
-  waitSecond: 5
 }
 ```
 

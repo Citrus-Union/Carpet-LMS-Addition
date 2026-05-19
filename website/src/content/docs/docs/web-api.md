@@ -40,19 +40,10 @@ description: Storage website API reference
 }
 ```
 
-Behavior notes:
-
-- `websiteLoginCooldownSeconds` limits repeated login attempts by request `username`.
-- Successful and failed login attempts both count toward the cooldown.
-- Requests limited by this rule return `429`.
-
 ## GET /api/storage/getData
 
 - Method: `GET`
 - Data is generated from the current `checkStorageConfig.json` and `checkStorageList` files when the request is handled.
-- `getStorageDataCooldownSeconds` limits repeated queries by token username.
-- If `noPassword: true` and no valid token is used, all anonymous queries share the empty-string cooldown key.
-- Requests limited by this rule return `429`.
 - Response uses compact keys.
 - Dimension key mapping:
 - `"0"`: overworld
