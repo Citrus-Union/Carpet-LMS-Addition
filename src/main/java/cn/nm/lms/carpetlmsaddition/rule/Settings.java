@@ -152,6 +152,14 @@ public final class Settings {
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
         validators = {Validators.NonNegativeNumber.class})
+    public static int getStorageDataCooldownSeconds = 0;
+
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
+        validators = {Validators.NonNegativeNumber.class})
+    public static int websiteLoginCooldownSeconds = 0;
+
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},
+        validators = {Validators.NonNegativeNumber.class})
     public static int getItemMaxCount = 0;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE, LMSRuleCategory.STORAGE},

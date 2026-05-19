@@ -41,6 +41,7 @@ import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommandWithContext;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandRateLimitNbt;
 
 public final class CommandGetItem implements BaseCommandWithContext {
     private static boolean canUseGetItemCommand(CommandSourceStack source) {
@@ -90,6 +91,9 @@ public final class CommandGetItem implements BaseCommandWithContext {
             AsyncTasks.run(() -> runGetItemAsync(source, item, count, playerName, nbt));
             return 0;
         } catch (Throwable throwable) {
+            if (nbt && CommandRateLimitNbt.sendIfRateLimited(source, throwable)) {
+                return 0;
+            }
             source.sendFailure(Component.literal(buildFailureMessage(throwable)));
             return 1;
         }
@@ -162,7 +166,12 @@ public final class CommandGetItem implements BaseCommandWithContext {
             Map<String, Map<Item, Integer>> result = GetItem.getItem(item, count, playerName);
             source.getServer().execute(() -> sendResult(source, item, result, nbt));
         } catch (Throwable throwable) {
-            source.getServer().execute(() -> source.sendFailure(Component.literal(buildFailureMessage(throwable))));
+            source.getServer().execute(() -> {
+                if (nbt && CommandRateLimitNbt.sendIfRateLimited(source, throwable)) {
+                    return;
+                }
+                source.sendFailure(Component.literal(buildFailureMessage(throwable)));
+            });
         }
     }
 

@@ -33,6 +33,7 @@ import com.sun.net.httpserver.HttpServer;
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncFileIo;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
+import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.storage.Storage;
@@ -44,6 +45,7 @@ public class Website {
     private static final Path SECRET_PATH = GetPaths.getLmsConfigSecretPath().resolve("storage");
     private static final Path CUSTOM_STORAGE_WEBSITE_PATH = GetPaths.getLmsWorldPath().resolve("customStorageWebsite");
     private static final String CUSTOM_STORAGE_INDEX_HTML = "This storage viewer is to be customized.<br>这是待修改的仓储查看";
+    private static final NameRateLimiter LOGIN_RATE_LIMITER = new NameRateLimiter();
     private static HttpServer app;
 
     public static boolean isServerRunning() {
@@ -96,6 +98,12 @@ public class Website {
                 noPasswordEnabled, SECRET_PATH);
             if (auth.errorMessage != null) {
                 writeJson(exchange, 401, new WebsiteMessageResp("401", auth.errorMessage));
+                return;
+            }
+            try {
+                Storage.checkGetDataRateLimit(auth.username);
+            } catch (IllegalStateException e) {
+                writeJson(exchange, 429, new WebsiteMessageResp("429", e.getMessage()));
                 return;
             }
             handleGetDataAsync(exchange);
@@ -262,8 +270,22 @@ public class Website {
     }
 
     private static void handleLoginAsync(HttpExchange exchange, String body) {
-        CompletableFuture<Password.Result> authFuture =
-            Password.LoginRequest.authenticateAsync(body, SECRET_PATH, getExpireDay());
+        Password.LoginRequest loginRequest = new Password.LoginRequest(body);
+        String username = loginRequest.getUsername();
+        if (username != null && !username.isBlank()) {
+            try {
+                LOGIN_RATE_LIMITER.check("website login", username, Settings.websiteLoginCooldownSeconds);
+            } catch (IllegalStateException e) {
+                try {
+                    writeJson(exchange, 429, new WebsiteMessageResp("429", e.getMessage()));
+                } catch (Exception ignored) {
+                    exchange.close();
+                }
+                return;
+            }
+        }
+
+        CompletableFuture<Password.Result> authFuture = loginRequest.authenticateAsync(SECRET_PATH, getExpireDay());
         authFuture.whenComplete((result, throwable) -> {
             try {
                 if (throwable != null) {
