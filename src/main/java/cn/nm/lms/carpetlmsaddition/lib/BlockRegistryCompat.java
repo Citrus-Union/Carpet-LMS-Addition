@@ -18,30 +18,30 @@ package cn.nm.lms.carpetlmsaddition.lib;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 import org.jspecify.annotations.Nullable;
 
-public final class ItemRegistryCompat {
-    private ItemRegistryCompat() {}
-
-    public static String compactItemId(String itemId) {
-        return IdentifierCompat.compactId(itemId);
-    }
+public final class BlockRegistryCompat {
+    private BlockRegistryCompat() {}
 
     @Nullable
-    public static Item getItem(Identifier itemId) {
+    public static Block getBlock(Identifier blockId) {
         //#if MC>=12102
-        var itemReference = BuiltInRegistries.ITEM.get(itemId);
-        if (itemReference.isEmpty()) {
+        var blockReference = BuiltInRegistries.BLOCK.get(blockId);
+        if (blockReference.isEmpty()) {
             return null;
         }
-        return itemReference.get().value();
+        return blockReference.get().value();
         //#else
-        //$$ if (!BuiltInRegistries.ITEM.containsKey(itemId)) {
+        //$$ if (!BuiltInRegistries.BLOCK.containsKey(blockId)) {
         //$$     return null;
         //$$ }
-        //$$ return BuiltInRegistries.ITEM.get(itemId);
+        //$$ return BuiltInRegistries.BLOCK.get(blockId);
         //#endif
+    }
+
+    public static String getBlockId(Block block) {
+        return BuiltInRegistries.BLOCK.getKey(block).toString();
     }
 }

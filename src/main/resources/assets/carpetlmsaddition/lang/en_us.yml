@@ -5,8 +5,12 @@ carpet:
       extra:
         "0": 0 represents no healing
         "1": <0 keeps vanilla behavior
+    breakingRestriction:
+      desc: Enable per-player block breaking restriction configured by /lms
     commandStorageWebsite:
       desc: Enable "/storageWebsite status", "/storageWebsite start" and "/storageWebsite stop" command
+    commandLMSBot:
+      desc: View or modify bot's /lms settings
     commandLMSOthers:
       desc: View or modify other players' /lms settings
     commandLMSSelf:

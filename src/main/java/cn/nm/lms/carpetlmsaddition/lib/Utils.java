@@ -29,11 +29,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
+
+import org.jspecify.annotations.Nullable;
 
 public class Utils {
     public static boolean isShulkerBox(ItemStack stack) {
@@ -124,5 +127,15 @@ public class Utils {
      */
     public static int forcePositive(int value, int fallback) {
         return nonNegativeOrOrigin(nonZeroOrMax(value), fallback);
+    }
+
+    public static boolean isSamePlayer(@Nullable Player a, @Nullable Player b) {
+        if (a == b) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
+        return a.getUUID().equals(b.getUUID());
     }
 }

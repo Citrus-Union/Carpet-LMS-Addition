@@ -39,6 +39,14 @@ public final class JsonFileIo {
     }
 
     public static JsonObject putString(Path path, String value, String... fieldPath) throws IOException {
+        return put(path, json -> json.addProperty(fieldPath[fieldPath.length - 1], value), fieldPath);
+    }
+
+    public static JsonObject putElement(Path path, JsonElement value, String... fieldPath) throws IOException {
+        return put(path, json -> json.add(fieldPath[fieldPath.length - 1], value), fieldPath);
+    }
+
+    private static JsonObject put(Path path, JsonObjectWriter writer, String... fieldPath) throws IOException {
         if (fieldPath.length == 0) {
             throw new IOException("JSON field path cannot be empty: " + path);
         }
@@ -57,8 +65,7 @@ public final class JsonFileIo {
                 throw new IOException("JSON field must be an object: " + parentKey + " in " + path);
             }
         }
-        String key = fieldPath[fieldPath.length - 1];
-        target.addProperty(key, value);
+        writer.write(target);
         write(path, root);
         return root;
     }
@@ -81,5 +88,9 @@ public final class JsonFileIo {
 
     public static void write(Path path, JsonElement json) throws IOException {
         AsyncFileIo.writeString(path, GSON.toJson(json));
+    }
+
+    private interface JsonObjectWriter {
+        void write(JsonObject json);
     }
 }

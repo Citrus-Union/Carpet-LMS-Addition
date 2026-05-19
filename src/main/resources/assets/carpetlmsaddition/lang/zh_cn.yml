@@ -8,9 +8,15 @@ carpet:
       extra:
         "0": 设置为0时不回血
         "1": <0时不修改原版行为
+    breakingRestriction:
+      name: 玩家破坏限制
+      desc: 启用通过 /lms 配置的玩家方块破坏限制
     commandStorageWebsite:
       name: 仓库网页命令
       desc: 启用 "/storageWebsite status", "/storageWebsite start" 和 "/storageWebsite stop" 命令
+    commandLMSBot:
+      name: 管理假人LMS设置
+      desc: 查看或修改假人的 /lms 设置
     commandLMSOthers:
       name: 管理他人LMS设置
       desc: 查看或修改其他玩家的 /lms 设置

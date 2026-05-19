@@ -7,6 +7,7 @@
     "block.breaking.ExplosionProofBuddingAmethystMixin",
     "block.breaking.FragileTrialSpawnerMixin",
     "block.breaking.FragileVaultMixin",
+    "block.breaking.ServerPlayerGameModeMixin",
     "block.breaking.SoftTrialSpawnerMixin",
     "block.breaking.SoftVaultMixin",
     "block.breaking.UnbreakableBuddingAmethystMixin",

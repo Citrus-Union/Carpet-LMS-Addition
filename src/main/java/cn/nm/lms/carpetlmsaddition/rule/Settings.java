@@ -38,6 +38,13 @@ public final class Settings {
         validators = {Validators.CommandLevel.class})
     public static String commandLMSOthers = "ops";
 
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.COMMAND},
+        validators = {Validators.CommandLevel.class})
+    public static String commandLMSBot = "true";
+
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.COMMAND})
+    public static boolean breakingRestriction = false;
+
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE})
     public static DispenserBarteringSetting dispenserBartering = DispenserBarteringSetting.FALSE;
 
@@ -63,7 +70,7 @@ public final class Settings {
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.CREATIVE})
     public static boolean globalSlimeChunk = false;
 
-    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.COMMAND})
     public static PlayerConfig.RuleSetting lowHealthSpectator = PlayerConfig.RuleSetting.FALSE;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})

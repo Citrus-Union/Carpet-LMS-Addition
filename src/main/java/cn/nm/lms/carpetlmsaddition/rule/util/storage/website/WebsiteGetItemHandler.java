@@ -32,6 +32,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import cn.nm.lms.carpetlmsaddition.bot.GetItem;
+import cn.nm.lms.carpetlmsaddition.lib.IdentifierCompat;
 import cn.nm.lms.carpetlmsaddition.lib.ItemRegistryCompat;
 import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
@@ -51,7 +52,7 @@ final class WebsiteGetItemHandler {
             throw new WebsiteApiException(400, String.format("Count must be between 1 and %d", maxCount));
         }
 
-        Identifier itemId = parseItemId(request.itemId);
+        Identifier itemId = IdentifierCompat.parseNamespacedId(request.itemId);
         if (itemId == null) {
             throw new WebsiteApiException(400, "Invalid itemId");
         }
@@ -183,7 +184,7 @@ final class WebsiteGetItemHandler {
             if (count < 1) {
                 throw new WebsiteApiException(400, "Count must be at least 1");
             }
-            Identifier itemIdValue = parseItemId(itemId);
+            Identifier itemIdValue = IdentifierCompat.parseNamespacedId(itemId);
             if (itemIdValue == null) {
                 throw new WebsiteApiException(400, "Invalid itemId");
             }
@@ -194,18 +195,6 @@ final class WebsiteGetItemHandler {
             requests.add(new SendGetItemResultRequest(item, count, botName));
         }
         return requests;
-    }
-
-    private static Identifier parseItemId(String rawItemId) {
-        String[] parts = rawItemId.split(":", 2);
-        if (parts.length != 2) {
-            return null;
-        }
-        try {
-            return Identifier.fromNamespaceAndPath(parts[0], parts[1]);
-        } catch (RuntimeException e) {
-            return null;
-        }
     }
 
     private static List<GetItemBotResult> toResponse(String itemId, Item item, Map<String, Map<Item, Integer>> result) {
