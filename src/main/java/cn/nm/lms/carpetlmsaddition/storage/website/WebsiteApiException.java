@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.rule.util.storage.website;
+package cn.nm.lms.carpetlmsaddition.storage.website;
 
-final class WebsiteMessageResp {
-    String status;
-    String message;
+public final class WebsiteApiException extends RuntimeException {
+    public final int status;
 
-    WebsiteMessageResp(String status, String message) {
+    public WebsiteApiException(int status, String message) {
+        super(message);
         this.status = status;
-        this.message = message;
     }
 }

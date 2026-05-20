@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.rule.util.storage.website;
+package cn.nm.lms.carpetlmsaddition.storage.website;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -31,13 +31,14 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
-import cn.nm.lms.carpetlmsaddition.lib.AsyncFileIo;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
+import cn.nm.lms.carpetlmsaddition.lib.FileIo;
 import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
-import cn.nm.lms.carpetlmsaddition.rule.util.storage.Storage;
 import cn.nm.lms.carpetlmsaddition.safety.Password;
+import cn.nm.lms.carpetlmsaddition.storage.data.Storage;
+import cn.nm.lms.carpetlmsaddition.storage.getitem.WebsiteGetItemHandler;
 
 public class Website {
     private static final Gson GSON = new Gson();
@@ -212,10 +213,10 @@ public class Website {
 
     private static boolean ensureCustomWebsiteReady() {
         try {
-            AsyncFileIo.createDirectories(CUSTOM_STORAGE_WEBSITE_PATH);
+            Files.createDirectories(CUSTOM_STORAGE_WEBSITE_PATH);
             Path customIndexHtmlPath = CUSTOM_STORAGE_WEBSITE_PATH.resolve("index.html");
-            if (!AsyncFileIo.exists(customIndexHtmlPath)) {
-                AsyncFileIo.writeString(customIndexHtmlPath, CUSTOM_STORAGE_INDEX_HTML);
+            if (!Files.exists(customIndexHtmlPath)) {
+                FileIo.writeString(customIndexHtmlPath, CUSTOM_STORAGE_INDEX_HTML);
             }
             return true;
         } catch (IOException e) {
@@ -235,7 +236,7 @@ public class Website {
     }
 
     private static byte[] readCustomResource(Path filePath) {
-        if (filePath == null || !AsyncFileIo.exists(filePath)) {
+        if (filePath == null || !Files.exists(filePath)) {
             return null;
         }
         try {
@@ -259,7 +260,7 @@ public class Website {
     private static boolean isCustomWebsiteEnabled() {
         try {
             JsonElement customWebsite =
-                JsonParser.parseString(AsyncFileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject().get("customWebsite");
+                JsonParser.parseString(FileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject().get("customWebsite");
             if (customWebsite != null && customWebsite.isJsonPrimitive()
                 && customWebsite.getAsJsonPrimitive().isBoolean()) {
                 return customWebsite.getAsBoolean();
@@ -409,7 +410,7 @@ public class Website {
 
     private static boolean isAutoStartWebsiteEnabled() {
         try {
-            JsonObject root = JsonParser.parseString(AsyncFileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject();
+            JsonObject root = JsonParser.parseString(FileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject();
             JsonElement autoStartWebsite = root.get("autoStartWebsite");
             if (autoStartWebsite != null && autoStartWebsite.isJsonPrimitive()
                 && autoStartWebsite.getAsJsonPrimitive().isBoolean()) {
@@ -423,7 +424,7 @@ public class Website {
     private static int getPort() {
         try {
             JsonElement port =
-                JsonParser.parseString(AsyncFileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject().get("port");
+                JsonParser.parseString(FileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject().get("port");
             if (port != null && port.isJsonPrimitive() && port.getAsJsonPrimitive().isNumber()) {
                 return port.getAsInt();
             }
@@ -435,7 +436,7 @@ public class Website {
     private static int getExpireDay() {
         try {
             JsonElement expireDay =
-                JsonParser.parseString(AsyncFileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject().get("expireDay");
+                JsonParser.parseString(FileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject().get("expireDay");
             if (expireDay != null && expireDay.isJsonPrimitive() && expireDay.getAsJsonPrimitive().isNumber()) {
                 return expireDay.getAsInt();
             }
@@ -447,7 +448,7 @@ public class Website {
     private static boolean isNoPasswordEnabled() {
         try {
             JsonElement noPassword =
-                JsonParser.parseString(AsyncFileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject().get("noPassword");
+                JsonParser.parseString(FileIo.readString(CONFIG_JSON_PATH)).getAsJsonObject().get("noPassword");
             if (noPassword != null && noPassword.isJsonPrimitive() && noPassword.getAsJsonPrimitive().isBoolean()) {
                 return noPassword.getAsBoolean();
             }

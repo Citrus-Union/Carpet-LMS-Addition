@@ -64,10 +64,7 @@ export const messages = {
       itemName: "物品名称",
       itemId: "物品 ID",
       totalCount: "总数",
-      details: "明细",
       dimension: "维度",
-      coordinate: "坐标",
-      positionCount: "该点数量",
     },
     dimension: {
       overworld: "主世界",
@@ -79,7 +76,6 @@ export const messages = {
       aggregateName: "累积仓库",
       noItems: "该仓库没有物品数据",
       noErrors: "无错误点位",
-      noPositionDetails: "暂无坐标明细",
       searchPlaceholder: "搜索名称或 ID",
     },
     errors: {
@@ -167,10 +163,7 @@ export const messages = {
       itemName: "Item Name",
       itemId: "Item ID",
       totalCount: "Total",
-      details: "Details",
       dimension: "Dimension",
-      coordinate: "Coordinate",
-      positionCount: "Count at Position",
     },
     dimension: {
       overworld: "Overworld",
@@ -182,7 +175,6 @@ export const messages = {
       aggregateName: "Aggregate",
       noItems: "No item data in this storage",
       noErrors: "No error positions",
-      noPositionDetails: "No position details",
       searchPlaceholder: "Search name or ID",
     },
     errors: {

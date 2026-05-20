@@ -40,15 +40,15 @@ public final class FakePlayerSpawner {
     private static final Set<String> FORCE_OFFLINE_PROFILE_PLAYERS = ConcurrentHashMap.newKeySet();
     private static final Set<UUID> SILENT_LOGOUT_PLAYERS = ConcurrentHashMap.newKeySet();
 
-    public static EntityPlayerMPFake spawnSurvivalFakeWithName(MinecraftServer server, String botName,
-        ResourceKey<Level> dimension, Vec3 spawnPos, boolean silence, boolean forceOffline) {
-        return spawnSurvivalFakeWithName(server, botName, dimension, spawnPos, 0F, 0F, silence, forceOffline);
+    public static EntityPlayerMPFake spawnSurvivalFakeWithName(String botName, ResourceKey<Level> dimension,
+        Vec3 spawnPos, boolean silence, boolean forceOffline) {
+        return spawnSurvivalFakeWithName(botName, dimension, spawnPos, 0F, 0F, silence, forceOffline);
     }
 
-    public static EntityPlayerMPFake spawnSurvivalFakeWithName(MinecraftServer server, String botName,
-        ResourceKey<Level> dimension, Vec3 spawnPos, float yaw, float pitch, boolean silence, boolean forceOffline) {
-        boolean nameOnline =
-            Utils.runOnServerThread(server, () -> server.getPlayerList().getPlayerByName(botName) != null);
+    public static EntityPlayerMPFake spawnSurvivalFakeWithName(String botName, ResourceKey<Level> dimension,
+        Vec3 spawnPos, float yaw, float pitch, boolean silence, boolean forceOffline) {
+        MinecraftServer server = Utils.getServer();
+        boolean nameOnline = Utils.runOnServerThread(() -> server.getPlayerList().getPlayerByName(botName) != null);
         if (nameOnline) {
             throw new IllegalStateException("Fake player already online: " + botName);
         }
@@ -57,13 +57,13 @@ public final class FakePlayerSpawner {
             FORCE_OFFLINE_PROFILE_PLAYERS.add(botName);
         }
         try {
-            boolean created = Utils.runOnServerThread(server, () -> callWithSilence(silence, () -> EntityPlayerMPFake
+            boolean created = Utils.runOnServerThread(() -> callWithSilence(silence, () -> EntityPlayerMPFake
                 .createFake(botName, server, spawnPos, yaw, pitch, dimension, GameType.SURVIVAL, false)));
             if (!created) {
                 throw new IllegalStateException("Unable to spawn fake player: " + botName);
             }
 
-            EntityPlayerMPFake fakePlayer = awaitFakePlayerOnline(server, botName);
+            EntityPlayerMPFake fakePlayer = awaitFakePlayerOnline(botName);
             if (fakePlayer == null) {
                 throw new IllegalStateException("Timed out waiting for fake player online: " + botName);
             }
@@ -75,9 +75,10 @@ public final class FakePlayerSpawner {
         }
     }
 
-    private static EntityPlayerMPFake awaitFakePlayerOnline(MinecraftServer server, String botName) {
+    private static EntityPlayerMPFake awaitFakePlayerOnline(String botName) {
+        MinecraftServer server = Utils.getServer();
         for (int tick = 0; tick < SPAWN_TIMEOUT_TICKS; tick++) {
-            EntityPlayerMPFake fakePlayer = Utils.runOnServerThread(server, () -> {
+            EntityPlayerMPFake fakePlayer = Utils.runOnServerThread(() -> {
                 if (server.getPlayerList().getPlayerByName(botName) instanceof EntityPlayerMPFake player) {
                     return player;
                 }
@@ -88,7 +89,7 @@ public final class FakePlayerSpawner {
             }
             waitSpawnPoll();
         }
-        return Utils.runOnServerThread(server, () -> {
+        return Utils.runOnServerThread(() -> {
             if (server.getPlayerList().getPlayerByName(botName) instanceof EntityPlayerMPFake player) {
                 return player;
             }
@@ -101,9 +102,8 @@ public final class FakePlayerSpawner {
     }
 
     public static void silenceLogout(EntityPlayerMPFake fakePlayer) {
-        MinecraftServer server = fakePlayer.level().getServer();
         markSilentLogout(fakePlayer);
-        Utils.runOnServerThread(server, () -> callWithSilence(true, () -> {
+        Utils.runOnServerThread(() -> callWithSilence(true, () -> {
             logout(fakePlayer);
             return null;
         }));

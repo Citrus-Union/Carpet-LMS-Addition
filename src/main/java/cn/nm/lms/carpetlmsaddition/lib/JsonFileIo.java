@@ -17,6 +17,7 @@
 package cn.nm.lms.carpetlmsaddition.lib;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.google.gson.Gson;
@@ -32,7 +33,7 @@ public final class JsonFileIo {
     private JsonFileIo() {}
 
     public static JsonObject readObjectOrEmpty(Path path) throws IOException {
-        if (!AsyncFileIo.exists(path)) {
+        if (!Files.exists(path)) {
             return new JsonObject();
         }
         return readObject(path);
@@ -80,14 +81,14 @@ public final class JsonFileIo {
 
     public static JsonElement read(Path path) throws IOException {
         try {
-            return JsonParser.parseString(AsyncFileIo.readString(path));
+            return JsonParser.parseString(FileIo.readString(path));
         } catch (JsonParseException | IllegalStateException e) {
             throw new IOException("Invalid JSON: " + path, e);
         }
     }
 
     public static void write(Path path, JsonElement json) throws IOException {
-        AsyncFileIo.writeString(path, GSON.toJson(json));
+        FileIo.writeString(path, GSON.toJson(json));
     }
 
     private interface JsonObjectWriter {

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.bot;
+package cn.nm.lms.carpetlmsaddition.storage.getitem.clean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +23,18 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-import carpet.CarpetServer;
 import carpet.fakes.ServerPlayerInterface;
 import carpet.patches.EntityPlayerMPFake;
 
+import cn.nm.lms.carpetlmsaddition.bot.FakePlayerSpawner;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
+import cn.nm.lms.carpetlmsaddition.storage.getitem.GetItemBotHelper;
+import cn.nm.lms.carpetlmsaddition.storage.getitem.OfflineInvCheck;
 
 public final class CleanGetItemBot {
     private CleanGetItemBot() {}
@@ -43,21 +44,16 @@ public final class CleanGetItemBot {
     }
 
     public static List<String> listBots() {
-        MinecraftServer server = CarpetServer.minecraft_server;
-        if (server == null) {
-            return List.of();
-        }
-
         String prefix = GetItemBotHelper.getBotPrefix();
-        Set<String> onlineNames = Utils.runOnServerThread(server, () -> server.getPlayerList().getPlayers().stream()
+        Set<String> onlineNames = Utils.runOnServerThread(() -> Utils.getServer().getPlayerList().getPlayers().stream()
             .map(ServerPlayer::getScoreboardName).collect(Collectors.toSet()));
 
         return IntStream.rangeClosed(1, GetItemBotHelper.BOT_SCAN_LIMIT).parallel().mapToObj(i -> prefix + i)
-            .filter(name -> !onlineNames.contains(name)).filter(name -> !OfflineInvCheck.isInventoryEmpty(server, name))
+            .filter(name -> !onlineNames.contains(name)).filter(name -> !OfflineInvCheck.isInventoryEmpty(name))
             .toList();
     }
 
-    public static List<String> cleanBots(ServerPlayer player, int max) {
+    public static synchronized List<String> cleanBots(ServerPlayer player, int max) {
         SpawnData spawnData = new SpawnData(player);
         List<String> bots = listBots();
         List<String> result = new ArrayList<>();
@@ -77,7 +73,7 @@ public final class CleanGetItemBot {
         }
         EntityPlayerMPFake bot = spawnData.spawn(name);
         try {
-            return Utils.runOnServerThread(spawnData.server, () -> {
+            return Utils.runOnServerThread(() -> {
                 int dropped = 0;
                 ServerPlayerInterface playerInterface = (ServerPlayerInterface)bot;
                 Inventory inv = bot.getInventory();
@@ -99,20 +95,17 @@ public final class CleanGetItemBot {
         Vec3 spawnPos;
         float yaw;
         float pitch;
-        MinecraftServer server;
         ResourceKey<Level> dimension;
 
         SpawnData(ServerPlayer player) {
             this.spawnPos = player.position();
             this.yaw = player.getYRot();
             this.pitch = player.getXRot();
-            this.server = player.level().getServer();
             this.dimension = player.level().dimension();
         }
 
         EntityPlayerMPFake spawn(String name) {
-            return FakePlayerSpawner.spawnSurvivalFakeWithName(this.server, name, this.dimension, spawnPos, yaw, pitch,
-                true, true);
+            return FakePlayerSpawner.spawnSurvivalFakeWithName(name, this.dimension, spawnPos, yaw, pitch, true, true);
         }
     }
 }

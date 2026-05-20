@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.bot;
+package cn.nm.lms.carpetlmsaddition.storage.getitem;
 
 import java.util.Map;
 
@@ -42,8 +42,13 @@ import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommandWithContext;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandRateLimitNbt;
+import cn.nm.lms.carpetlmsaddition.storage.StorageSlotCounter;
 
 public final class CommandGetItem implements BaseCommandWithContext {
+    private enum OutputMode {
+        TEXT, NBT
+    }
+
     private static boolean canUseGetItemCommand(CommandSourceStack source) {
         return CommandHelper.canUseCommand(source, Settings.commandGetItem);
     }
@@ -54,44 +59,51 @@ public final class CommandGetItem implements BaseCommandWithContext {
         dispatcher.register(Commands.literal("getItem").requires(CommandGetItem::canUseGetItemCommand)
             .then(Commands.argument("item", ItemArgument.item(commandBuildContext))
                 .then(Commands.argument("count", IntegerArgumentType.integer(1)).executes(ctx -> {
-                    return executeGetItem(ctx, false);
-                }).then(Commands.argument("nbt", StringArgumentType.word()).suggests((ctx, builder) -> {
+                    return executeGetItem(ctx, OutputMode.TEXT);
+                }).then(Commands.argument("mode", StringArgumentType.word()).suggests((ctx, builder) -> {
                     builder.suggest("nbt");
                     return builder.buildFuture();
                 }).executes(ctx -> {
-                    return executeGetItem(ctx, true);
+                    return executeGetItem(ctx, parseMode(StringArgumentType.getString(ctx, "mode")));
                 })))));
     }
 
-    private int executeGetItem(CommandContext<CommandSourceStack> ctx, boolean nbt) {
+    private static OutputMode parseMode(String mode) {
+        if ("nbt".equals(mode)) {
+            return OutputMode.NBT;
+        }
+        return OutputMode.TEXT;
+    }
+
+    private int executeGetItem(CommandContext<CommandSourceStack> ctx, OutputMode mode) {
         CommandSourceStack source = ctx.getSource();
         ItemInput itemInput = ItemArgument.getItem(ctx, "item");
-        Item item = Utils.itemFromInput(itemInput);
+        Item item = StorageSlotCounter.normalize(Utils.itemFromInput(itemInput));
         int count = IntegerArgumentType.getInteger(ctx, "count");
         String playerName = source.getTextName();
         int maxCount = Settings.getItemMaxCount;
         if (count < 1) {
-            if (nbt) {
+            if (mode == OutputMode.NBT) {
                 return getItemFailNbt(source, maxCount);
             }
             source.sendFailure(Component.literal("Count must be at least 1"));
             return 0;
         }
         if (maxCount > 0 && count > maxCount) {
-            if (nbt) {
+            if (mode == OutputMode.NBT) {
                 return getItemFailNbt(source, maxCount);
             }
             source.sendFailure(Component.literal(String.format("Count must be between 1 and %d", maxCount)));
             return 0;
         }
-        if (!nbt) {
+        if (mode != OutputMode.NBT) {
             source.sendSuccess(() -> Component.literal("getItem started in background"), false);
         }
         try {
-            AsyncTasks.run(() -> runGetItemAsync(source, item, count, playerName, nbt));
+            AsyncTasks.run(() -> runGetItemAsync(source, item, count, playerName, mode));
             return 0;
         } catch (Throwable throwable) {
-            if (nbt && CommandRateLimitNbt.sendIfRateLimited(source, throwable)) {
+            if (mode == OutputMode.NBT && CommandRateLimitNbt.sendIfRateLimited(source, throwable)) {
                 return 0;
             }
             source.sendFailure(Component.literal(buildFailureMessage(throwable)));
@@ -111,8 +123,8 @@ public final class CommandGetItem implements BaseCommandWithContext {
     private void sendResultText(CommandSourceStack source, Item item, Map<String, Map<Item, Integer>> result) {
         Component itemName = Utils.itemDisplayName(item);
         if (result.isEmpty()) {
-            source.sendSuccess(
-                () -> Component.literal("getItem done: ").append(itemName).append(Component.literal(" x0")), false);
+            Component component = Component.literal("getItem done: ").append(itemName).append(Component.literal(" x0"));
+            source.sendSuccess(() -> component, false);
             return;
         }
 
@@ -124,9 +136,9 @@ public final class CommandGetItem implements BaseCommandWithContext {
             source.sendSuccess(() -> GetItem.buildBotResultLine(botName, item, got), false);
         }
         int totalResult = total;
-        source.sendSuccess(
-            () -> Component.literal("getItem done: ").append(itemName).append(Component.literal(" x" + totalResult)),
-            false);
+        Component component =
+            Component.literal("getItem done: ").append(itemName).append(Component.literal(" x" + totalResult));
+        source.sendSuccess(() -> component, false);
     }
 
     private void sendResultNbt(CommandSourceStack source, Map<String, Map<Item, Integer>> result) {
@@ -153,21 +165,21 @@ public final class CommandGetItem implements BaseCommandWithContext {
         source.sendSuccess(() -> component, false);
     }
 
-    private void sendResult(CommandSourceStack source, Item item, Map<String, Map<Item, Integer>> result, boolean nbt) {
-        if (nbt) {
-            sendResultNbt(source, result);
+    private void sendResult(CommandSourceStack source, Item item, GetItem.GetItemResult result, OutputMode mode) {
+        if (mode == OutputMode.NBT) {
+            sendResultNbt(source, result.result());
         } else {
-            sendResultText(source, item, result);
+            sendResultText(source, item, result.result());
         }
     }
 
-    private void runGetItemAsync(CommandSourceStack source, Item item, int count, String playerName, boolean nbt) {
+    private void runGetItemAsync(CommandSourceStack source, Item item, int count, String playerName, OutputMode mode) {
         try {
-            Map<String, Map<Item, Integer>> result = GetItem.getItem(item, count, playerName);
-            source.getServer().execute(() -> sendResult(source, item, result, nbt));
+            GetItem.GetItemResult result = GetItem.getItemWithStats(item, count, playerName);
+            source.getServer().execute(() -> sendResult(source, item, result, mode));
         } catch (Throwable throwable) {
             source.getServer().execute(() -> {
-                if (nbt && CommandRateLimitNbt.sendIfRateLimited(source, throwable)) {
+                if (mode == OutputMode.NBT && CommandRateLimitNbt.sendIfRateLimited(source, throwable)) {
                     return;
                 }
                 source.sendFailure(Component.literal(buildFailureMessage(throwable)));

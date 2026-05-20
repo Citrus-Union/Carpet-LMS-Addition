@@ -25,7 +25,6 @@ const {
   errorMessage,
   setLocale,
   formatRefreshedAt,
-  flattenPositions,
   getDimensionLabel,
   getItemDisplayName,
   refreshData,
@@ -86,7 +85,6 @@ const loginErrorMessage = computed(() =>
           :loading="loading"
           :error-message="errorMessage"
           :get-item-display-name="getItemDisplayName"
-          :flatten-positions="flattenPositions"
           :get-dimension-label="getDimensionLabel"
           :on-get-item="handleGetItem"
         />

@@ -13,7 +13,6 @@ import {
 } from "@/api/storage";
 import { STORAGE_WEBSITE_LOCALE_KEY, type AppLocale } from "@/i18n";
 import type {
-  PositionCount,
   StorageErrorPosition,
   StorageItem,
   StorageResponse,
@@ -39,12 +38,6 @@ interface DashboardErrorState {
   code: DashboardErrorCode;
   status?: number;
   detail?: string;
-}
-
-export interface FlattenedPosition {
-  dimension: string;
-  pos: PositionCount["pos"];
-  count: number;
 }
 
 export function useStorageDashboard() {
@@ -119,40 +112,11 @@ export function useStorageDashboard() {
         if (!aggregateItems[itemId]) {
           aggregateItems[itemId] = {
             count: 0,
-            positionsByDimension: {},
           };
         }
 
         const target = aggregateItems[itemId];
         target.count += item.count;
-
-        for (const [dimension, positions] of Object.entries(
-          item.positionsByDimension,
-        )) {
-          const positionsByCoord = new Map<string, PositionCount>();
-
-          for (const existing of target.positionsByDimension[dimension] ?? []) {
-            const key = `${existing.pos.x},${existing.pos.y},${existing.pos.z}`;
-            positionsByCoord.set(key, {
-              ...existing,
-              pos: { ...existing.pos },
-            });
-          }
-
-          for (const pos of positions) {
-            const key = `${pos.pos.x},${pos.pos.y},${pos.pos.z}`;
-            const existing = positionsByCoord.get(key);
-            if (existing) {
-              existing.count += pos.count;
-            } else {
-              positionsByCoord.set(key, { ...pos, pos: { ...pos.pos } });
-            }
-          }
-
-          target.positionsByDimension[dimension] = Array.from(
-            positionsByCoord.values(),
-          );
-        }
       }
 
       aggregateErrors.push(
@@ -278,22 +242,6 @@ export function useStorageDashboard() {
       mojangMap.value = {};
       mojangLoaded.value = true;
     }
-  }
-
-  function flattenPositions(item: StorageItem): FlattenedPosition[] {
-    const rows: FlattenedPosition[] = [];
-
-    Object.entries(item.positionsByDimension).forEach(([dimension, list]) => {
-      list.forEach((point) => {
-        rows.push({
-          dimension,
-          pos: point.pos,
-          count: point.count,
-        });
-      });
-    });
-
-    return rows;
   }
 
   function getDimensionLabel(dimension: string): string {
@@ -712,7 +660,6 @@ export function useStorageDashboard() {
     errorMessage,
     setLocale,
     formatRefreshedAt,
-    flattenPositions,
     getDimensionLabel,
     getItemDisplayName,
     refreshData,

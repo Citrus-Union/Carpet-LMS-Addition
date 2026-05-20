@@ -161,7 +161,7 @@ public final class PlayerConfig {
         return values;
     }
 
-    private static synchronized JsonObject ensureLoaded() {
+    public static synchronized JsonObject ensureLoaded() {
         Path file = currentFile();
         if (root != null && file.equals(loadedFile)) {
             return root;

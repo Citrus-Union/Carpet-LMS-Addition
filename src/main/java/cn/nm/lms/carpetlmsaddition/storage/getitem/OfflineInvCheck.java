@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.bot;
+package cn.nm.lms.carpetlmsaddition.storage.getitem;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +22,6 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 
 import cn.nm.lms.carpetlmsaddition.lib.PlayerUtils;
@@ -31,7 +30,7 @@ import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 public final class OfflineInvCheck {
     private OfflineInvCheck() {}
 
-    static boolean isInventoryEmpty(MinecraftServer server, String name) {
+    public static boolean isInventoryEmpty(String name) {
         UUID uuid = UUIDUtil.createOfflinePlayerUUID(name);
         Path playerDat = GetPaths.getWorldPath(LevelResource.PLAYER_DATA_DIR).resolve(uuid.toString() + ".dat");
         if (!Files.exists(playerDat)) {

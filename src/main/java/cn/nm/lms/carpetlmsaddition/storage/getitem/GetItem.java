@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.bot;
+package cn.nm.lms.carpetlmsaddition.storage.getitem;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,11 +22,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -35,47 +33,36 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
-import carpet.CarpetServer;
 import carpet.patches.EntityPlayerMPFake;
 
 import org.jspecify.annotations.Nullable;
 
+import cn.nm.lms.carpetlmsaddition.bot.FakePlayerSpawner;
 import cn.nm.lms.carpetlmsaddition.lib.ChatEventCompat;
 import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
-import cn.nm.lms.carpetlmsaddition.rule.util.storage.Storage;
+import cn.nm.lms.carpetlmsaddition.storage.StorageSlotCounter;
+import cn.nm.lms.carpetlmsaddition.storage.StorageSlotCounter.Result;
+import cn.nm.lms.carpetlmsaddition.storage.data.Storage;
+import cn.nm.lms.carpetlmsaddition.storage.data.StorageContainerReader.SlotSnapshot;
+import cn.nm.lms.carpetlmsaddition.storage.getitem.GetItemSlotSelector.Target;
 
 public class GetItem {
-    private static final Object GET_ITEM_SERIAL_LOCK = new Object();
     private static final NameRateLimiter RATE_LIMITER = new NameRateLimiter();
 
-    public static Map<String, Map<Item, Integer>> getItem(Item item, int count, @Nullable String playerName) {
-        if (count <= 0) {
-            return Map.of();
-        }
-        MinecraftServer server = CarpetServer.minecraft_server;
-        if (server == null) {
-            return Map.of();
-        }
+    public static synchronized Map<String, Map<Item, Integer>> getItem(Item item, int count,
+        @Nullable String playerName) {
+        return getItemWithStats(item, count, playerName).result();
+    }
+
+    public static synchronized GetItemResult getItemWithStats(Item item, int count, @Nullable String playerName) {
         checkRateLimit(playerName);
-        CompletableFuture<Map<String, Map<Item, Integer>>> future = new CompletableFuture<>();
-        Thread worker = new Thread(() -> {
-            try {
-                synchronized (GET_ITEM_SERIAL_LOCK) {
-                    future.complete(doGetItem(server, item, count));
-                }
-            } catch (Throwable throwable) {
-                future.completeExceptionally(throwable);
-            }
-        }, "carpet-lms-getitem-worker");
-        worker.setDaemon(true);
-        worker.start();
-        return future.join();
+        Item target = StorageSlotCounter.normalize(item);
+        return doGetItem(target, count);
     }
 
     public static Component buildBotResultLine(String botName, Item item, int got) {
@@ -106,8 +93,8 @@ public class GetItem {
         return screenHandler.quickMoveStack(player, slotIndex);
     }
 
-    private static FetchResult getItemFromContainer(ServerLevel level, BlockPos pos, EntityPlayerMPFake player,
-        Item item, int targetCount) {
+    private static FetchResult getItemFromSlot(ServerLevel level, BlockPos pos, int slotIndex,
+        EntityPlayerMPFake player, Item item) {
 
         double tpX = pos.getX() + 0.5;
         double tpY = pos.getY() + 0.5 - player.getEyeHeight();
@@ -124,60 +111,55 @@ public class GetItem {
 
         AbstractContainerMenu screenHandler = player.containerMenu;
 
-        int already = 0;
-        boolean inventoryFull = false;
-        boolean targetIsShulker = GetItemShulkerUtil.isShulker(item);
-
         int containerSlotCount = Math.min(container.getContainerSize(), screenHandler.slots.size());
-        for (int i = 0; i < containerSlotCount; i++) {
-            Slot slot = screenHandler.slots.get(i);
-            ItemStack slotStack = slot.getItem();
-            int slotContribution = GetItemShulkerUtil.slotAmount(slotStack, item, targetIsShulker);
-            if (slotContribution <= 0) {
-                continue;
-            }
+        if (slotIndex < 0 || slotIndex >= containerSlotCount) {
+            player.closeContainer();
+            return new FetchResult(0, false);
+        }
 
-            ItemStack moveRusult = quickMove(screenHandler, i, player);
+        Slot slot = screenHandler.slots.get(slotIndex);
+        int slotContribution = countTarget(slot.getItem(), item);
+        if (slotContribution <= 0) {
+            player.closeContainer();
+            return new FetchResult(0, false);
+        }
 
-            if (moveRusult == ItemStack.EMPTY) {
-                inventoryFull = true;
-                break;
-            }
+        ItemStack moveResult = quickMove(screenHandler, slotIndex, player);
 
-            already += slotContribution;
+        if (moveResult == ItemStack.EMPTY) {
+            player.closeContainer();
+            return new FetchResult(0, true);
+        }
 
-            if (slot.hasItem()) {
-                already -= GetItemShulkerUtil.slotAmount(slot.getItem(), item, targetIsShulker);
-                inventoryFull = true;
-                break;
-            }
-
-            if (already >= targetCount) {
-                break;
-            }
+        int got = slotContribution;
+        boolean inventoryFull = false;
+        if (slot.hasItem()) {
+            got -= countTarget(slot.getItem(), item);
+            inventoryFull = true;
         }
 
         player.closeContainer();
-        return new FetchResult(already, inventoryFull);
+        return new FetchResult(got, inventoryFull);
     }
 
-    private static Map<String, Map<Item, Integer>> doGetItem(MinecraftServer server, Item item, int count) {
+    private static GetItemResult doGetItem(Item item, int count) {
         int maxBots = Settings.getItemMaxBots;
         int remainingBots = maxBots <= 0 ? Integer.MAX_VALUE : maxBots;
-        return doGetItem(server, item, count, 1, 0, remainingBots).result();
+        RoundResult roundResult = doGetItem(item, count, 1, remainingBots);
+        return new GetItemResult(roundResult.result());
     }
 
-    private static RoundResult doGetItem(MinecraftServer server, Item item, int count, int startBotIndex, int depth,
-        int remainingBots) {
+    private static RoundResult doGetItem(Item item, int count, int startBotIndex, int remainingBots) {
         if (count <= 0) {
             return new RoundResult(Map.of(), remainingBots);
         }
 
-        List<ContainerTarget> targets = collectTargets(item);
+        List<Target> allTargets = collectSlotTargets(item);
+        List<Target> targets = GetItemSlotSelector.select(allTargets, count);
         if (targets.isEmpty()) {
             return new RoundResult(Map.of(), remainingBots);
         }
-        targets.sort(Comparator.comparingInt((ContainerTarget target) -> target.pos().getY()).reversed());
+        targets.sort(Comparator.comparingInt((Target target) -> target.pos().getY()).reversed());
 
         LinkedHashMap<String, Map<Item, Integer>> result = new LinkedHashMap<>();
         int remaining = count;
@@ -189,7 +171,7 @@ public class GetItem {
         int currentBotFetched = 0;
 
         try {
-            for (ContainerTarget target : targets) {
+            for (Target target : targets) {
                 if (remaining <= 0) {
                     break;
                 }
@@ -199,7 +181,7 @@ public class GetItem {
                         break;
                     }
                     int botStartIndex = nextBotIndex;
-                    SpawnedFake spawned = spawnNextUsableBot(server, target, botStartIndex);
+                    SpawnedFake spawned = spawnNextUsableBot(target, botStartIndex);
                     currentBot = spawned.player();
                     currentBotName = spawned.name();
                     currentBotFetched = 0;
@@ -207,14 +189,14 @@ public class GetItem {
                     remainingBots--;
                 }
 
-                int callTargetCount = remaining;
                 EntityPlayerMPFake callBot = currentBot;
-                FetchResult fetched = Utils.runOnServerThread(server, () -> {
+                FetchResult fetched = Utils.runOnServerThread(() -> {
+                    MinecraftServer server = Utils.getServer();
                     ServerLevel level = server.getLevel(target.dimension());
                     if (level == null) {
                         return new FetchResult(0, false);
                     }
-                    return getItemFromContainer(level, target.pos(), callBot, item, callTargetCount);
+                    return getItemFromSlot(level, target.pos(), target.slotIndex(), callBot, item);
                 });
                 int got = fetched.count();
                 if (got > 0) {
@@ -243,7 +225,7 @@ public class GetItem {
         }
 
         if (remaining > 0 && fetchedThisRound > 0 && remainingBots > 0) {
-            RoundResult nextRound = doGetItem(server, item, remaining, nextBotIndex, depth + 1, remainingBots);
+            RoundResult nextRound = doGetItem(item, remaining, nextBotIndex, remainingBots);
             remainingBots = nextRound.remainingBots();
             mergeResults(result, nextRound.result(), item);
         }
@@ -251,48 +233,48 @@ public class GetItem {
         return new RoundResult(result, remainingBots);
     }
 
-    private static List<ContainerTarget> collectTargets(Item item) {
-        List<ContainerTarget> targets = new ArrayList<>();
-        for (Storage.ContainerSnapshot snapshot : Storage.collectConfiguredContainerSnapshots()) {
-            if (!hasItem(snapshot, item)) {
+    private static List<Target> collectSlotTargets(Item item) {
+        List<Target> targets = new ArrayList<>();
+        for (SlotSnapshot snapshot : Storage.collectAllConfiguredStorageSnapshots().snapshots()) {
+            Storage.Position position = snapshot.position();
+            Result result = StorageSlotCounter.count(snapshot.stack());
+            if (result == null || !result.matches(item)) {
                 continue;
             }
-            Storage.Position position = snapshot.position;
-            targets.add(new ContainerTarget(position.dimension, position.pos));
+            targets.add(new Target(position.dimension, position.pos, snapshot.slotIndex(), result.count(),
+                result.noShulkerBox()));
         }
+        targets.sort(Comparator.comparingInt((Target target) -> target.pos().getY()).reversed());
         return targets;
     }
 
-    private static boolean hasItem(Storage.ContainerSnapshot snapshot, Item item) {
-        boolean targetIsShulker = GetItemShulkerUtil.isShulker(item);
-        for (ItemStack stack : snapshot.stacks) {
-            if (GetItemShulkerUtil.slotAmount(stack, item, targetIsShulker) > 0) {
-                return true;
-            }
+    private static int countTarget(ItemStack stack, Item target) {
+        Result result = StorageSlotCounter.count(stack);
+        if (result == null || !result.matches(target)) {
+            return 0;
         }
-        return false;
+        return result.count();
     }
 
-    private static SpawnedFake spawnNextUsableBot(MinecraftServer server, ContainerTarget target, int startIndex) {
+    private static SpawnedFake spawnNextUsableBot(Target target, int startIndex) {
         int index = startIndex;
         int maxIndex = GetItemBotHelper.BOT_SCAN_LIMIT;
         while (index < maxIndex) {
             String botName = GetItemBotHelper.getBotPrefix() + index;
             index++;
 
-            boolean nameOnline = GetItemBotHelper.isBotOnline(server, botName);
+            boolean nameOnline = GetItemBotHelper.isBotOnline(botName);
             if (nameOnline) {
                 continue;
             }
-            boolean offlineEmpty =
-                Utils.runOnServerThread(server, () -> OfflineInvCheck.isInventoryEmpty(server, botName));
+            boolean offlineEmpty = OfflineInvCheck.isInventoryEmpty(botName);
             if (!offlineEmpty) {
                 continue;
             }
 
             Vec3 spawnPos = new Vec3(target.pos().getX() + 0.5, target.pos().getY() + 0.5, target.pos().getZ() + 0.5);
             EntityPlayerMPFake fakePlayer =
-                FakePlayerSpawner.spawnSurvivalFakeWithName(server, botName, target.dimension(), spawnPos, true, true);
+                FakePlayerSpawner.spawnSurvivalFakeWithName(botName, target.dimension(), spawnPos, true, true);
 
             return new SpawnedFake(fakePlayer, botName, index);
         }
@@ -344,13 +326,13 @@ public class GetItem {
         }
     }
 
-    private record ContainerTarget(ResourceKey<Level> dimension, BlockPos pos) {
-    }
-
     private record FetchResult(int count, boolean inventoryFull) {
     }
 
     private record SpawnedFake(EntityPlayerMPFake player, String name, int nextIndex) {
+    }
+
+    public record GetItemResult(Map<String, Map<Item, Integer>> result) {
     }
 
     private record RoundResult(Map<String, Map<Item, Integer>> result, int remainingBots) {

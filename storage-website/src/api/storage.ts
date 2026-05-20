@@ -7,56 +7,21 @@ const DEV_MOCK_DATA: StorageResponse[] = [
       items: {
         "minecraft:gold_ingot": {
           count: 2,
-          positionsByDimension: {
-            overworld: [{ pos: { x: -1, y: 100, z: 0 }, count: 2 }],
-          },
         },
         "minecraft:white_shulker_box": {
           count: 1,
-          positionsByDimension: {
-            overworld: [{ pos: { x: -1, y: 100, z: 0 }, count: 1 }],
-          },
         },
         "minecraft:shulker_box": {
           count: 2,
-          positionsByDimension: {
-            overworld: [{ pos: { x: -1, y: 100, z: 0 }, count: 2 }],
-          },
         },
         "minecraft:command_block": {
           count: 64,
-          positionsByDimension: {
-            overworld: [
-              {
-                pos: { x: 1012, y: 112, z: 930 },
-                count: 64,
-              },
-            ],
-          },
         },
         "minecraft:barrel": {
           count: 1152,
-          positionsByDimension: {
-            overworld: [
-              {
-                pos: { x: 1, y: 100, z: 0 },
-                count: 576,
-              },
-              { pos: { x: -1, y: 100, z: 0 }, count: 576 },
-            ],
-          },
         },
         "minecraft:orange_stained_glass_pane": {
           count: 39744,
-          positionsByDimension: {
-            overworld: [
-              {
-                pos: { x: 0, y: 100, z: 1 },
-                count: 27648,
-              },
-              { pos: { x: -1, y: 100, z: 0 }, count: 12096 },
-            ],
-          },
         },
       },
       errors: [{ dimension: "overworld", pos: { x: 0, y: 100, z: 0 } }],
@@ -87,12 +52,6 @@ function isNumberArray(value: unknown, length: number): value is number[] {
     value.length === length &&
     value.every((item) => typeof item === "number")
   );
-}
-
-function isPointWithCount(
-  value: unknown,
-): value is [number, number, number, number] {
-  return isNumberArray(value, 4);
 }
 
 function isPointOnly(value: unknown): value is [number, number, number] {
@@ -275,67 +234,34 @@ function decodeCompactStorage(payload: unknown): StorageResponse[] | null {
     if (!isRecord(oneStorage) || typeof oneStorage.n !== "string") {
       return null;
     }
-    if (
-      !isRecord(oneStorage.d) ||
-      !isRecord(oneStorage.d.i) ||
-      !isRecord(oneStorage.d.e)
-    ) {
+    if (!Array.isArray(oneStorage.d) || !isRecord(oneStorage.e)) {
       return null;
     }
 
     const items: StorageResponse["data"]["items"] = {};
-    for (const [rawItemId, rawItem] of Object.entries(oneStorage.d.i)) {
-      if (!isRecord(rawItem) || typeof rawItem.c !== "number") {
+    for (const rawItem of oneStorage.d) {
+      if (
+        !isRecord(rawItem) ||
+        typeof rawItem.i !== "string" ||
+        typeof rawItem.c !== "number"
+      ) {
         return null;
       }
-      const itemId = normalizeItemId(rawItemId);
-
-      const positionsByDimension: Record<
-        string,
-        { pos: { x: number; y: number; z: number }; count: number }[]
-      > = {};
-      for (const dimKey of ["0", "-1", "1"] as const) {
-        const rawPoints = rawItem[dimKey];
-        const dimName = decodeDimensionKey(dimKey);
-        if (dimName == null) {
-          return null;
-        }
-        if (rawPoints == null) {
-          positionsByDimension[dimName] = [];
-          continue;
-        }
-        if (!Array.isArray(rawPoints)) {
-          return null;
-        }
-        const decodedPoints = [];
-        for (const onePoint of rawPoints) {
-          if (!isPointWithCount(onePoint)) {
-            return null;
-          }
-          const [x, y, z, c] = onePoint;
-          decodedPoints.push({
-            pos: { x, y, z },
-            count: c,
-          });
-        }
-        positionsByDimension[dimName] = decodedPoints;
+      const itemId = normalizeItemId(rawItem.i);
+      if (items[itemId] != null) {
+        return null;
       }
 
       items[itemId] = {
         count: rawItem.c,
-        positionsByDimension,
       };
     }
 
     const errors: StorageErrorPosition[] = [];
-    for (const dimKey of ["0", "-1", "1"] as const) {
-      const rawErrors = oneStorage.d.e[dimKey];
+    for (const [dimKey, rawErrors] of Object.entries(oneStorage.e)) {
       const dimName = decodeDimensionKey(dimKey);
       if (dimName == null) {
         return null;
-      }
-      if (rawErrors == null) {
-        continue;
       }
       if (!Array.isArray(rawErrors)) {
         return null;

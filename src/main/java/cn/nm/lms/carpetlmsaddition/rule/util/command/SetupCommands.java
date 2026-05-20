@@ -23,12 +23,12 @@ import net.minecraft.commands.CommandSourceStack;
 
 import com.mojang.brigadier.CommandDispatcher;
 
-import cn.nm.lms.carpetlmsaddition.bot.CommandCleanGetItemBot;
-import cn.nm.lms.carpetlmsaddition.bot.CommandGetItem;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.lms.CommandLmsImpl;
-import cn.nm.lms.carpetlmsaddition.rule.util.storage.CommandGetStorageData;
-import cn.nm.lms.carpetlmsaddition.rule.util.storage.CommandStorageWebsite;
 import cn.nm.lms.carpetlmsaddition.safety.CommandSetPassword;
+import cn.nm.lms.carpetlmsaddition.storage.data.CommandGetStorageData;
+import cn.nm.lms.carpetlmsaddition.storage.getitem.CommandGetItem;
+import cn.nm.lms.carpetlmsaddition.storage.getitem.clean.CommandCleanGetItemBot;
+import cn.nm.lms.carpetlmsaddition.storage.website.CommandStorageWebsite;
 
 public final class SetupCommands {
     private static final List<BaseCommand> COMMANDS = List.of(new CommandStorageWebsite(), new CommandSetPassword(),

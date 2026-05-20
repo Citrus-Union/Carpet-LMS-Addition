@@ -34,12 +34,13 @@ import carpet.CarpetServer;
 import org.slf4j.Logger;
 
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
-import cn.nm.lms.carpetlmsaddition.rule.Bootstrap;
+import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
+import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.runtime.RecipeBookHelper;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.runtime.RecipeRuleHelper;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.SetupCommands;
-import cn.nm.lms.carpetlmsaddition.rule.util.storage.Storage;
-import cn.nm.lms.carpetlmsaddition.rule.util.storage.website.Website;
+import cn.nm.lms.carpetlmsaddition.storage.data.Storage;
+import cn.nm.lms.carpetlmsaddition.storage.website.Website;
 
 public class Mod implements ModInitializer, CarpetExtension {
     public static final String MOD_ID = "carpet-lms-addition";
@@ -72,7 +73,7 @@ public class Mod implements ModInitializer, CarpetExtension {
 
     @Override
     public void onGameStarted() {
-        Bootstrap.registerAll();
+        CarpetServer.settingsManager.parseSettingsClass(Settings.class);
     }
 
     @Override
@@ -84,8 +85,9 @@ public class Mod implements ModInitializer, CarpetExtension {
     public void onServerLoadedWorlds(MinecraftServer server) {
         AsyncTasks.init();
         Storage.prepareDefaultFilesOnWorldLoad();
-        RecipeRuleHelper.flushPendingReload(server);
+        RecipeRuleHelper.flushPendingReload();
         Website.autoStartFromConfigAfterWorldLoaded();
+        PlayerConfig.ensureLoaded();
     }
 
     @Override

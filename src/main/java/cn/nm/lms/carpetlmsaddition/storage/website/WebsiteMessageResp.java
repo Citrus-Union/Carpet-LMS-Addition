@@ -14,12 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.rule;
+package cn.nm.lms.carpetlmsaddition.storage.website;
 
-import carpet.CarpetServer;
+final class WebsiteMessageResp {
+    String status;
+    String message;
 
-public final class Bootstrap {
-    public static void registerAll() {
-        CarpetServer.settingsManager.parseSettingsClass(Settings.class);
+    WebsiteMessageResp(String status, String message) {
+        this.status = status;
+        this.message = message;
     }
 }

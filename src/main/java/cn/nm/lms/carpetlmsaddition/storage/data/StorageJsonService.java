@@ -14,11 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.rule.util.storage;
+package cn.nm.lms.carpetlmsaddition.storage.data;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,9 +39,8 @@ import com.google.gson.JsonParser;
 import org.jspecify.annotations.Nullable;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
-import cn.nm.lms.carpetlmsaddition.lib.AsyncFileIo;
+import cn.nm.lms.carpetlmsaddition.lib.FileIo;
 import cn.nm.lms.carpetlmsaddition.lib.ItemRegistryCompat;
-import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 
 final class StorageJsonService {
     private StorageJsonService() {}
@@ -70,7 +72,7 @@ final class StorageJsonService {
         }
 
         try {
-            AsyncFileIo.createDirectories(Storage.storageDir);
+            Files.createDirectories(Storage.storageDir);
         } catch (IOException e) {
             Mod.LOGGER.warn("Failed to create storage dir: {}", Storage.storageDir);
             return Storage.PreparedInputs.EMPTY;
@@ -91,13 +93,13 @@ final class StorageJsonService {
 
             String storageFileName = element.getAsString();
             Path storageFile = Storage.storageDir.resolve(storageFileName);
-            if (!AsyncFileIo.exists(storageFile)) {
+            if (!Files.exists(storageFile)) {
                 Mod.LOGGER.warn("Storage file not found: {}", storageFile);
                 continue;
             }
 
             try {
-                JsonElement root = JsonParser.parseString(AsyncFileIo.readString(storageFile));
+                JsonElement root = JsonParser.parseString(FileIo.readString(storageFile));
                 if (!root.isJsonObject()) {
                     Mod.LOGGER.warn("Invalid storage JSON format: {}", storageFileName);
                     continue;
@@ -119,88 +121,48 @@ final class StorageJsonService {
         return config.getAsJsonArray("storageList");
     }
 
-    static JsonObject toOutputJsonObject(Map<Item, Storage.ItemCount> items, List<Storage.Position> errors) {
-        JsonObject root = new JsonObject();
-
-        JsonObject itemsObject = new JsonObject();
-        items.forEach((item, itemCount) -> {
-            Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
+    static JsonArray toOutputItemsArray(Map<Item, Storage.ItemCount> items) {
+        JsonArray itemsArray = new JsonArray();
+        items.entrySet().stream().map(entry -> {
+            Identifier itemId = BuiltInRegistries.ITEM.getKey(entry.getKey());
+            String compactItemId = ItemRegistryCompat.compactItemId(itemId.toString());
             JsonObject oneItem = new JsonObject();
-            oneItem.addProperty("c", itemCount.count);
-            JsonArray overworldPositions = new JsonArray();
-            JsonArray netherPositions = new JsonArray();
-            JsonArray endPositions = new JsonArray();
-            itemCount.positionsCount.forEach((position, positionCount) -> {
-                JsonArray onePosition = new JsonArray();
-                onePosition.add(position.pos.getX());
-                onePosition.add(position.pos.getY());
-                onePosition.add(position.pos.getZ());
-                onePosition.add(positionCount);
-                JsonArray targetArray =
-                    getDimensionArray(position.dimension, overworldPositions, netherPositions, endPositions);
-                if (targetArray != null) {
-                    targetArray.add(onePosition);
-                }
-            });
+            oneItem.addProperty("i", compactItemId);
+            oneItem.addProperty("c", entry.getValue().count);
+            return oneItem;
+        }).sorted(Comparator.comparing(oneItem -> oneItem.get("i").getAsString())).forEach(itemsArray::add);
 
-            if (!overworldPositions.isEmpty()) {
-                oneItem.add("0", overworldPositions);
-            }
-            if (!netherPositions.isEmpty()) {
-                oneItem.add("-1", netherPositions);
-            }
-            if (!endPositions.isEmpty()) {
-                oneItem.add("1", endPositions);
-            }
-            itemsObject.add(ItemRegistryCompat.compactItemId(itemId.toString()), oneItem);
-        });
-        root.add("i", itemsObject);
+        return itemsArray;
+    }
 
-        JsonObject errorsObject = new JsonObject();
-        JsonArray overworldErrors = new JsonArray();
-        JsonArray netherErrors = new JsonArray();
-        JsonArray endErrors = new JsonArray();
+    static JsonObject toOutputErrorsObject(List<Storage.Position> errors) {
+        Map<ResourceKey<Level>, JsonArray> errorsByDimension = new HashMap<>();
+        for (Storage.StorageDimension dimension : Storage.DIMENSIONS) {
+            errorsByDimension.put(dimension.key(), new JsonArray());
+        }
         errors.forEach(position -> {
             JsonArray oneError = new JsonArray();
             oneError.add(position.pos.getX());
             oneError.add(position.pos.getY());
             oneError.add(position.pos.getZ());
-            JsonArray targetArray = getDimensionArray(position.dimension, overworldErrors, netherErrors, endErrors);
-            if (targetArray != null) {
-                targetArray.add(oneError);
+            JsonArray dimensionErrors = errorsByDimension.get(position.dimension);
+            if (dimensionErrors != null) {
+                dimensionErrors.add(oneError);
             }
         });
-        if (!overworldErrors.isEmpty()) {
-            errorsObject.add("0", overworldErrors);
+        JsonObject errorsObject = new JsonObject();
+        for (Storage.StorageDimension dimension : Storage.DIMENSIONS) {
+            JsonArray dimensionErrors = errorsByDimension.get(dimension.key());
+            if (!dimensionErrors.isEmpty()) {
+                errorsObject.add(dimension.outputKey(), dimensionErrors);
+            }
         }
-        if (!netherErrors.isEmpty()) {
-            errorsObject.add("-1", netherErrors);
-        }
-        if (!endErrors.isEmpty()) {
-            errorsObject.add("1", endErrors);
-        }
-        root.add("e", errorsObject);
 
-        return root;
-    }
-
-    private static JsonArray getDimensionArray(ResourceKey<Level> dimension, JsonArray overworldArray,
-        JsonArray netherArray, JsonArray endArray) {
-        String dimensionString = Storage.dimensionToSting.get(dimension);
-        if ("overworld".equals(dimensionString)) {
-            return overworldArray;
-        }
-        if ("nether".equals(dimensionString)) {
-            return netherArray;
-        }
-        if ("end".equals(dimensionString)) {
-            return endArray;
-        }
-        return null;
+        return errorsObject;
     }
 
     private static boolean ensureDefaultConfigExists() {
-        if (AsyncFileIo.exists(Storage.configJsonPath)) {
+        if (Files.exists(Storage.configJsonPath)) {
             return true;
         }
 
@@ -215,8 +177,7 @@ final class StorageJsonService {
         defaultConfig.add("storageList", storageList);
 
         try {
-            AsyncFileIo.createDirectories(GetPaths.getLmsWorldPath());
-            AsyncFileIo.writeString(Storage.configJsonPath, Storage.PRETTY_GSON.toJson(defaultConfig));
+            FileIo.writeString(Storage.configJsonPath, Storage.PRETTY_GSON.toJson(defaultConfig));
             Mod.LOGGER.info("Generated default storage config: {}", Storage.configJsonPath);
             return true;
         } catch (IOException e) {
@@ -227,12 +188,11 @@ final class StorageJsonService {
 
     private static boolean ensureDefaultStorageExampleExists() {
         Path storageFile = Storage.storageDir.resolve("example.json");
-        if (AsyncFileIo.exists(storageFile)) {
+        if (Files.exists(storageFile)) {
             return true;
         }
 
         try {
-            AsyncFileIo.createParentDirectories(storageFile);
             JsonObject defaultStorage = new JsonObject();
             JsonArray overworld = new JsonArray();
             JsonArray examplePos = new JsonArray();
@@ -243,7 +203,7 @@ final class StorageJsonService {
             defaultStorage.add("overworld", overworld);
             defaultStorage.add("end", new JsonArray());
             defaultStorage.add("nether", new JsonArray());
-            AsyncFileIo.writeString(storageFile, Storage.PRETTY_GSON.toJson(defaultStorage));
+            FileIo.writeString(storageFile, Storage.PRETTY_GSON.toJson(defaultStorage));
             Mod.LOGGER.info("Generated default storage list file: {}", storageFile);
             return true;
         } catch (IOException e) {
@@ -252,12 +212,12 @@ final class StorageJsonService {
     }
 
     private static @Nullable JsonObject readConfigJsonObject() {
-        if (!AsyncFileIo.exists(Storage.configJsonPath)) {
+        if (!Files.exists(Storage.configJsonPath)) {
             Mod.LOGGER.warn("Config file not found: {}", Storage.configJsonPath);
             return null;
         }
         try {
-            JsonElement root = JsonParser.parseString(AsyncFileIo.readString(Storage.configJsonPath));
+            JsonElement root = JsonParser.parseString(FileIo.readString(Storage.configJsonPath));
             if (!root.isJsonObject()) {
                 Mod.LOGGER.warn("Invalid config JSON (root is not object): {}", Storage.configJsonPath);
                 return null;

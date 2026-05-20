@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.rule.util.storage;
+package cn.nm.lms.carpetlmsaddition.storage.website;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -28,7 +28,6 @@ import carpet.utils.CommandHelper;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommand;
-import cn.nm.lms.carpetlmsaddition.rule.util.storage.website.Website;
 
 public final class CommandStorageWebsite implements BaseCommand {
     private static boolean canUseStorageWebsiteCommand(CommandSourceStack source) {
@@ -66,7 +65,6 @@ public final class CommandStorageWebsite implements BaseCommand {
     }
 
     private int executeServerActionAsync(CommandSourceStack source, String action, Runnable task) {
-        source.sendSuccess(() -> Component.literal("storageWebsite " + action + " in background"), false);
         AsyncTasks.run(() -> {
             task.run();
             source.getServer().execute(

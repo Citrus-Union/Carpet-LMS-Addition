@@ -14,34 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.rule.util.storage.website;
+package cn.nm.lms.carpetlmsaddition.storage.getitem;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
-
-import carpet.CarpetServer;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import cn.nm.lms.carpetlmsaddition.bot.GetItem;
 import cn.nm.lms.carpetlmsaddition.lib.IdentifierCompat;
 import cn.nm.lms.carpetlmsaddition.lib.ItemRegistryCompat;
 import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
+import cn.nm.lms.carpetlmsaddition.storage.StorageSlotCounter;
+import cn.nm.lms.carpetlmsaddition.storage.website.WebsiteApiException;
 
-final class WebsiteGetItemHandler {
+public final class WebsiteGetItemHandler {
     private WebsiteGetItemHandler() {}
 
-    static List<GetItemBotResult> process(String body, String playerName) {
+    public static List<GetItemBotResult> process(String body, String playerName) {
         GetItemRequest request = parseRequest(body);
         if (request.count < 1) {
             throw new WebsiteApiException(400, "Count must be at least 1");
@@ -61,16 +60,17 @@ final class WebsiteGetItemHandler {
         if (item == null) {
             throw new WebsiteApiException(400, "Invalid itemId");
         }
+        item = StorageSlotCounter.normalize(item);
         Map<String, Map<Item, Integer>> result;
         try {
             result = GetItem.getItem(item, request.count, playerName);
         } catch (NameRateLimiter.RateLimitException e) {
             throw new WebsiteApiException(429, e.getMessage());
         }
-        return toResponse(itemId.toString(), item, result);
+        return toResponse(item, result);
     }
 
-    static SendGetItemResultResponse sendResultLine(String body, String playerName) {
+    public static SendGetItemResultResponse sendResultLine(String body, String playerName) {
         if (playerName == null || playerName.isBlank()) {
             throw new WebsiteApiException(401, "Invalid token");
         }
@@ -80,13 +80,14 @@ final class WebsiteGetItemHandler {
             throw new WebsiteApiException(400, "At least one send entry is required");
         }
 
-        MinecraftServer server = CarpetServer.minecraft_server;
-        if (server == null) {
+        try {
+            Utils.getServer();
+        } catch (IllegalStateException e) {
             throw new WebsiteApiException(503, "Minecraft server is not initialized");
         }
 
-        Boolean sent = Utils.runOnServerThread(server, () -> {
-            ServerPlayer player = server.getPlayerList().getPlayerByName(playerName);
+        Boolean sent = Utils.runOnServerThread(() -> {
+            ServerPlayer player = Utils.getServer().getPlayerList().getPlayerByName(playerName);
             if (player == null) {
                 return Boolean.FALSE;
             }
@@ -192,14 +193,15 @@ final class WebsiteGetItemHandler {
             if (item == null) {
                 throw new WebsiteApiException(400, "Invalid itemId");
             }
+            item = StorageSlotCounter.normalize(item);
             requests.add(new SendGetItemResultRequest(item, count, botName));
         }
         return requests;
     }
 
-    private static List<GetItemBotResult> toResponse(String itemId, Item item, Map<String, Map<Item, Integer>> result) {
+    private static List<GetItemBotResult> toResponse(Item item, Map<String, Map<Item, Integer>> result) {
         List<GetItemBotResult> bots = new ArrayList<>();
-        String compactItemId = ItemRegistryCompat.compactItemId(itemId);
+        String compactItemId = ItemRegistryCompat.compactItemId(BuiltInRegistries.ITEM.getKey(item).toString());
 
         for (Map.Entry<String, Map<Item, Integer>> entry : result.entrySet()) {
             String botName = entry.getKey();
@@ -231,7 +233,7 @@ final class WebsiteGetItemHandler {
         }
     }
 
-    static final class GetItemBotResult {
+    public static final class GetItemBotResult {
         String n;
         String i;
         int c;
@@ -243,7 +245,7 @@ final class WebsiteGetItemHandler {
         }
     }
 
-    static final class SendGetItemResultResponse {
+    public static final class SendGetItemResultResponse {
         boolean success;
         String message;
 

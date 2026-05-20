@@ -23,18 +23,17 @@ import net.minecraft.world.level.storage.LevelResource;
 
 import net.fabricmc.loader.api.FabricLoader;
 
-import carpet.CarpetServer;
-
 import cn.nm.lms.carpetlmsaddition.Mod;
+import cn.nm.lms.carpetlmsaddition.lib.Utils;
 
 public final class GetPaths {
     public static Path getWorldPath() {
-        MinecraftServer server = CarpetServer.minecraft_server;
+        MinecraftServer server = Utils.getServer();
         return server.getWorldPath(LevelResource.ROOT);
     }
 
     public static Path getWorldPath(LevelResource levelResource) {
-        MinecraftServer server = CarpetServer.minecraft_server;
+        MinecraftServer server = Utils.getServer();
         return server.getWorldPath(levelResource);
     }
 

@@ -36,11 +36,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 
+import carpet.CarpetServer;
+
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class Utils {
     public static boolean isShulkerBox(ItemStack stack) {
-        return stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ShulkerBoxBlock;
+        return isShulkerBox(stack.getItem());
+    }
+
+    public static boolean isShulkerBox(Item item) {
+        return item instanceof BlockItem blockItem && blockItem.getBlock() instanceof ShulkerBoxBlock;
     }
 
     public static List<ItemStack> nonItemCopyList(ItemContainerContents container) {
@@ -67,6 +74,15 @@ public class Utils {
         return list;
     }
 
+    @NonNull
+    public static MinecraftServer getServer() {
+        MinecraftServer server = CarpetServer.minecraft_server;
+        if (server == null) {
+            throw new IllegalStateException("Minecraft server is not initialized");
+        }
+        return server;
+    }
+
     public static void teleportTo(ServerPlayer player, ServerLevel level, double x, double y, double z, float yaw,
         float pitch) {
         //#if MC >= 12102
@@ -76,10 +92,8 @@ public class Utils {
         //#endif
     }
 
-    public static <T> T runOnServerThread(MinecraftServer server, Supplier<T> supplier) {
-        if (server == null) {
-            throw new IllegalStateException("Minecraft server is not initialized");
-        }
+    public static <T> T runOnServerThread(Supplier<T> supplier) {
+        MinecraftServer server = getServer();
         if (server.isSameThread()) {
             return supplier.get();
         }
@@ -92,6 +106,24 @@ public class Utils {
             }
         });
         return future.join();
+    }
+
+    public static void runOnServerThread(Runnable runnable) {
+        MinecraftServer server = getServer();
+        if (server.isSameThread()) {
+            runnable.run();
+            return;
+        }
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        server.execute(() -> {
+            try {
+                runnable.run();
+                future.complete(null);
+            } catch (Throwable throwable) {
+                future.completeExceptionally(throwable);
+            }
+        });
+        future.join();
     }
 
     public static Item itemFromInput(ItemInput itemInput) {

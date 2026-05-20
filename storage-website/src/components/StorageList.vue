@@ -2,7 +2,6 @@
 import { computed, ref, watch, type PropType } from "vue";
 import { useI18n } from "vue-i18n";
 
-import type { FlattenedPosition } from "@/composables/useStorageDashboard";
 import type { StorageItem, StorageResponse } from "@/types/storage";
 
 interface Props {
@@ -10,7 +9,6 @@ interface Props {
   loading: boolean;
   errorMessage: string;
   getItemDisplayName: (itemId: string) => string;
-  flattenPositions: (item: StorageItem) => FlattenedPosition[];
   getDimensionLabel: (dimension: string) => string;
   onGetItem: (itemId: string) => void | Promise<void>;
 }
@@ -39,10 +37,6 @@ const props = defineProps({
     type: Function as PropType<Props["getItemDisplayName"]>,
     required: true,
   },
-  flattenPositions: {
-    type: Function as PropType<Props["flattenPositions"]>,
-    required: true,
-  },
   getDimensionLabel: {
     type: Function as PropType<Props["getDimensionLabel"]>,
     required: true,
@@ -58,7 +52,6 @@ const { t } = useI18n();
 const ACTIVE_STORAGE_NAME_KEY = "storageWebsite.activeStorageName";
 const SHOW_ITEM_ID_KEY = "storageWebsite.showItemId";
 const AGGREGATE_STORAGE_NAME = "__aggregate__";
-const expandedItemKeys = ref<Set<string>>(new Set());
 const expandedErrorKeys = ref<Set<string>>(new Set());
 const sortModeByStorage = ref<Record<string, SortMode>>({});
 const searchQueryByStorage = ref<Record<string, string>>({});
@@ -115,7 +108,6 @@ function pickActiveStorageName(storages: StorageResponse[]): string {
 watch(
   () => props.storages,
   (storages) => {
-    expandedItemKeys.value = new Set();
     expandedErrorKeys.value = new Set();
 
     const nextSortModeByStorage: Record<string, SortMode> = {};
@@ -154,27 +146,6 @@ function getStorageDisplayName(storageName: string): string {
     return t("storage.aggregateName");
   }
   return storageName;
-}
-
-function getItemKey(storageName: string, itemId: string): string {
-  return `${storageName}::${itemId}`;
-}
-
-function isExpanded(storageName: string, itemId: string): boolean {
-  return expandedItemKeys.value.has(getItemKey(storageName, itemId));
-}
-
-function toggleExpanded(storageName: string, itemId: string): void {
-  const key = getItemKey(storageName, itemId);
-  const next = new Set(expandedItemKeys.value);
-
-  if (next.has(key)) {
-    next.delete(key);
-  } else {
-    next.add(key);
-  }
-
-  expandedItemKeys.value = next;
 }
 
 function isErrorExpanded(storageName: string): boolean {
@@ -233,8 +204,6 @@ function onShowItemIdChange(event: Event): void {
 function normalizeSearchText(value: string): string {
   return value.replace(/\s+/g, "").toLowerCase();
 }
-
-const expandedRowColspan = computed(() => (showItemId.value ? 4 : 3));
 
 function sortItemRows(rows: ItemRow[], mode: SortMode): ItemRow[] {
   const sorted = [...rows];
@@ -461,92 +430,41 @@ function getVisibleItemRows(storage: StorageResponse): ItemRow[] {
                       </span>
                     </span>
                   </th>
-                  <th class="px-2 py-2 font-medium sm:px-3">
-                    {{ t("table.details") }}
-                  </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-800">
-                <template
+                <tr
                   v-for="row in getVisibleItemRows(activeStorage)"
                   :key="row.itemId"
+                  class="bg-slate-900/40"
                 >
-                  <tr class="bg-slate-900/40">
-                    <td class="px-2 py-2 text-slate-100 sm:px-3">
-                      <div
-                        class="flex flex-wrap items-center justify-between gap-2"
-                      >
-                        <span class="min-w-0 flex-1">
-                          {{ getItemDisplayName(row.itemId) }}
-                        </span>
-                        <button
-                          class="shrink-0 rounded-md border border-cyan-700/70 px-2 py-1 text-[11px] text-cyan-300 transition hover:border-cyan-400 hover:text-cyan-200"
-                          @click="props.onGetItem(row.itemId)"
-                        >
-                          {{ t("actions.getItem") }}
-                        </button>
-                      </div>
-                    </td>
-                    <td
-                      v-if="showItemId"
-                      class="px-2 py-2 font-mono text-[11px] text-slate-200 sm:px-3 sm:text-xs"
+                  <td class="px-2 py-2 text-slate-100 sm:px-3">
+                    <div
+                      class="flex flex-wrap items-center justify-between gap-2"
                     >
-                      <span class="block max-w-36 truncate sm:max-w-48">
-                        {{ row.itemId }}
+                      <span class="min-w-0 flex-1">
+                        {{ getItemDisplayName(row.itemId) }}
                       </span>
-                    </td>
-                    <td class="px-2 py-2 text-slate-100 sm:px-3">
-                      {{ row.item.count }}
-                    </td>
-                    <td class="px-2 py-2 text-slate-300 sm:px-3">
                       <button
-                        class="rounded-md border border-slate-600 px-2 py-1 text-xs transition hover:border-cyan-400 hover:text-cyan-300"
-                        @click="toggleExpanded(activeStorage.name, row.itemId)"
+                        class="shrink-0 rounded-md border border-cyan-700/70 px-2 py-1 text-[11px] text-cyan-300 transition hover:border-cyan-400 hover:text-cyan-200"
+                        @click="props.onGetItem(row.itemId)"
                       >
-                        {{
-                          isExpanded(activeStorage.name, row.itemId)
-                            ? t("actions.collapse")
-                            : t("actions.expand")
-                        }}
+                        {{ t("actions.getItem") }}
                       </button>
-                    </td>
-                  </tr>
-                  <tr
-                    v-if="isExpanded(activeStorage.name, row.itemId)"
-                    class="bg-slate-900/20"
+                    </div>
+                  </td>
+                  <td
+                    v-if="showItemId"
+                    class="px-2 py-2 font-mono text-[11px] text-slate-200 sm:px-3 sm:text-xs"
                   >
-                    <td :colspan="expandedRowColspan" class="px-2 py-3 sm:px-3">
-                      <div
-                        v-if="flattenPositions(row.item).length === 0"
-                        class="text-xs text-slate-400"
-                      >
-                        {{ t("storage.noPositionDetails") }}
-                      </div>
-                      <ul v-else class="grid gap-2 md:grid-cols-2">
-                        <li
-                          v-for="(point, pointIndex) in flattenPositions(
-                            row.item,
-                          )"
-                          :key="`${activeStorage.name}-${row.itemId}-${pointIndex}`"
-                          class="rounded-md border border-slate-700 bg-slate-900/50 px-3 py-2"
-                        >
-                          <p class="text-xs text-slate-300">
-                            {{ t("table.dimension") }}:
-                            {{ getDimensionLabel(point.dimension) }}
-                          </p>
-                          <p class="font-mono text-xs text-slate-300">
-                            {{ t("table.coordinate") }}: ({{ point.pos.x }}
-                            {{ point.pos.y }} {{ point.pos.z }})
-                          </p>
-                          <p class="text-xs text-cyan-300">
-                            {{ t("table.positionCount") }}:
-                            {{ point.count }}
-                          </p>
-                        </li>
-                      </ul>
-                    </td>
-                  </tr>
-                </template>
+                    <span class="block max-w-36 truncate sm:max-w-48">
+                      {{ row.itemId }}
+                    </span>
+                  </td>
+                  <td class="px-2 py-2 text-slate-100 sm:px-3">
+                    {{ row.item.count }}
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>

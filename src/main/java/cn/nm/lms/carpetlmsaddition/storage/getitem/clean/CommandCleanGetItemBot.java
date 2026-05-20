@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.bot;
+package cn.nm.lms.carpetlmsaddition.storage.getitem.clean;
 
 import java.util.List;
 
@@ -46,7 +46,6 @@ public final class CommandCleanGetItemBot implements BaseCommand {
     }
 
     private int executeView(CommandSourceStack source) {
-        source.sendSuccess(() -> Component.literal("cleanGetItemBot view running in background"), false);
         AsyncTasks.run(() -> {
             int size = CleanGetItemBot.listUnspawnedGetItemBotsWithInventory().size();
             source.getServer()

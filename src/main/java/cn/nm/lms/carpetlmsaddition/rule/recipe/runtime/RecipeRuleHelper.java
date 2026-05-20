@@ -26,6 +26,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import carpet.CarpetServer;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
+import cn.nm.lms.carpetlmsaddition.lib.Utils;
 
 public final class RecipeRuleHelper {
     private static boolean startupReloadPending;
@@ -53,25 +54,22 @@ public final class RecipeRuleHelper {
         return merged.values();
     }
 
-    public static void flushPendingReload(MinecraftServer server) {
+    public static void flushPendingReload() {
         if (!startupReloadPending) {
             return;
         }
-        if (reloadRecipes(server)) {
+        if (reloadRecipes()) {
             startupReloadPending = false;
         }
     }
 
     private static boolean reloadRecipes() {
-        return reloadRecipes(CarpetServer.minecraft_server);
-    }
-
-    private static boolean reloadRecipes(MinecraftServer server) {
         // carpet.conf loading may happen before Carpet script server is initialized.
         // Triggering reloadResources too early would crash in Carpet command re-registering.
-        if (server == null || CarpetServer.scriptServer == null) {
+        if (CarpetServer.scriptServer == null) {
             return false;
         }
+        MinecraftServer server = Utils.getServer();
         server.execute(() -> server.reloadResources(server.getPackRepository().getSelectedIds())
             .thenRun(() -> server.execute(() -> RecipeBookHelper.syncOnlinePlayers(server)))
             .exceptionally(throwable -> {

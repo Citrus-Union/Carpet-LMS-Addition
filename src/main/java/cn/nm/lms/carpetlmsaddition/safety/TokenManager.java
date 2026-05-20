@@ -34,6 +34,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import cn.nm.lms.carpetlmsaddition.lib.FileIo;
+
 public class TokenManager {
     public static final String TOKEN_INVALID_MESSAGE = "Invalid token";
     public static final String TOKEN_EXPIRED_MESSAGE = "Token expired";
@@ -176,7 +178,7 @@ public class TokenManager {
 
     private static byte[] getOrCreateSecret(Path path) throws IOException {
         if (Files.exists(path)) {
-            String secret = Files.readString(path).trim();
+            String secret = FileIo.readString(path).trim();
             if (!secret.isBlank()) {
                 try {
                     byte[] secretBytes = Base64.getDecoder().decode(secret);
@@ -192,11 +194,7 @@ public class TokenManager {
 
         String base64 = Base64.getEncoder().encodeToString(newSecret);
 
-        Path parent = path.getParent();
-        if (parent != null) {
-            Files.createDirectories(parent);
-        }
-        Files.writeString(path, base64);
+        FileIo.writeString(path, base64);
         return newSecret;
     }
 
