@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.lib;
+package cn.nm.lms.carpetlmsaddition.playerconfig;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,11 +31,16 @@ import com.google.gson.JsonPrimitive;
 
 import org.jspecify.annotations.Nullable;
 
+import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
+import cn.nm.lms.carpetlmsaddition.lib.JsonFileIo;
 import cn.nm.lms.carpetlmsaddition.lib.getvalue.GetPaths;
 
-public final class PlayerConfig {
+public final class PlayerConfigStore {
     private static JsonObject root;
     private static Path loadedFile;
+    private static CompletableFuture<Void> writeQueue = CompletableFuture.completedFuture(null);
+
+    private PlayerConfigStore() {}
 
     @Nullable
     public static synchronized String get(UUID playerUUID, String configName) {
@@ -51,13 +57,9 @@ public final class PlayerConfig {
     }
 
     public static synchronized void set(UUID playerUUID, String configName, String value) {
-        Path file = currentFile();
-        try {
-            root = JsonFileIo.putString(file, value, configName, playerUUID.toString());
-            loadedFile = file;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        JsonObject data = ensureLoaded();
+        getOrCreatePerConfig(data, configName).addProperty(playerUUID.toString(), value);
+        queueWrite();
     }
 
     @Nullable
@@ -79,13 +81,9 @@ public final class PlayerConfig {
     }
 
     public static synchronized void setBoolean(UUID playerUUID, String configName, boolean value) {
-        Path file = currentFile();
-        try {
-            root = JsonFileIo.putElement(file, new JsonPrimitive(value), configName, playerUUID.toString());
-            loadedFile = file;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        JsonObject data = ensureLoaded();
+        getOrCreatePerConfig(data, configName).add(playerUUID.toString(), new JsonPrimitive(value));
+        queueWrite();
     }
 
     @Nullable
@@ -132,33 +130,9 @@ public final class PlayerConfig {
     public static synchronized void setStringSet(UUID playerUUID, String configName, Set<String> values) {
         JsonArray array = new JsonArray();
         values.forEach(array::add);
-        Path file = currentFile();
-        try {
-            root = JsonFileIo.putElement(file, array, configName, playerUUID.toString());
-            loadedFile = file;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static synchronized Set<String> addToStringSet(UUID playerUUID, String configName, String value) {
-        Set<String> values = getStringSet(playerUUID, configName);
-        if (values == null) {
-            values = new LinkedHashSet<>();
-        }
-        values.add(value);
-        setStringSet(playerUUID, configName, values);
-        return values;
-    }
-
-    public static synchronized Set<String> removeFromStringSet(UUID playerUUID, String configName, String value) {
-        Set<String> values = getStringSet(playerUUID, configName);
-        if (values == null) {
-            values = new LinkedHashSet<>();
-        }
-        values.remove(value);
-        setStringSet(playerUUID, configName, values);
-        return values;
+        JsonObject data = ensureLoaded();
+        getOrCreatePerConfig(data, configName).add(playerUUID.toString(), array);
+        queueWrite();
     }
 
     public static synchronized JsonObject ensureLoaded() {
@@ -175,21 +149,34 @@ public final class PlayerConfig {
         return root;
     }
 
+    private static JsonObject getOrCreatePerConfig(JsonObject data, String configName) {
+        JsonObject perConfig = data.getAsJsonObject(configName);
+        if (perConfig != null) {
+            return perConfig;
+        }
+        JsonObject created = new JsonObject();
+        data.add(configName, created);
+        return created;
+    }
+
+    private static synchronized void queueWrite() {
+        Path file = currentFile();
+        JsonObject snapshot = root.deepCopy();
+        loadedFile = file;
+        writeQueue = writeQueue.exceptionally(_ignored -> null).thenRunAsync(() -> writeSnapshot(file, snapshot),
+            AsyncTasks.executor());
+    }
+
+    private static void writeSnapshot(Path file, JsonObject snapshot) {
+        try {
+            JsonFileIo.write(file, snapshot);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static Path currentFile() {
         return GetPaths.getLmsWorldDataPath().resolve("playerConfig.json");
-    }
-
-    public static boolean isPlayerEnabled(RuleSetting setting, UUID playerUUID, String configName) {
-        return switch (setting) {
-            case TRUE -> true;
-            case FALSE -> false;
-            case CUSTOM -> isPlayerSettingTrue(playerUUID, configName);
-        };
-    }
-
-    private static boolean isPlayerSettingTrue(UUID playerUUID, String configName) {
-        Boolean configured = PlayerConfig.getBoolean(playerUUID, configName);
-        return Boolean.TRUE.equals(configured);
     }
 
     public enum RuleSetting {

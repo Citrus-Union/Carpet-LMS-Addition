@@ -34,7 +34,7 @@ import carpet.CarpetServer;
 import org.slf4j.Logger;
 
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
-import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
+import cn.nm.lms.carpetlmsaddition.playerconfig.PlayerConfigStore;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.runtime.RecipeBookHelper;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.runtime.RecipeRuleHelper;
@@ -87,7 +87,7 @@ public class Mod implements ModInitializer, CarpetExtension {
         Storage.prepareDefaultFilesOnWorldLoad();
         RecipeRuleHelper.flushPendingReload();
         Website.autoStartFromConfigAfterWorldLoaded();
-        PlayerConfig.ensureLoaded();
+        PlayerConfigStore.ensureLoaded();
     }
 
     @Override

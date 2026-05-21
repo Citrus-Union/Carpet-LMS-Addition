@@ -23,7 +23,7 @@ import net.minecraft.commands.CommandSourceStack;
 
 import com.mojang.brigadier.CommandDispatcher;
 
-import cn.nm.lms.carpetlmsaddition.rule.util.command.lms.CommandLmsImpl;
+import cn.nm.lms.carpetlmsaddition.playerconfig.command.CommandLms;
 import cn.nm.lms.carpetlmsaddition.safety.CommandSetPassword;
 import cn.nm.lms.carpetlmsaddition.storage.data.CommandGetStorageData;
 import cn.nm.lms.carpetlmsaddition.storage.getitem.CommandGetItem;
@@ -34,7 +34,7 @@ public final class SetupCommands {
     private static final List<BaseCommand> COMMANDS = List.of(new CommandStorageWebsite(), new CommandSetPassword(),
         new CommandPlayerDropall(), new CommandCleanGetItemBot());
     private static final List<BaseCommandWithContext> COMMAND_WITH_CONTEXTS =
-        List.of(new CommandLmsImpl(), new CommandGetItem(), new CommandGetStorageData());
+        List.of(new CommandLms(), new CommandGetItem(), new CommandGetStorageData());
 
     public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher,
         final CommandBuildContext commandBuildContext) {

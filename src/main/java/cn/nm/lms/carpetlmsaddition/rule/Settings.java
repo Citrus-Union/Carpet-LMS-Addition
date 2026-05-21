@@ -20,7 +20,7 @@ import carpet.api.settings.Rule;
 import carpet.api.settings.RuleCategory;
 import carpet.api.settings.Validators;
 
-import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
+import cn.nm.lms.carpetlmsaddition.playerconfig.PlayerConfigStore;
 import cn.nm.lms.carpetlmsaddition.rule.block.dispenser.bartering.DispenserBarteringSetting;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.observer.RecipeRuleObserver;
 import cn.nm.lms.carpetlmsaddition.rule.recipe.smelting.ShulkerBoxFurnaceSetting;
@@ -71,7 +71,7 @@ public final class Settings {
     public static boolean globalSlimeChunk = false;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL, RuleCategory.COMMAND})
-    public static PlayerConfig.RuleSetting lowHealthSpectator = PlayerConfig.RuleSetting.FALSE;
+    public static PlayerConfigStore.RuleSetting lowHealthSpectator = PlayerConfigStore.RuleSetting.FALSE;
 
     @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.SURVIVAL})
     public static LowHealthSpectatorMethod lowHealthSpectatorMethod = LowHealthSpectatorMethod.VANILLA;

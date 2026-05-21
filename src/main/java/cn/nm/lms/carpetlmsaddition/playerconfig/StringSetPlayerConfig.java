@@ -14,16 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.rule.util.command.lms;
+package cn.nm.lms.carpetlmsaddition.playerconfig;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.server.level.ServerPlayer;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -35,33 +36,26 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import org.jspecify.annotations.Nullable;
 
-import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
+import cn.nm.lms.carpetlmsaddition.playerconfig.command.PlayerConfigCommandSupport;
 
-class LmsStringSetConfigCommand implements LmsConfigCommand {
-    protected final String config;
+public class StringSetPlayerConfig extends PlayerConfigEntry<Set<String>> {
     protected final String argumentName;
-    private final BooleanSupplier enabled;
 
-    LmsStringSetConfigCommand(String config, String argumentName) {
-        this(config, argumentName, () -> true);
-    }
-
-    LmsStringSetConfigCommand(String config, String argumentName, BooleanSupplier enabled) {
-        this.config = config;
+    StringSetPlayerConfig(String key, String argumentName, BooleanSupplier enabled) {
+        super(key, enabled);
         this.argumentName = argumentName;
-        this.enabled = enabled;
     }
 
     @Override
-    public boolean enabled() {
-        return enabled.getAsBoolean();
+    public @Nullable Set<String> get(UUID playerUUID) {
+        return PlayerConfigStore.getStringSet(playerUUID, key);
     }
 
     @Override
     public ArgumentBuilder<CommandSourceStack, ?> build(CommandBuildContext commandBuildContext) {
         RequiredArgumentBuilder<CommandSourceStack, ?> addValueArg = addValueArgument(commandBuildContext);
         RequiredArgumentBuilder<CommandSourceStack, String> removeValueArg = valueArgument();
-        return Commands.literal(config).executes(this::executeGet)
+        return Commands.literal(key).executes(this::executeGet)
             .then(Commands.literal("add").then(addValueArg.executes(this::executeAdd)))
             .then(Commands.literal("remove").then(removeValueArg.executes(this::executeRemove)))
             .then(Commands.literal("clear").executes(this::executeClear));
@@ -78,47 +72,29 @@ class LmsStringSetConfigCommand implements LmsConfigCommand {
 
     protected CompletableFuture<Suggestions> suggestRemoveValues(CommandContext<CommandSourceStack> ctx,
         SuggestionsBuilder builder) {
-        ServerPlayer target;
         try {
-            target = CommandLms.getTarget(ctx);
+            Set<String> values = get(PlayerConfigCommandSupport.getTarget(ctx).getUUID());
+            if (values != null) {
+                values.forEach(builder::suggest);
+            }
         } catch (CommandSyntaxException e) {
             return builder.buildFuture();
-        }
-        Set<String> values = PlayerConfig.getStringSet(target.getUUID(), config);
-        if (values != null) {
-            values.forEach(builder::suggest);
         }
         return builder.buildFuture();
     }
 
-    private int executeGet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        CommandSourceStack src = ctx.getSource();
-        ServerPlayer target = CommandLms.getTarget(ctx);
-        if (CommandLms.cannotUse(src, target)) {
-            CommandLms.sendNoPermission(src);
-            return 0;
-        }
-
-        Set<String> raw = PlayerConfig.getStringSet(target.getUUID(), config);
-        CommandLms.sendConfigValue(src, config, raw == null ? "null" : raw.toString());
-        return 1;
-    }
-
     private int executeAdd(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        CommandSourceStack src = ctx.getSource();
-        ServerPlayer target = CommandLms.getTarget(ctx);
-        if (CommandLms.cannotUse(src, target)) {
-            CommandLms.sendNoPermission(src);
-            return 0;
-        }
-
-        String value = normalizeAddValue(ctx, src);
-        if (value == null) {
-            return 0;
-        }
-        Set<String> values = PlayerConfig.addToStringSet(target.getUUID(), config, value);
-        CommandLms.sendConfigValue(src, config, values.toString());
-        return 1;
+        return withPermittedTarget(ctx, (src, target) -> {
+            String value = normalizeAddValue(ctx, src);
+            if (value == null) {
+                return 0;
+            }
+            Set<String> values = currentValuesOrEmpty(target.getUUID());
+            values.add(value);
+            PlayerConfigStore.setStringSet(target.getUUID(), key, values);
+            PlayerConfigCommandSupport.sendConfigValue(src, key, values.toString());
+            return 1;
+        });
     }
 
     @Nullable
@@ -127,35 +103,33 @@ class LmsStringSetConfigCommand implements LmsConfigCommand {
     }
 
     private int executeRemove(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        CommandSourceStack src = ctx.getSource();
-        ServerPlayer target = CommandLms.getTarget(ctx);
-        if (CommandLms.cannotUse(src, target)) {
-            CommandLms.sendNoPermission(src);
-            return 0;
-        }
-
         String value = StringArgumentType.getString(ctx, argumentName);
-        Set<String> values = PlayerConfig.getStringSet(target.getUUID(), config);
-        if (values == null || !values.contains(value)) {
-            CommandLms.sendFailure(src, CommandLms.MESSAGE_VALUE_NOT_FOUND_PREFIX + value);
-            return 0;
-        }
-        values = PlayerConfig.removeFromStringSet(target.getUUID(), config, value);
-        CommandLms.sendConfigValue(src, config, values.toString());
-        return 1;
+        return withPermittedTarget(ctx, (src, target) -> {
+            Set<String> values = get(target.getUUID());
+            if (values == null || !values.contains(value)) {
+                PlayerConfigCommandSupport.sendFailure(src,
+                    PlayerConfigCommandSupport.MESSAGE_VALUE_NOT_FOUND_PREFIX + value);
+                return 0;
+            }
+            values = new LinkedHashSet<>(values);
+            values.remove(value);
+            PlayerConfigStore.setStringSet(target.getUUID(), key, values);
+            PlayerConfigCommandSupport.sendConfigValue(src, key, values.toString());
+            return 1;
+        });
     }
 
     private int executeClear(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        CommandSourceStack src = ctx.getSource();
-        ServerPlayer target = CommandLms.getTarget(ctx);
-        if (CommandLms.cannotUse(src, target)) {
-            CommandLms.sendNoPermission(src);
-            return 0;
-        }
+        return withPermittedTarget(ctx, (src, target) -> {
+            Set<String> values = Set.of();
+            PlayerConfigStore.setStringSet(target.getUUID(), key, values);
+            PlayerConfigCommandSupport.sendConfigValue(src, key, values.toString());
+            return 1;
+        });
+    }
 
-        Set<String> values = Set.of();
-        PlayerConfig.setStringSet(target.getUUID(), config, values);
-        CommandLms.sendConfigValue(src, config, values.toString());
-        return 1;
+    private Set<String> currentValuesOrEmpty(UUID playerUUID) {
+        Set<String> values = get(playerUUID);
+        return values == null ? new LinkedHashSet<>() : new LinkedHashSet<>(values);
     }
 }

@@ -23,13 +23,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 import cn.nm.lms.carpetlmsaddition.lib.BlockRegistryCompat;
-import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
+import cn.nm.lms.carpetlmsaddition.playerconfig.PlayerConfigs;
 
 public class PlayerRestriction {
-    public static final String CONFIG_MODE = "blockRestrictionMode";
-    public static final String CONFIG_BLACKLIST = "blockRestrictionBlacklist";
-    public static final String CONFIG_WHITELIST = "blockRestrictionWhitelist";
-
     private final ServerPlayer player;
     private final String blockId;
 
@@ -46,8 +42,7 @@ public class PlayerRestriction {
         return shouldLimit(player, state.getBlock());
     }
 
-    private boolean inBlockSet(String configName) {
-        Set<String> blockIds = PlayerConfig.getStringSet(player.getUUID(), configName);
+    private boolean inBlockSet(Set<String> blockIds) {
         if (blockIds == null) {
             return false;
         }
@@ -55,13 +50,15 @@ public class PlayerRestriction {
     }
 
     private boolean shouldLimit() {
-        Mode mode = PlayerConfig.getEnum(player.getUUID(), CONFIG_MODE, Mode.class);
+        Mode mode = PlayerConfigs.BLOCK_RESTRICTION_MODE.get(player);
         if (mode == null) {
             return false;
         }
+        Set<String> blacklist = PlayerConfigs.BLOCK_RESTRICTION_BLACKLIST.get(player);
+        Set<String> whitelist = PlayerConfigs.BLOCK_RESTRICTION_WHITELIST.get(player);
         return switch (mode) {
-            case BLACKLIST -> inBlockSet(CONFIG_BLACKLIST);
-            case WHITELIST -> !inBlockSet(CONFIG_WHITELIST);
+            case BLACKLIST -> inBlockSet(blacklist);
+            case WHITELIST -> !inBlockSet(whitelist);
             default -> false;
         };
     }

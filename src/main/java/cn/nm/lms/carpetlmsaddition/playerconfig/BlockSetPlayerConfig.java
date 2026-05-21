@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition.rule.util.command.lms;
+package cn.nm.lms.carpetlmsaddition.playerconfig;
 
 import java.util.function.BooleanSupplier;
 
@@ -34,17 +34,14 @@ import org.jspecify.annotations.Nullable;
 
 import cn.nm.lms.carpetlmsaddition.lib.BlockRegistryCompat;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
+import cn.nm.lms.carpetlmsaddition.playerconfig.command.PlayerConfigCommandSupport;
 
-final class LmsBlockStringSetConfigCommand extends LmsStringSetConfigCommand {
+public final class BlockSetPlayerConfig extends StringSetPlayerConfig {
     private static final String ARG_BLOCK = "block";
     private static final String MESSAGE_UNKNOWN_BLOCK_PREFIX = "Unknown block: ";
 
-    LmsBlockStringSetConfigCommand(String config) {
-        super(config, ARG_BLOCK);
-    }
-
-    LmsBlockStringSetConfigCommand(String config, BooleanSupplier enabled) {
-        super(config, ARG_BLOCK, enabled);
+    BlockSetPlayerConfig(String key, BooleanSupplier enabled) {
+        super(key, ARG_BLOCK, enabled);
     }
 
     @Override
@@ -57,7 +54,7 @@ final class LmsBlockStringSetConfigCommand extends LmsStringSetConfigCommand {
     protected String normalizeAddValue(CommandContext<CommandSourceStack> ctx, CommandSourceStack src) {
         Block block = getBlock(ItemArgument.getItem(ctx, argumentName));
         if (block == null) {
-            CommandLms.sendFailure(src, MESSAGE_UNKNOWN_BLOCK_PREFIX + "not a block item");
+            PlayerConfigCommandSupport.sendFailure(src, MESSAGE_UNKNOWN_BLOCK_PREFIX + "not a block item");
             return null;
         }
         return BlockRegistryCompat.getBlockId(block);

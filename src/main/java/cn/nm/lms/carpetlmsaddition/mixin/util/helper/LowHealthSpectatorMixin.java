@@ -33,8 +33,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
-import cn.nm.lms.carpetlmsaddition.lib.PlayerConfig;
 import cn.nm.lms.carpetlmsaddition.lib.check.CheckMod;
+import cn.nm.lms.carpetlmsaddition.playerconfig.PlayerConfigs;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 
 @Mixin(ServerPlayer.class)
@@ -79,7 +79,7 @@ public abstract class LowHealthSpectatorMixin {
         UUID playerUUID = player.getUUID();
         long last = COOLDOWN_MAP.getOrDefault(playerUUID, now - Settings.lowHealthSpectatorCooldown);
 
-        if (!PlayerConfig.isPlayerEnabled(Settings.lowHealthSpectator, playerUUID, "lowHealthSpectator")) {
+        if (!PlayerConfigs.LOW_HEALTH_SPECTATOR.isPlayerEnabled(Settings.lowHealthSpectator, playerUUID)) {
             return;
         }
         if (isInCooldown(now, last)) {
