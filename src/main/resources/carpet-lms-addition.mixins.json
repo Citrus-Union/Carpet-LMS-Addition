@@ -13,7 +13,6 @@
     "block.breaking.UnbreakableBuddingAmethystMixin",
     "block.util.VaultMaxBlacklistSizeMixin",
     "bug.ZombifiedPiglinSpawnFixMixin",
-    "compat.sgu.EntityPlayerMPFakeSguCompatMixin",
     "entity.allay.AllayHealIntervalMixin",
     "entity.projectile.PearlIgnoreEntityCollisionMixin",
     "entity.projectile.PearlNoTpMixin",
