@@ -88,6 +88,7 @@ dependencies {
     autoImplementation("net.fabricmc:fabric-loader:$loaderVersion")
     autoImplementation("carpet:fabric-carpet:$carpetVersion")
 
+    // https://central.sonatype.com/artifact/org.jspecify/jspecify
     autoCompileOnly("org.jspecify:jspecify:1.0.0")
     // runtime mods
     if (mcVersion < 11904) {

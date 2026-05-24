@@ -15,7 +15,7 @@ plugins {
     // https://github.com/Fallen-Breath/yamlang
     id("me.fallenbreath.yamlang") version "1.5.0" apply false
     // https://github.com/diffplug/spotless/releases?q=gradle
-    id("com.diffplug.spotless") version "8.4.0"
+    id("com.diffplug.spotless") version "8.5.1"
     // https://github.com/vanniktech/gradle-maven-publish-plugin
     id("com.vanniktech.maven.publish") version "0.36.0"
     // https://github.com/node-gradle/gradle-node-plugin
