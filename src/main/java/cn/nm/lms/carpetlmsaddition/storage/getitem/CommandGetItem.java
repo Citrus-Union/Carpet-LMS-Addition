@@ -34,8 +34,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 
-import carpet.utils.CommandHelper;
-
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
@@ -44,6 +42,7 @@ import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommandWithContext;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandRateLimitNbt;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandUtils;
 import cn.nm.lms.carpetlmsaddition.storage.StorageSlotCounter;
 import cn.nm.lms.carpetlmsaddition.translations.Translations;
 
@@ -52,14 +51,14 @@ public final class CommandGetItem implements BaseCommandWithContext {
         TEXT, NBT
     }
 
-    private static boolean canUseGetItemCommand(CommandSourceStack source) {
-        return CommandHelper.canUseCommand(source, Settings.commandGetItem);
+    private static boolean checkPermission(CommandSourceStack source) {
+        return CommandUtils.hasPermission(source, Settings.commandGetItem, "/getItem", "commandGetItem");
     }
 
     @Override
     public void register(CommandDispatcher<CommandSourceStack> dispatcher,
         final CommandBuildContext commandBuildContext) {
-        dispatcher.register(Commands.literal("getItem").requires(CommandGetItem::canUseGetItemCommand)
+        dispatcher.register(Commands.literal("getItem").executes(ctx -> tutor(ctx.getSource()))
             .then(Commands.argument("item", ItemArgument.item(commandBuildContext))
                 .then(Commands.argument("count", IntegerArgumentType.integer(1)).executes(ctx -> {
                     return executeGetItem(ctx, OutputMode.TEXT);
@@ -71,6 +70,14 @@ public final class CommandGetItem implements BaseCommandWithContext {
                 })))));
     }
 
+    private int tutor(CommandSourceStack source) {
+        if (!checkPermission(source)) {
+            return 0;
+        }
+        CommandUtils.tutor(source, "getItem", 4);
+        return 1;
+    }
+
     private static OutputMode parseMode(String mode) {
         if ("nbt".equals(mode)) {
             return OutputMode.NBT;
@@ -80,6 +87,9 @@ public final class CommandGetItem implements BaseCommandWithContext {
 
     private int executeGetItem(CommandContext<CommandSourceStack> ctx, OutputMode mode) {
         CommandSourceStack source = ctx.getSource();
+        if (!checkPermission(source)) {
+            return 0;
+        }
         ItemInput itemInput = ItemArgument.getItem(ctx, "item");
         Item item = StorageSlotCounter.normalize(Utils.itemFromInput(itemInput));
         int count = IntegerArgumentType.getInteger(ctx, "count");

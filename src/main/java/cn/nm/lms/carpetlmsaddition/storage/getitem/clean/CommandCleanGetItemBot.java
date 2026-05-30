@@ -25,28 +25,31 @@ import net.minecraft.server.level.ServerPlayer;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
-import carpet.utils.CommandHelper;
-
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommand;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandUtils;
 
 public final class CommandCleanGetItemBot implements BaseCommand {
-    private static boolean canUse(CommandSourceStack source) {
-        return CommandHelper.canUseCommand(source, Settings.commandCleanGetItemBot);
+    private static boolean checkPermission(CommandSourceStack source) {
+        return CommandUtils.hasPermission(source, Settings.commandCleanGetItemBot, "/cleanGetItemBot",
+            "commandCleanGetItemBot");
     }
 
     @Override
     public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("cleanGetItemBot").requires(CommandCleanGetItemBot::canUse)
+        dispatcher.register(Commands.literal("cleanGetItemBot").executes(ctx -> tutor(ctx.getSource()))
             .then(Commands.literal("view").executes(ctx -> executeView(ctx.getSource())))
             .then(Commands.literal("clean").then(Commands.argument("max", IntegerArgumentType.integer(1))
                 .executes(ctx -> executeClean(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "max"))))));
     }
 
     private int executeView(CommandSourceStack source) {
+        if (!checkPermission(source)) {
+            return 0;
+        }
         AsyncTasks.run(() -> {
             int size = CleanGetItemBot.listUnspawnedGetItemBotsWithInventory().size();
             source.getServer()
@@ -55,10 +58,20 @@ public final class CommandCleanGetItemBot implements BaseCommand {
         return 1;
     }
 
+    private int tutor(CommandSourceStack source) {
+        if (!checkPermission(source)) {
+            return 0;
+        }
+        CommandUtils.tutor(source, "cleanGetItemBot", 6);
+        return 1;
+    }
+
     private int executeClean(CommandSourceStack source, int max) {
-        ServerPlayer player = source.getPlayer();
+        if (!checkPermission(source)) {
+            return 0;
+        }
+        ServerPlayer player = CommandUtils.getPlayer(source, "/cleanGetItemBot clean");
         if (player == null) {
-            new MessageComponent("common.command.playerOnly", "/cleanGetItemBot clean").sendFailure(source);
             return 0;
         }
 

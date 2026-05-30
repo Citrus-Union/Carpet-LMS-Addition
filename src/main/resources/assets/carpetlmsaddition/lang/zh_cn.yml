@@ -3,11 +3,19 @@ carpetlmsaddition:
     cleanGetItemBot:
       botsWithItem: "有物品的假人共 %d 个"
       cleaned: "假人已清理：%s"
-      started: 已开始清理假人物品
+      started: 已开始清理取物假人的物品
+      tutor:
+        "0": 使用 /cleanGetItemBot view
+        "1": "查看有物品的取物假人数量\n"
+        "2": 使用 /cleanGetItemBot clean <n>
+        "3": "自动清理n堆取物假人背包内的物品\n"
+        "4": 如 /cleanGetItemBot clean 256
+        "5": 自动清理256堆
     common:
       unknownError: 未知错误
       command:
         playerOnly: "%s 只能由玩家执行"
+        noPermission: "没有权限执行 %s，可以通过 Carpet 规则 %s 配置权限"
     getItem:
       botResultSeparator: "："
       botResultCountSuffix: " x%d"
@@ -17,18 +25,31 @@ carpetlmsaddition:
       doneCount: " x%d"
       rateLimited: "获取物品请求过快，请等待 %d 秒"
       started: 获取物品已开始执行
+      tutor:
+        "0": 使用 /getItem <item> <count>
+        "1": "从仓储系统中按数量取出指定物品\n"
+        "2": 使用 /getItem <item> <count> nbt
+        "3": 以 NBT 列表形式返回结果，便于脚本调用
     playerConfig:
       noPermission: 没有权限
+      tutor:
+        "0": 使用 /lms <player> <config>
+        "1": "查看指定玩家的 LMS 配置项当前值\n"
+        "2": 使用 /lms <player> <config> <value>
+        "3": "修改指定玩家的 LMS 配置项\n"
+        "4": 可用配置项会随规则启用状态动态变化
       unknownBlockNotItem: 未知方块：这不是方块物品
       unknownValue: "未知值：%s"
       value: "%s = %s"
       valueNotFound: "未找到该值：%s"
     password:
       passwordEmpty: 密码不能为空
+      success: 密码设置成功
+      tutor:
+        "0": 使用 /setPassword <password>
+        "1": 为当前玩家设置网页登录密码
       userDataError: 用户数据错误
       usernameEmpty: 用户名不能为空
-    setPassword:
-      success: 密码设置成功
     storageWebsite:
       action:
         starting: 仓储网站已启动
@@ -36,6 +57,11 @@ carpetlmsaddition:
       status:
         running: 仓储网站运行中
         stopped: 仓储网站未开启
+      tutor:
+        "0": 使用 /storageWebsite status
+        "1": "查看仓储网站当前运行状态\n"
+        "2": 使用 /storageWebsite start 或 /storageWebsite stop
+        "3": 启动或停止仓储网站服务
 
 carpet:
   category:

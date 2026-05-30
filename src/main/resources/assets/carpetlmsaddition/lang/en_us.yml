@@ -1,13 +1,21 @@
 carpetlmsaddition:
   message:
     cleanGetItemBot:
-      botsWithItem: "%d fake players have items"
-      cleaned: "Cleaned fake players: %s"
-      started: Started cleaning items from fake players
+      botsWithItem: "%d get-item fake players have items"
+      cleaned: "Cleaned get-item fake players: %s"
+      started: Started cleaning items from get-item fake players
+      tutor:
+        "0": Use /cleanGetItemBot view
+        "1": "View how many get-item fake players still have items\n"
+        "2": Use /cleanGetItemBot clean <n>
+        "3": "Automatically clean items from get-item fake players, up to n stacks\n"
+        "4": "Example: /cleanGetItemBot clean 256"
+        "5": cleans up to 256 stacks
     common:
       unknownError: Unknown error
       command:
         playerOnly: "%s can only be used by a player"
+        noPermission: "You do not have permission to execute %s. Configure it with the Carpet rule %s"
     getItem:
       botResultSeparator: ": "
       botResultCountSuffix: " x%d"
@@ -17,18 +25,31 @@ carpetlmsaddition:
       doneCount: " x%d"
       rateLimited: "Get item requests are too frequent. Please wait %d seconds"
       started: Get item started
+      tutor:
+        "0": Use /getItem <item> <count>
+        "1": "Fetch the specified amount of an item from storage\n"
+        "2": Use /getItem <item> <count> nbt
+        "3": Return results as an NBT list for scripts
     playerConfig:
       noPermission: No permission
+      tutor:
+        "0": Use /lms <player> <config>
+        "1": "View the current LMS config value for a player\n"
+        "2": Use /lms <player> <config> <value>
+        "3": "Change the LMS config value for a player\n"
+        "4": Available config entries change with rule state
       unknownBlockNotItem: "Unknown block: not a block item"
       unknownValue: "Unknown value: %s"
       value: "%s = %s"
       valueNotFound: "Value not found: %s"
     password:
       passwordEmpty: Password cannot be empty
+      success: Password set successfully
+      tutor:
+        "0": Use /setPassword <password>
+        "1": Set the web login password for the current player
       userDataError: User data error
       usernameEmpty: Username cannot be empty
-    setPassword:
-      success: Password set successfully
     storageWebsite:
       action:
         starting: Storage website started
@@ -36,6 +57,11 @@ carpetlmsaddition:
       status:
         running: Storage website is running
         stopped: Storage website is not running
+      tutor:
+        "0": Use /storageWebsite status
+        "1": "View whether the storage website is running\n"
+        "2": Use /storageWebsite start or /storageWebsite stop
+        "3": Start or stop the storage website service
 
 carpet:
   rule:

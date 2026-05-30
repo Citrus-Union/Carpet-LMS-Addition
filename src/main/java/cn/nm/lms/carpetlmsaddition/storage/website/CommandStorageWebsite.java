@@ -22,40 +22,54 @@ import net.minecraft.commands.Commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
-import carpet.utils.CommandHelper;
-
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommand;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandUtils;
 
 public final class CommandStorageWebsite implements BaseCommand {
-    private static boolean canUseStorageWebsiteCommand(CommandSourceStack source) {
-        return CommandHelper.canUseCommand(source, Settings.commandStorageWebsite);
+    private static boolean checkPermission(CommandSourceStack source) {
+        return CommandUtils.hasPermission(source, Settings.commandStorageWebsite, "/storageWebsite",
+            "commandStorageWebsite");
     }
 
     @Override
     public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        LiteralArgumentBuilder<CommandSourceStack> stop =
-            Commands.literal("stop").requires(CommandStorageWebsite::canUseStorageWebsiteCommand).executes(ctx -> {
-                CommandSourceStack source = ctx.getSource();
-                return executeStopAsync(source);
-            });
+        LiteralArgumentBuilder<CommandSourceStack> stop = Commands.literal("stop").executes(ctx -> {
+            CommandSourceStack source = ctx.getSource();
+            if (!checkPermission(source)) {
+                return 0;
+            }
+            return executeStopAsync(source);
+        });
 
-        LiteralArgumentBuilder<CommandSourceStack> start =
-            Commands.literal("start").requires(CommandStorageWebsite::canUseStorageWebsiteCommand).executes(ctx -> {
-                CommandSourceStack source = ctx.getSource();
-                return executeStartAsync(source);
-            });
+        LiteralArgumentBuilder<CommandSourceStack> start = Commands.literal("start").executes(ctx -> {
+            CommandSourceStack source = ctx.getSource();
+            if (!checkPermission(source)) {
+                return 0;
+            }
+            return executeStartAsync(source);
+        });
 
-        LiteralArgumentBuilder<CommandSourceStack> status =
-            Commands.literal("status").requires(CommandStorageWebsite::canUseStorageWebsiteCommand).executes(ctx -> {
-                CommandSourceStack source = ctx.getSource();
-                return executeServerStatus(source);
-            });
+        LiteralArgumentBuilder<CommandSourceStack> status = Commands.literal("status").executes(ctx -> {
+            CommandSourceStack source = ctx.getSource();
+            if (!checkPermission(source)) {
+                return 0;
+            }
+            return executeServerStatus(source);
+        });
 
-        dispatcher.register(Commands.literal("storageWebsite")
-            .requires(CommandStorageWebsite::canUseStorageWebsiteCommand).then(start).then(stop).then(status));
+        dispatcher.register(Commands.literal("storageWebsite").executes(ctx -> tutor(ctx.getSource())).then(start)
+            .then(stop).then(status));
+    }
+
+    private int tutor(CommandSourceStack source) {
+        if (!checkPermission(source)) {
+            return 0;
+        }
+        CommandUtils.tutor(source, "storageWebsite", 4);
+        return 1;
     }
 
     private int executeServerStatus(CommandSourceStack source) {

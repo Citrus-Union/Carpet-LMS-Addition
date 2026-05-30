@@ -27,16 +27,18 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import carpet.helpers.EntityPlayerActionPack;
-import carpet.utils.CommandHelper;
 
 import cn.nm.lms.carpetlmsaddition.mixin.util.command.playercommanddropall.PlayerCommandDropallMixin;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 
 public final class CommandPlayerDropall implements BaseCommand {
+    private static boolean checkPermission(CommandSourceStack source) {
+        return CommandUtils.hasPermission(source, Settings.playerCommandDropall, "/player <player> dropall",
+            "playerCommandDropall");
+    }
+
     public static LiteralArgumentBuilder<CommandSourceStack> buildDropallCommand() {
-        return Commands.literal("dropall")
-            .requires(src -> CommandHelper.canUseCommand(src, Settings.playerCommandDropall))
-            .executes(CommandPlayerDropall::executeDropallOnce)
+        return Commands.literal("dropall").executes(CommandPlayerDropall::executeDropallOnce)
             .then(Commands.literal("once").executes(CommandPlayerDropall::executeDropallOnce))
             .then(Commands.literal("continuous").executes(CommandPlayerDropall::executeDropallContinuous))
             .then(Commands.literal("interval").then(Commands.argument("ticks", IntegerArgumentType.integer(1))
@@ -49,15 +51,24 @@ public final class CommandPlayerDropall implements BaseCommand {
     }
 
     private static int executeDropallOnce(CommandContext<CommandSourceStack> ctx) {
+        if (!checkPermission(ctx.getSource())) {
+            return 0;
+        }
         return PlayerCommandDropallMixin.invokeManipulate$LMS(ctx, pack -> pack.drop(-2, true));
     }
 
     private static int executeDropallContinuous(CommandContext<CommandSourceStack> ctx) {
+        if (!checkPermission(ctx.getSource())) {
+            return 0;
+        }
         return PlayerCommandDropallMixin.invokeManipulate$LMS(ctx,
             pack -> markAndStart(pack, EntityPlayerActionPack.Action.continuous()));
     }
 
     private static int executeDropallInterval(CommandContext<CommandSourceStack> ctx) {
+        if (!checkPermission(ctx.getSource())) {
+            return 0;
+        }
         int t = IntegerArgumentType.getInteger(ctx, "ticks");
         return PlayerCommandDropallMixin.invokeManipulate$LMS(ctx,
             pack -> markAndStart(pack, EntityPlayerActionPack.Action.interval(t)));

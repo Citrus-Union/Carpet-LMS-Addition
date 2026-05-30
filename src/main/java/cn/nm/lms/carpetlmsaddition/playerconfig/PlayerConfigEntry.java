@@ -68,8 +68,7 @@ public abstract class PlayerConfigEntry<T> {
         throws CommandSyntaxException {
         CommandSourceStack src = ctx.getSource();
         ServerPlayer target = PlayerConfigCommandSupport.getTarget(ctx);
-        if (PlayerConfigCommandSupport.cannotUse(src, target)) {
-            PlayerConfigCommandSupport.sendNoPermission(src);
+        if (!PlayerConfigCommandSupport.hasPermission(src, target)) {
             return 0;
         }
         return action.run(src, target);

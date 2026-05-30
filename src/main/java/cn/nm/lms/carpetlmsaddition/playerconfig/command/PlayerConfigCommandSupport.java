@@ -25,11 +25,11 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import carpet.patches.EntityPlayerMPFake;
-import carpet.utils.CommandHelper;
 
 import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandUtils;
 
 public final class PlayerConfigCommandSupport {
     public static final String ARG_VALUE = "value";
@@ -38,7 +38,7 @@ public final class PlayerConfigCommandSupport {
 
     private PlayerConfigCommandSupport() {}
 
-    private static String permissionFor(CommandSourceStack src, ServerPlayer target) {
+    public static String permissionFor(CommandSourceStack src, ServerPlayer target) {
         if (target instanceof EntityPlayerMPFake) {
             return Settings.commandLMSBot;
         }
@@ -49,10 +49,6 @@ public final class PlayerConfigCommandSupport {
         return Settings.commandLMSOthers;
     }
 
-    public static boolean cannotUse(CommandSourceStack src, ServerPlayer target) {
-        return !CommandHelper.canUseCommand(src, permissionFor(src, target));
-    }
-
     public static ServerPlayer getTarget(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         return EntityArgument.getPlayer(ctx, ARG_PLAYER);
     }
@@ -61,8 +57,10 @@ public final class PlayerConfigCommandSupport {
         return StringArgumentType.getString(ctx, ARG_VALUE);
     }
 
-    public static void sendNoPermission(CommandSourceStack src) {
-        new MessageComponent("playerConfig.noPermission").sendFailure(src);
+    public static boolean hasPermission(CommandSourceStack src, ServerPlayer target) {
+        String ruleName = target instanceof EntityPlayerMPFake ? "commandLMSBot"
+            : Utils.isSamePlayer(target, src.getPlayer()) ? "commandLMSSelf" : "commandLMSOthers";
+        return CommandUtils.hasPermission(src, permissionFor(src, target), "/lms <player> ...", ruleName);
     }
 
     public static void sendUnknownValue(CommandSourceStack src, String value) {

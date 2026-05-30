@@ -26,6 +26,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import cn.nm.lms.carpetlmsaddition.playerconfig.PlayerConfigs;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommandWithContext;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandUtils;
 
 public final class CommandLms implements BaseCommandWithContext {
 
@@ -36,6 +37,12 @@ public final class CommandLms implements BaseCommandWithContext {
         for (var configCommand : PlayerConfigs.ALL) {
             player.then(configCommand.build(commandBuildContext).requires(_src -> configCommand.enabled()));
         }
-        dispatcher.register(Commands.literal(PlayerConfigCommandSupport.COMMAND).then(player));
+        dispatcher.register(
+            Commands.literal(PlayerConfigCommandSupport.COMMAND).executes(ctx -> tutor(ctx.getSource())).then(player));
+    }
+
+    private int tutor(CommandSourceStack source) {
+        CommandUtils.tutor(source, "playerConfig", 5);
+        return 1;
     }
 }

@@ -23,17 +23,15 @@ import net.minecraft.server.level.ServerPlayer;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
-import carpet.utils.CommandHelper;
-
 import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommand;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandUtils;
 
 public class CommandSetPassword implements BaseCommand {
     private static int setPassword(String password, CommandSourceStack src) {
-        ServerPlayer player = src.getPlayer();
+        ServerPlayer player = CommandUtils.getPlayer(src, "/setPassword");
         if (player == null) {
-            new MessageComponent("common.command.playerOnly", "/setPassword").sendFailure(src);
             return 0;
         }
         String username = player.getName().getString();
@@ -44,7 +42,7 @@ public class CommandSetPassword implements BaseCommand {
                     return;
                 }
                 if (result.isSuccess()) {
-                    new MessageComponent("setPassword.success").sendSuccess(src);
+                    new MessageComponent("password.success").sendSuccess(src);
                     return;
                 }
                 new MessageComponent(result.getMessage().key(), result.getMessage().args()).sendFailure(src);
@@ -54,15 +52,26 @@ public class CommandSetPassword implements BaseCommand {
 
     @Override
     public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("setPassword")
-            .requires(src -> CommandHelper.canUseCommand(src, Settings.commandSetPassword))
+        dispatcher.register(Commands.literal("setPassword").executes(ctx -> tutor(ctx.getSource()))
             .then(Commands.argument("password", StringArgumentType.greedyString()).executes(context -> {
                 String password = StringArgumentType.getString(context, "password");
                 CommandSourceStack src = context.getSource();
+                if (!CommandUtils.hasPermission(src, Settings.commandSetPassword, "/setPassword",
+                    "commandSetPassword")) {
+                    return 0;
+                }
 
                 return setPassword(password, src);
             })));
 
+    }
+
+    private int tutor(CommandSourceStack source) {
+        if (!CommandUtils.hasPermission(source, Settings.commandSetPassword, "/setPassword", "commandSetPassword")) {
+            return 0;
+        }
+        CommandUtils.tutor(source, "password", 2);
+        return 1;
     }
 
 }

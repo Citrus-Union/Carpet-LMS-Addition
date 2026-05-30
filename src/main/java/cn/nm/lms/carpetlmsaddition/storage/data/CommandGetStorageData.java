@@ -33,8 +33,6 @@ import net.minecraft.world.item.Item;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 
-import carpet.utils.CommandHelper;
-
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
 import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
@@ -43,14 +41,19 @@ import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommandWithContext;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandRateLimitNbt;
+import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandUtils;
 import cn.nm.lms.carpetlmsaddition.storage.StorageSlotCounter;
 
 public final class CommandGetStorageData implements BaseCommandWithContext {
-    private static boolean canUseGetStorageDataCommand(CommandSourceStack source) {
-        return CommandHelper.canUseCommand(source, Settings.commandGetStorageData);
+    private static boolean checkPermission(CommandSourceStack source) {
+        return CommandUtils.hasPermission(source, Settings.commandGetStorageData, "/getStorageData",
+            "commandGetStorageData");
     }
 
     private static int executeGetAll(CommandSourceStack source) {
+        if (!checkPermission(source)) {
+            return 0;
+        }
         if (!checkRateLimit(source)) {
             return 0;
         }
@@ -66,6 +69,9 @@ public final class CommandGetStorageData implements BaseCommandWithContext {
 
     private static int executeGetOne(CommandContext<CommandSourceStack> ctx) {
         CommandSourceStack source = ctx.getSource();
+        if (!checkPermission(source)) {
+            return 0;
+        }
         if (!checkRateLimit(source)) {
             return 0;
         }
@@ -113,11 +119,10 @@ public final class CommandGetStorageData implements BaseCommandWithContext {
     @Override
     public void register(CommandDispatcher<CommandSourceStack> dispatcher,
         final CommandBuildContext commandBuildContext) {
-        dispatcher.register(Commands.literal("getStorageData")
-            .requires(CommandGetStorageData::canUseGetStorageDataCommand).executes(ctx -> {
-                return executeGetAll(ctx.getSource());
-            }).then(Commands.argument("id", ItemArgument.item(commandBuildContext)).executes(ctx -> {
-                return executeGetOne(ctx);
-            })));
+        dispatcher.register(Commands.literal("getStorageData").executes(ctx -> {
+            return executeGetAll(ctx.getSource());
+        }).then(Commands.argument("id", ItemArgument.item(commandBuildContext)).executes(ctx -> {
+            return executeGetOne(ctx);
+        })));
     }
 }
