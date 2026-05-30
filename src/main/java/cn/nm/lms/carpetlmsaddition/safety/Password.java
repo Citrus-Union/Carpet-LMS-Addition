@@ -28,6 +28,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
+import cn.nm.lms.carpetlmsaddition.translations.Translations;
 
 public class Password {
     private static final Gson GSON = new Gson();
@@ -46,7 +47,7 @@ public class Password {
             return passwordCheck;
         }
         if (username == null || username.isBlank()) {
-            return Result.failure("Username is empty");
+            return Result.failure("password.usernameEmpty");
         }
         String passwordHash = generateHash(password);
 
@@ -55,10 +56,10 @@ public class Password {
             return Result.success();
         } catch (UserPasswordStore.UserDataException e) {
             Mod.LOGGER.warn("User data error while setting password", e);
-            return Result.failure("User data error");
+            return Result.failure("password.userDataError");
         } catch (Exception e) {
             Mod.LOGGER.warn("Unknown error while setting password", e);
-            return Result.failure("Unknown error");
+            return Result.failure("common.unknownError");
         }
     }
 
@@ -68,30 +69,30 @@ public class Password {
 
     private static Result authenticateSync(String username, String inputPassword, Path secret, int expireDay) {
         if (username == null || username.isBlank()) {
-            return Result.failure("Username is empty");
+            return Result.failure("password.usernameEmpty");
         }
         if (inputPassword == null || inputPassword.isBlank()) {
-            return Result.failure("Password is empty");
+            return Result.failure("password.passwordEmpty");
         }
         try {
             String passwordHash = UserPasswordStore.getPasswordHash(username);
             if (passwordHash == null) {
-                return Result.failure("Invalid username or password");
+                return Result.failure("common.invalidUsernameOrPassword");
             }
             if (verified(inputPassword, passwordHash)) {
                 String token = TokenManager.generateToken(secret, username, expireDay);
                 return Result.success(username, token);
             }
-            return Result.failure("Invalid username or password");
+            return Result.failure("common.invalidUsernameOrPassword");
         } catch (IllegalArgumentException e) {
             Mod.LOGGER.warn("Invalid user password hash while authenticating", e);
-            return Result.failure("User data error");
+            return Result.failure("password.userDataError");
         } catch (UserPasswordStore.UserDataException e) {
             Mod.LOGGER.warn("User data error while authenticating", e);
-            return Result.failure("User data error");
+            return Result.failure("password.userDataError");
         } catch (Exception e) {
             Mod.LOGGER.warn("Unknown error while authenticating", e);
-            return Result.failure("Unknown error");
+            return Result.failure("common.unknownError");
         }
     }
 
@@ -102,18 +103,18 @@ public class Password {
 
     private static Result isBadPassword(String password) {
         if (password == null || password.isBlank()) {
-            return Result.failure("Password cannot be empty");
+            return Result.failure("password.passwordEmpty");
         }
         return Result.success();
     }
 
     public static final class Result {
         private final boolean success;
-        private final String message;
+        private final Translations.FeedbackMessage message;
         private final String username;
         private final String token;
 
-        private Result(boolean success, String message, String username, String token) {
+        private Result(boolean success, Translations.FeedbackMessage message, String username, String token) {
             this.success = success;
             this.message = message;
             this.username = username;
@@ -128,16 +129,29 @@ public class Password {
             return new Result(true, null, null, null);
         }
 
-        public static Result failure(String message) {
-            return new Result(false, message, null, null);
+        public static Result failure(String key, Object... args) {
+            return new Result(false, new Translations.FeedbackMessage(key, args), null, null);
         }
 
         public boolean isSuccess() {
             return this.success;
         }
 
-        public String getMessage() {
+        public Translations.FeedbackMessage getMessage() {
             return this.message;
+        }
+
+        public String getHttpMessage() {
+            if (this.message == null) {
+                return "Unknown error";
+            }
+            return switch (this.message.key()) {
+                case "common.invalidUsernameOrPassword" -> "Invalid username or password";
+                case "password.passwordEmpty" -> "Password cannot be empty";
+                case "password.usernameEmpty" -> "Username is empty";
+                case "password.userDataError" -> "User data error";
+                default -> "Unknown error";
+            };
         }
 
         public JsonElement getTokenResponse() {

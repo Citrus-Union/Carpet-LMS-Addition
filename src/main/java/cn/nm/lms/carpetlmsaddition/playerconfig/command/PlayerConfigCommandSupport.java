@@ -18,7 +18,6 @@ package cn.nm.lms.carpetlmsaddition.playerconfig.command;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -28,6 +27,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import carpet.patches.EntityPlayerMPFake;
 import carpet.utils.CommandHelper;
 
+import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 
@@ -35,10 +35,6 @@ public final class PlayerConfigCommandSupport {
     public static final String ARG_VALUE = "value";
     public static final String ARG_PLAYER = "player";
     public static final String COMMAND = "lms";
-    public static final String MESSAGE_PREFIX = "[Carpet LMS Addition] ";
-    public static final String MESSAGE_NO_PERMISSION = "No permission";
-    public static final String MESSAGE_UNKNOWN_VALUE_PREFIX = "Unknown value: ";
-    public static final String MESSAGE_VALUE_NOT_FOUND_PREFIX = "Value not found: ";
 
     private PlayerConfigCommandSupport() {}
 
@@ -65,15 +61,23 @@ public final class PlayerConfigCommandSupport {
         return StringArgumentType.getString(ctx, ARG_VALUE);
     }
 
-    public static void sendFailure(CommandSourceStack src, String message) {
-        src.sendFailure(Component.literal(message));
+    public static void sendNoPermission(CommandSourceStack src) {
+        new MessageComponent("playerConfig.noPermission").sendFailure(src);
     }
 
-    public static void sendNoPermission(CommandSourceStack src) {
-        sendFailure(src, MESSAGE_NO_PERMISSION);
+    public static void sendUnknownValue(CommandSourceStack src, String value) {
+        new MessageComponent("playerConfig.unknownValue", value).sendFailure(src);
+    }
+
+    public static void sendValueNotFound(CommandSourceStack src, String value) {
+        new MessageComponent("playerConfig.valueNotFound", value).sendFailure(src);
+    }
+
+    public static void sendUnknownBlockNotItem(CommandSourceStack src) {
+        new MessageComponent("playerConfig.unknownBlockNotItem").sendFailure(src);
     }
 
     public static void sendConfigValue(CommandSourceStack src, String config, String value) {
-        src.sendSuccess(() -> Component.literal(MESSAGE_PREFIX + config + " = " + value), false);
+        new MessageComponent("playerConfig.value", config, value).sendSuccess(src);
     }
 }

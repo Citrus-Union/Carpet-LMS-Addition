@@ -5,7 +5,7 @@ description: Command output formats intended for automation
 
 ## getItem
 
-```mcfunction
+```text
 /getItem <item> <count> nbt
 ```
 
@@ -69,8 +69,16 @@ Field notes:
 
 Other runtime failures still use the normal command failure text:
 
+- The message is localized using the server language.
+
 ```text
-getItem failed: <message>
+[Carpet LMS Addition] Unknown error
+```
+
+or
+
+```text
+[Carpet LMS Addition] 未知错误
 ```
 
 When `getItemCooldownSeconds` rate-limits NBT mode, the command sends a failure response with the remaining wait time:
@@ -83,7 +91,7 @@ When `getItemCooldownSeconds` rate-limits NBT mode, the command sends a failure 
 
 ## getStorageData
 
-```mcfunction
+```text
 /getStorageData
 /getStorageData <id>
 ```

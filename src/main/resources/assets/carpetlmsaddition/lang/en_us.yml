@@ -1,3 +1,42 @@
+carpetlmsaddition:
+  message:
+    cleanGetItemBot:
+      botsWithItem: "%d fake players have items"
+      cleaned: "Cleaned fake players: %s"
+      started: Started cleaning items from fake players
+    common:
+      unknownError: Unknown error
+      command:
+        playerOnly: "%s can only be used by a player"
+    getItem:
+      botResultSeparator: ": "
+      botResultCountSuffix: " x%d"
+      countOutOfRange: "Count must be between 1 and %d"
+      countTooSmall: "Count must be at least 1"
+      donePrefix: "Get item complete: "
+      doneCount: " x%d"
+      rateLimited: "Get item requests are too frequent. Please wait %d seconds"
+      started: Get item started
+    playerConfig:
+      noPermission: No permission
+      unknownBlockNotItem: "Unknown block: not a block item"
+      unknownValue: "Unknown value: %s"
+      value: "%s = %s"
+      valueNotFound: "Value not found: %s"
+    password:
+      passwordEmpty: Password cannot be empty
+      userDataError: User data error
+      usernameEmpty: Username cannot be empty
+    setPassword:
+      success: Password set successfully
+    storageWebsite:
+      action:
+        starting: Storage website started
+        stopping: Storage website stopped
+      status:
+        running: Storage website is running
+        stopped: Storage website is not running
+
 carpet:
   rule:
     allayHealInterval:

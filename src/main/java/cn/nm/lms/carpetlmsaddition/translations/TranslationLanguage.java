@@ -14,14 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Carpet LMS Addition.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cn.nm.lms.carpetlmsaddition;
+package cn.nm.lms.carpetlmsaddition.translations;
 
-import cn.nm.lms.carpetlmsaddition.rule.block.dispenser.bartering.DispenserBarteringInit;
-import cn.nm.lms.carpetlmsaddition.translations.Translations;
+import java.util.Locale;
 
-public final class Init {
-    public static void initAll() {
-        Translations.init();
-        DispenserBarteringInit.init();
+import carpet.CarpetSettings;
+
+final class TranslationLanguage {
+    private TranslationLanguage() {}
+
+    static String getServerLanguage() {
+        String language = CarpetSettings.language;
+        if (language == null || language.isBlank() || language.equalsIgnoreCase("none")) {
+            return TranslationStorage.DEFAULT_LANG;
+        }
+        return normalize(language);
+    }
+
+    static String normalize(String lang) {
+        return lang.toLowerCase(Locale.ROOT);
     }
 }

@@ -69,8 +69,7 @@ public final class EnumPlayerConfig<E extends Enum<E>> extends PlayerConfigEntry
         String value = PlayerConfigCommandSupport.getValue(ctx);
         E enumValue = parseEnum(value);
         if (enumValue == null) {
-            PlayerConfigCommandSupport.sendFailure(src,
-                PlayerConfigCommandSupport.MESSAGE_UNKNOWN_VALUE_PREFIX + value);
+            PlayerConfigCommandSupport.sendUnknownValue(src, value);
             return 0;
         }
         return withPermittedTarget(ctx, (_src, target) -> {

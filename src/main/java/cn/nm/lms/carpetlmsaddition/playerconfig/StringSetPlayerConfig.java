@@ -107,8 +107,7 @@ public class StringSetPlayerConfig extends PlayerConfigEntry<Set<String>> {
         return withPermittedTarget(ctx, (src, target) -> {
             Set<String> values = get(target.getUUID());
             if (values == null || !values.contains(value)) {
-                PlayerConfigCommandSupport.sendFailure(src,
-                    PlayerConfigCommandSupport.MESSAGE_VALUE_NOT_FOUND_PREFIX + value);
+                PlayerConfigCommandSupport.sendValueNotFound(src, value);
                 return 0;
             }
             values = new LinkedHashSet<>(values);

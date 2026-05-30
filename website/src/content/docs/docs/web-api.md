@@ -46,6 +46,16 @@ Behavior notes:
 - Successful and failed login attempts both count toward the cooldown.
 - Requests limited by this rule return `429`.
 
+Login error messages:
+
+- `401` may return these `message` values:
+  - `Invalid username or password`
+  - `Username cannot be empty`
+  - `Password cannot be empty`
+  - `User data error`
+- `500` may return:
+  - `Unknown error`
+
 ## GET /api/storage/getData
 
 - Method: `GET`
@@ -180,3 +190,21 @@ Common error shape:
   "message": "error message"
 }
 ```
+
+Known `message` values returned by backend:
+
+- Auth:
+  - `Invalid username or password`
+  - `Username cannot be empty`
+  - `Password cannot be empty`
+  - `User data error`
+  - `Invalid token`
+  - `Token expired`
+- Rate limit:
+  - `Rate limited, wait <seconds> seconds`
+- Storage website:
+  - `Website getItem is disabled`
+  - `Target player is not online`
+  - `Minecraft server is not initialized`
+- Generic:
+  - `Unknown error`

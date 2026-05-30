@@ -20,7 +20,6 @@ import java.util.List;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -28,7 +27,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import carpet.utils.CommandHelper;
 
+import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
+import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommand;
 
@@ -49,7 +50,7 @@ public final class CommandCleanGetItemBot implements BaseCommand {
         AsyncTasks.run(() -> {
             int size = CleanGetItemBot.listUnspawnedGetItemBotsWithInventory().size();
             source.getServer()
-                .execute(() -> source.sendSuccess(() -> Component.literal(size + " bots with item"), false));
+                .execute(() -> new MessageComponent("cleanGetItemBot.botsWithItem", size).sendSuccess(source));
         });
         return 1;
     }
@@ -57,20 +58,20 @@ public final class CommandCleanGetItemBot implements BaseCommand {
     private int executeClean(CommandSourceStack source, int max) {
         ServerPlayer player = source.getPlayer();
         if (player == null) {
-            source.sendFailure(Component.literal("cleanGetItemBot clean can only be used by a player"));
+            new MessageComponent("common.command.playerOnly", "/cleanGetItemBot clean").sendFailure(source);
             return 0;
         }
 
-        source.sendSuccess(() -> Component.literal("cleanGetItemBot clean running in background"), false);
+        new MessageComponent("cleanGetItemBot.started").sendSuccess(source);
         AsyncTasks.run(() -> {
             try {
                 List<String> cleaned = CleanGetItemBot.cleanBots(player, max);
-                source.getServer().execute(() -> source.sendSuccess(
-                    () -> Component.literal("cleanGetItemBot cleaned: " + String.join(", ", cleaned)), false));
+                source.getServer()
+                    .execute(() -> new MessageComponent("cleanGetItemBot.cleaned", String.join(", ", cleaned))
+                        .sendSuccess(source));
             } catch (Throwable throwable) {
-                String msg = throwable.getMessage();
-                source.getServer().execute(() -> source.sendFailure(
-                    Component.literal("cleanGetItemBot clean failed: " + (msg == null ? "unknown" : msg))));
+                Mod.LOGGER.warn("cleanGetItemBot failed", throwable);
+                source.getServer().execute(() -> new MessageComponent("common.unknownError").sendFailure(source));
             }
         });
         return 1;

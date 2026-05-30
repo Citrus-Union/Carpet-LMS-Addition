@@ -18,7 +18,6 @@ package cn.nm.lms.carpetlmsaddition.storage.website;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -26,6 +25,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import carpet.utils.CommandHelper;
 
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
+import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommand;
 
@@ -39,13 +39,13 @@ public final class CommandStorageWebsite implements BaseCommand {
         LiteralArgumentBuilder<CommandSourceStack> stop =
             Commands.literal("stop").requires(CommandStorageWebsite::canUseStorageWebsiteCommand).executes(ctx -> {
                 CommandSourceStack source = ctx.getSource();
-                return executeServerActionAsync(source, "stopping", Website::stopServer);
+                return executeStopAsync(source);
             });
 
         LiteralArgumentBuilder<CommandSourceStack> start =
             Commands.literal("start").requires(CommandStorageWebsite::canUseStorageWebsiteCommand).executes(ctx -> {
                 CommandSourceStack source = ctx.getSource();
-                return executeServerActionAsync(source, "starting", Website::startServer);
+                return executeStartAsync(source);
             });
 
         LiteralArgumentBuilder<CommandSourceStack> status =
@@ -59,16 +59,26 @@ public final class CommandStorageWebsite implements BaseCommand {
     }
 
     private int executeServerStatus(CommandSourceStack source) {
-        String statusText = Website.isServerRunning() ? "running" : "stopped";
-        source.sendSuccess(() -> Component.literal("storageWebsite status: " + statusText), false);
+        new MessageComponent(
+            Website.isServerRunning() ? "storageWebsite.status.running" : "storageWebsite.status.stopped")
+            .sendSuccess(source);
         return 1;
     }
 
-    private int executeServerActionAsync(CommandSourceStack source, String action, Runnable task) {
+    private int executeStartAsync(CommandSourceStack source) {
         AsyncTasks.run(() -> {
-            task.run();
-            source.getServer().execute(
-                () -> source.sendSuccess(() -> Component.literal("storageWebsite " + action + " done"), false));
+            Website.startServer();
+            source.getServer()
+                .execute(() -> new MessageComponent("storageWebsite.action.starting").sendSuccess(source));
+        });
+        return 1;
+    }
+
+    private int executeStopAsync(CommandSourceStack source) {
+        AsyncTasks.run(() -> {
+            Website.stopServer();
+            source.getServer()
+                .execute(() -> new MessageComponent("storageWebsite.action.stopping").sendSuccess(source));
         });
         return 1;
     }

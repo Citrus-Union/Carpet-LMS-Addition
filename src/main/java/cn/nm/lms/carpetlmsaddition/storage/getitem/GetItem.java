@@ -42,6 +42,7 @@ import org.jspecify.annotations.Nullable;
 
 import cn.nm.lms.carpetlmsaddition.bot.FakePlayerSpawner;
 import cn.nm.lms.carpetlmsaddition.lib.ChatEventCompat;
+import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
@@ -50,6 +51,7 @@ import cn.nm.lms.carpetlmsaddition.storage.StorageSlotCounter.Result;
 import cn.nm.lms.carpetlmsaddition.storage.data.Storage;
 import cn.nm.lms.carpetlmsaddition.storage.data.StorageContainerReader.SlotSnapshot;
 import cn.nm.lms.carpetlmsaddition.storage.getitem.GetItemSlotSelector.Target;
+import cn.nm.lms.carpetlmsaddition.translations.Translations;
 
 public class GetItem {
     private static final NameRateLimiter RATE_LIMITER = new NameRateLimiter();
@@ -65,7 +67,7 @@ public class GetItem {
         return doGetItem(target, count);
     }
 
-    public static Component buildBotResultLine(String botName, Item item, int got) {
+    public static MessageComponent buildBotResultLine(String botName, Item item, int got) {
         String spawnCommand = "/player " + botName + " spawn";
         String killCommand = "/player " + botName + " kill";
         String inventoryCommand = "/player " + botName + " inventory";
@@ -81,8 +83,9 @@ public class GetItem {
             .withStyle(style -> style.withClickEvent(ChatEventCompat.runCommand(inventoryCommand))
                 .withHoverEvent(ChatEventCompat.showText(Component.literal("inventory"))));
 
-        return Component.literal(botName).append(up).append(down).append(openInventory).append(Component.literal(": "))
-            .append(itemName.copy()).append(Component.literal(" x" + got));
+        return new MessageComponent(Component.literal(botName).append(up).append(down).append(openInventory))
+            .append(Translations.messageTr("getItem.botResultSeparator")).append(itemName)
+            .append(Translations.messageTr("getItem.botResultCountSuffix", got));
     }
 
     private static void checkRateLimit(@Nullable String playerName) {

@@ -28,8 +28,6 @@ import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.TextComponentTagVisitor;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -37,7 +35,9 @@ import com.mojang.brigadier.context.CommandContext;
 
 import carpet.utils.CommandHelper;
 
+import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
+import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
@@ -59,7 +59,7 @@ public final class CommandGetStorageData implements BaseCommandWithContext {
             counts.entrySet().stream()
                 .sorted(Comparator.comparing(entry -> BuiltInRegistries.ITEM.getKey(entry.getKey()).toString()))
                 .forEach(entry -> list.add(toResultTag(entry.getKey(), entry.getValue())));
-            return new TextComponentTagVisitor("").visit(list);
+            return list;
         });
         return 1;
     }
@@ -72,24 +72,21 @@ public final class CommandGetStorageData implements BaseCommandWithContext {
         Item item = StorageSlotCounter.normalize(Utils.itemFromInput(ItemArgument.getItem(ctx, "id")));
         sendCountsAsync(source, counts -> {
             int count = counts.getOrDefault(item, 0);
-            CompoundTag tag = toResultTag(item, count);
-            return new TextComponentTagVisitor("").visit(tag);
+            return toResultTag(item, count);
         });
         return 1;
     }
 
-    private static void sendCountsAsync(CommandSourceStack source, Function<Map<Item, Integer>, Component> formatter) {
-        generateStorageItemCountsAsync().thenApply(formatter).thenAccept(component -> {
-            source.getServer().execute(() -> source.sendSuccess(() -> component, false));
+    private static void sendCountsAsync(CommandSourceStack source,
+        Function<Map<Item, Integer>, net.minecraft.nbt.Tag> formatter) {
+        generateStorageItemCountsAsync().thenApply(formatter).thenAccept(tag -> {
+            source.getServer().execute(() -> new MessageComponent(tag).sendSuccess(source));
         }).exceptionally(e -> {
-            source.getServer().execute(() -> source.sendFailure(Component.literal(getErrorMessage(e))));
+            Throwable cause = e.getCause() == null ? e : e.getCause();
+            Mod.LOGGER.warn("getStorageData failed", cause);
+            source.getServer().execute(() -> new MessageComponent("common.unknownError").sendFailure(source));
             return null;
         });
-    }
-
-    private static String getErrorMessage(Throwable throwable) {
-        Throwable cause = throwable.getCause() == null ? throwable : throwable.getCause();
-        return cause.getMessage() == null ? cause.toString() : cause.getMessage();
     }
 
     private static boolean checkRateLimit(CommandSourceStack source) {

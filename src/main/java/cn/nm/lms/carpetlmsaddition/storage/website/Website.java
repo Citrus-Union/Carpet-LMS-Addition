@@ -295,7 +295,7 @@ public class Website {
                     return;
                 }
                 if (!result.isSuccess()) {
-                    writeJson(exchange, 401, new WebsiteMessageResp("401", result.getMessage()));
+                    writeJson(exchange, 401, new WebsiteMessageResp("401", result.getHttpMessage()));
                     return;
                 }
                 writeJson(exchange, 200, result.getTokenResponse());

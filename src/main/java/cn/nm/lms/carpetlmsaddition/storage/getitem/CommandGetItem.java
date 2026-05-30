@@ -26,7 +26,6 @@ import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.TextComponentTagVisitor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 
@@ -37,12 +36,16 @@ import com.mojang.brigadier.context.CommandContext;
 
 import carpet.utils.CommandHelper;
 
+import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.AsyncTasks;
+import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
+import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommandWithContext;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.CommandRateLimitNbt;
 import cn.nm.lms.carpetlmsaddition.storage.StorageSlotCounter;
+import cn.nm.lms.carpetlmsaddition.translations.Translations;
 
 public final class CommandGetItem implements BaseCommandWithContext {
     private enum OutputMode {
@@ -86,18 +89,18 @@ public final class CommandGetItem implements BaseCommandWithContext {
             if (mode == OutputMode.NBT) {
                 return getItemFailNbt(source, maxCount);
             }
-            source.sendFailure(Component.literal("Count must be at least 1"));
+            new MessageComponent("getItem.countTooSmall").sendFailure(source);
             return 0;
         }
         if (maxCount > 0 && count > maxCount) {
             if (mode == OutputMode.NBT) {
                 return getItemFailNbt(source, maxCount);
             }
-            source.sendFailure(Component.literal(String.format("Count must be between 1 and %d", maxCount)));
+            new MessageComponent("getItem.countOutOfRange", maxCount).sendFailure(source);
             return 0;
         }
         if (mode != OutputMode.NBT) {
-            source.sendSuccess(() -> Component.literal("getItem started in background"), false);
+            new MessageComponent("getItem.started").sendSuccess(source);
         }
         try {
             AsyncTasks.run(() -> runGetItemAsync(source, item, count, playerName, mode));
@@ -106,7 +109,9 @@ public final class CommandGetItem implements BaseCommandWithContext {
             if (mode == OutputMode.NBT && CommandRateLimitNbt.sendIfRateLimited(source, throwable)) {
                 return 0;
             }
-            source.sendFailure(Component.literal(buildFailureMessage(throwable)));
+            Mod.LOGGER.warn("getItem failed to start", throwable);
+            Translations.FeedbackMessage message = buildFailureMessage(throwable);
+            new MessageComponent(message.key(), message.args()).sendFailure(source);
             return 1;
         }
     }
@@ -114,17 +119,15 @@ public final class CommandGetItem implements BaseCommandWithContext {
     private int getItemFailNbt(CommandSourceStack source, int maxCount) {
         CompoundTag tag = new CompoundTag();
         tag.putInt("maxCount", maxCount);
-        Component component = new TextComponentTagVisitor("").visit(tag);
-
-        source.sendFailure(component);
+        new MessageComponent(tag).sendFailure(source);
         return 0;
     }
 
     private void sendResultText(CommandSourceStack source, Item item, Map<String, Map<Item, Integer>> result) {
         Component itemName = Utils.itemDisplayName(item);
         if (result.isEmpty()) {
-            Component component = Component.literal("getItem done: ").append(itemName).append(Component.literal(" x0"));
-            source.sendSuccess(() -> component, false);
+            new MessageComponent("getItem.donePrefix").append(itemName)
+                .append(Translations.messageTr("getItem.doneCount", 0)).sendSuccess(source);
             return;
         }
 
@@ -133,12 +136,11 @@ public final class CommandGetItem implements BaseCommandWithContext {
             int got = entry.getValue().getOrDefault(item, 0);
             total += got;
             String botName = entry.getKey();
-            source.sendSuccess(() -> GetItem.buildBotResultLine(botName, item, got), false);
+            GetItem.buildBotResultLine(botName, item, got).sendSuccess(source);
         }
         int totalResult = total;
-        Component component =
-            Component.literal("getItem done: ").append(itemName).append(Component.literal(" x" + totalResult));
-        source.sendSuccess(() -> component, false);
+        new MessageComponent("getItem.donePrefix").append(itemName)
+            .append(Translations.messageTr("getItem.doneCount", totalResult)).sendSuccess(source);
     }
 
     private void sendResultNbt(CommandSourceStack source, Map<String, Map<Item, Integer>> result) {
@@ -160,9 +162,7 @@ public final class CommandGetItem implements BaseCommandWithContext {
             }
         }
 
-        Component component = new TextComponentTagVisitor("").visit(list);
-
-        source.sendSuccess(() -> component, false);
+        new MessageComponent(list).sendSuccess(source);
     }
 
     private void sendResult(CommandSourceStack source, Item item, GetItem.GetItemResult result, OutputMode mode) {
@@ -182,13 +182,17 @@ public final class CommandGetItem implements BaseCommandWithContext {
                 if (mode == OutputMode.NBT && CommandRateLimitNbt.sendIfRateLimited(source, throwable)) {
                     return;
                 }
-                source.sendFailure(Component.literal(buildFailureMessage(throwable)));
+                Mod.LOGGER.warn("getItem failed in background", throwable);
+                Translations.FeedbackMessage message = buildFailureMessage(throwable);
+                new MessageComponent(message.key(), message.args()).sendFailure(source);
             });
         }
     }
 
-    private String buildFailureMessage(Throwable throwable) {
-        String msg = throwable.getMessage();
-        return "getItem failed: " + (msg == null ? "unknown" : msg);
+    private Translations.FeedbackMessage buildFailureMessage(Throwable throwable) {
+        if (throwable instanceof NameRateLimiter.RateLimitException rateLimitException) {
+            return new Translations.FeedbackMessage("getItem.rateLimited", rateLimitException.waitSeconds());
+        }
+        return new Translations.FeedbackMessage("common.unknownError");
     }
 }

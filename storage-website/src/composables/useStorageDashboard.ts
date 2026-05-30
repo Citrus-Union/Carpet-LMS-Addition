@@ -161,10 +161,10 @@ export function useStorageDashboard() {
       if (detail === "Invalid token") {
         return t("errors.invalidToken");
       }
-      if (detail === "Username is empty") {
+      if (detail === "Username cannot be empty") {
         return t("errors.unauthorizedUsernameEmpty");
       }
-      if (detail === "Password is empty") {
+      if (detail === "Password cannot be empty") {
         return t("errors.unauthorizedPasswordEmpty");
       }
       if (detail === "Invalid username or password") {

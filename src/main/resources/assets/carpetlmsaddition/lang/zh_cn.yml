@@ -1,3 +1,42 @@
+carpetlmsaddition:
+  message:
+    cleanGetItemBot:
+      botsWithItem: "有物品的假人共 %d 个"
+      cleaned: "假人已清理：%s"
+      started: 已开始清理假人物品
+    common:
+      unknownError: 未知错误
+      command:
+        playerOnly: "%s 只能由玩家执行"
+    getItem:
+      botResultSeparator: "："
+      botResultCountSuffix: " x%d"
+      countOutOfRange: "数量必须在 1 到 %d 之间"
+      countTooSmall: 数量至少为 1
+      donePrefix: 获取物品完成：
+      doneCount: " x%d"
+      rateLimited: "获取物品请求过快，请等待 %d 秒"
+      started: 获取物品已开始执行
+    playerConfig:
+      noPermission: 没有权限
+      unknownBlockNotItem: 未知方块：这不是方块物品
+      unknownValue: "未知值：%s"
+      value: "%s = %s"
+      valueNotFound: "未找到该值：%s"
+    password:
+      passwordEmpty: 密码不能为空
+      userDataError: 用户数据错误
+      usernameEmpty: 用户名不能为空
+    setPassword:
+      success: 密码设置成功
+    storageWebsite:
+      action:
+        starting: 仓储网站已启动
+        stopping: 仓储网站已停止
+      status:
+        running: 仓储网站运行中
+        stopped: 仓储网站未开启
+
 carpet:
   category:
     storage: 储存

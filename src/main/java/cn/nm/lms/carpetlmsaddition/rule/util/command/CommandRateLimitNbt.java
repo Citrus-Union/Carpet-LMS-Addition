@@ -18,9 +18,8 @@ package cn.nm.lms.carpetlmsaddition.rule.util.command;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TextComponentTagVisitor;
-import net.minecraft.network.chat.Component;
 
+import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.lib.NameRateLimiter;
 
 public final class CommandRateLimitNbt {
@@ -38,8 +37,7 @@ public final class CommandRateLimitNbt {
     public static void sendWaitSecond(CommandSourceStack source, int waitSecond) {
         CompoundTag tag = new CompoundTag();
         tag.putInt("waitSecond", waitSecond);
-        Component component = new TextComponentTagVisitor("").visit(tag);
-        source.sendFailure(component);
+        new MessageComponent(tag).sendFailure(source);
     }
 
     private static NameRateLimiter.RateLimitException findRateLimitException(Throwable throwable) {

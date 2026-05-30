@@ -38,7 +38,6 @@ import cn.nm.lms.carpetlmsaddition.playerconfig.command.PlayerConfigCommandSuppo
 
 public final class BlockSetPlayerConfig extends StringSetPlayerConfig {
     private static final String ARG_BLOCK = "block";
-    private static final String MESSAGE_UNKNOWN_BLOCK_PREFIX = "Unknown block: ";
 
     BlockSetPlayerConfig(String key, BooleanSupplier enabled) {
         super(key, ARG_BLOCK, enabled);
@@ -54,7 +53,7 @@ public final class BlockSetPlayerConfig extends StringSetPlayerConfig {
     protected String normalizeAddValue(CommandContext<CommandSourceStack> ctx, CommandSourceStack src) {
         Block block = getBlock(ItemArgument.getItem(ctx, argumentName));
         if (block == null) {
-            PlayerConfigCommandSupport.sendFailure(src, MESSAGE_UNKNOWN_BLOCK_PREFIX + "not a block item");
+            PlayerConfigCommandSupport.sendUnknownBlockNotItem(src);
             return null;
         }
         return BlockRegistryCompat.getBlockId(block);

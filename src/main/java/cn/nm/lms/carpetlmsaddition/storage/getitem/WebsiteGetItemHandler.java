@@ -92,7 +92,7 @@ public final class WebsiteGetItemHandler {
                 return Boolean.FALSE;
             }
             for (SendGetItemResultRequest request : requests) {
-                player.sendSystemMessage(GetItem.buildBotResultLine(request.botName, request.item, request.count));
+                GetItem.buildBotResultLine(request.botName, request.item, request.count).sendSystemMessage(player);
             }
             return Boolean.TRUE;
         });

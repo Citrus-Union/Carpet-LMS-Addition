@@ -8,6 +8,14 @@ import path from "path";
 // https://astro.build/config
 export default defineConfig({
   site: SITE.url,
+  markdown: {
+    shikiConfig: {
+      langAlias: {
+        mcfunction: "shellscript",
+        snbt: "hjson",
+      },
+    },
+  },
 
   integrations: [
     sitemap(),

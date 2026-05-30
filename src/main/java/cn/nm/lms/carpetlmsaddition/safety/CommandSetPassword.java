@@ -18,7 +18,6 @@ package cn.nm.lms.carpetlmsaddition.safety;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -26,6 +25,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 
 import carpet.utils.CommandHelper;
 
+import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 import cn.nm.lms.carpetlmsaddition.rule.Settings;
 import cn.nm.lms.carpetlmsaddition.rule.util.command.BaseCommand;
 
@@ -33,21 +33,21 @@ public class CommandSetPassword implements BaseCommand {
     private static int setPassword(String password, CommandSourceStack src) {
         ServerPlayer player = src.getPlayer();
         if (player == null) {
-            src.sendFailure(Component.literal("Should be executed by a player"));
+            new MessageComponent("common.command.playerOnly", "/setPassword").sendFailure(src);
             return 0;
         }
         String username = player.getName().getString();
         Password.setPasswordAsync(password, username)
             .whenComplete((result, throwable) -> src.getServer().execute(() -> {
                 if (throwable != null) {
-                    src.sendFailure(Component.literal("Unknown error"));
+                    new MessageComponent("common.unknownError").sendFailure(src);
                     return;
                 }
                 if (result.isSuccess()) {
-                    src.sendSuccess(() -> Component.literal("Set password successfully"), false);
+                    new MessageComponent("setPassword.success").sendSuccess(src);
                     return;
                 }
-                src.sendFailure(Component.literal(result.getMessage()));
+                new MessageComponent(result.getMessage().key(), result.getMessage().args()).sendFailure(src);
             }));
         return 1;
     }
