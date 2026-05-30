@@ -91,21 +91,9 @@ dependencies {
     // https://central.sonatype.com/artifact/org.jspecify/jspecify
     autoCompileOnly("org.jspecify:jspecify:1.0.0")
     // runtime mods
-    if (mcVersion < 11904) {
-        autoRuntimeOnly(
-            if (mcVersion < 11900) {
-                "com.github.astei:lazydfu:0.1.2"
-            } else {
-                "com.github.Fallen-Breath:lazydfu:a7cfc44c0c"
-            },
-        )
-    }
     autoRuntimeOnly("me.fallenbreath:mixin-auditor:0.2.0-${if (unobfuscated) "u" else "o"}")
 
     includeDependency(autoImplementation("me.fallenbreath:conditional-mixin-fabric:$conditionalMixinVersion"))
-    if (mcVersion < 12005) {
-        includeDependency("io.github.llamalad7:mixinextras-fabric:$mixinExtrasVersion")
-    }
 
     includeDependency(autoImplementation("org.mindrot:jbcrypt:$jbcryptVersion"))
 }
@@ -124,22 +112,18 @@ val mixinCompatibilityLevel = javaCompatibility
 
 val commonVmArgs = listOf("--sun-misc-unsafe-memory-access=allow", "-Dmixin.debug.export=true")
 loomExtension.runConfigs.configureEach {
-    // to make sure it generates all "Minecraft Client (:subproject_name)" applications
-    isIdeConfigGenerated = false
     runDir = if (unobfuscated) "../../run" else "../../run-obsuscated"
     vmArgs(commonVmArgs)
 }
 loomExtension.runs {
-    val auditVmArgs = commonVmArgs + "-DmixinAuditor.audit=true"
+    val auditVmArgs = "-DmixinAuditor.audit=true"
     register("serverMixinAudit") {
         server()
-        vmArgs.addAll(auditVmArgs)
-        isIdeConfigGenerated = false
+        vmArgs.add(auditVmArgs)
     }
     register("clientMixinAudit") {
         client()
-        vmArgs.addAll(auditVmArgs)
-        isIdeConfigGenerated = false
+        vmArgs.add(auditVmArgs)
     }
 }
 loomExtension.accessWidenerPath.set(file("carpet-lms-addition.accesswidener"))

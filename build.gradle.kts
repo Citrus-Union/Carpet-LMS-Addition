@@ -30,8 +30,8 @@ apply(plugin = "com.github.node-gradle.node")
 
 extensions.configure<NodeExtension> {
     download.set(true)
-    version.set("24.14.1")
-    pnpmVersion.set("10.33.0")
+    version.set("24.16.0")
+    pnpmVersion.set("11.4.0")
     nodeProjectDir.set(layout.projectDirectory.dir("storage-website").asFile)
 }
 
@@ -143,6 +143,7 @@ spotless {
     }
     java {
         target("src/main/java/**/*.java", "versions/*/src/main/java/**/*.java")
+        toggleOffOn()
         removeUnusedImports()
         forbidWildcardImports()
         forbidModuleImports()
