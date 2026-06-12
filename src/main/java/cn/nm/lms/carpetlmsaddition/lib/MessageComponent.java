@@ -18,7 +18,6 @@ package cn.nm.lms.carpetlmsaddition.lib;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.TextComponentTagVisitor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,7 +36,7 @@ public final class MessageComponent {
     }
 
     public MessageComponent(Tag tag) {
-        this(new TextComponentTagVisitor("").visit(tag), false);
+        this(Component.literal(tag.toString()), false);
     }
 
     public MessageComponent(String key, Object... args) {
