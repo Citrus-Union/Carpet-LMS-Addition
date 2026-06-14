@@ -5,6 +5,8 @@ import sitemap from "@astrojs/sitemap";
 import { SITE } from "./src/config/site.ts";
 import path from "path";
 
+const branch = process.env.GIT_BRANCH ?? process.env.CF_PAGES_BRANCH ?? "main";
+
 // https://astro.build/config
 export default defineConfig({
   site: SITE.url,
@@ -21,6 +23,20 @@ export default defineConfig({
     sitemap(),
     starlight({
       title: "Carpet LMS Addition",
+      lastUpdated: true,
+      editLink: {
+        baseUrl: `https://github.com/Citrus-Union/Carpet-LMS-Addition/edit/${branch}/website`,
+      },
+      locales: {
+        root: {
+          label: "English",
+          lang: "en",
+        },
+        "zh-cn": {
+          label: "简体中文",
+          lang: "zh-CN",
+        },
+      },
       social: [
         {
           icon: "github",
@@ -29,26 +45,11 @@ export default defineConfig({
         },
       ],
       sidebar: [
-        {
-          label: "Intro",
-          link: "/docs",
-        },
-        {
-          label: "Rules",
-          link: "/docs/rules",
-        },
-        {
-          label: "Config",
-          link: "/docs/config",
-        },
-        {
-          label: "Web API",
-          link: "/docs/web-api",
-        },
-        {
-          label: "Command API",
-          link: "/docs/command-api",
-        },
+        "docs",
+        "docs/rules",
+        "docs/config",
+        "docs/web-api",
+        "docs/command-api",
       ],
       components: {
         Head: "./src/components/Head.astro",
