@@ -12,8 +12,11 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
     "@astrojs/starlight": "^0.38.5",
+    "@iconify-json/simple-icons": "^1.2.86",
     "astro": "^6.3.7",
-    "js-yaml": "^4.1.1"
+    "astro-icon": "^1.1.5",
+    "js-yaml": "^4.1.1",
+    "simple-icons": "^16.23.0"
   },
   "engines": {
     "node": "^24.16.0",

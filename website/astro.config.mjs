@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import sitemap from "@astrojs/sitemap";
+import icon from "astro-icon";
 import { SITE } from "./src/config/site.ts";
 import path from "path";
 
@@ -20,6 +21,7 @@ export default defineConfig({
   },
 
   integrations: [
+    icon(),
     sitemap(),
     starlight({
       title: "Carpet LMS Addition",
@@ -37,13 +39,6 @@ export default defineConfig({
           lang: "zh-CN",
         },
       },
-      social: [
-        {
-          icon: "github",
-          label: "GitHub",
-          href: "https://github.com/Citrus-Union/Carpet-LMS-Addition",
-        },
-      ],
       sidebar: [
         "docs",
         "docs/rules",
@@ -53,6 +48,7 @@ export default defineConfig({
       ],
       components: {
         Head: "./src/components/Head.astro",
+        SocialIcons: "./src/components/SocialIcons.astro",
       },
     }),
   ],
