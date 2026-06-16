@@ -27,7 +27,7 @@ export default defineConfig({
       title: "Carpet LMS Addition",
       lastUpdated: true,
       editLink: {
-        baseUrl: `https://github.com/Citrus-Union/Carpet-LMS-Addition/edit/${branch}/website`,
+        baseUrl: `https://github.com/Citrus-Union/Carpet-LMS-Addition/blob/${branch}/website`,
       },
       locales: {
         root: {
@@ -42,9 +42,27 @@ export default defineConfig({
       sidebar: [
         "docs",
         "docs/rules",
-        "docs/config",
-        "docs/web-api",
-        "docs/command-api",
+        {
+          label: "Storage",
+          translations: {
+            "zh-CN": "仓储",
+          },
+          items: [
+            "docs/storage",
+            "docs/storage/tutor",
+            "docs/storage/config",
+            {
+              label: "Development",
+              translations: {
+                "zh-CN": "开发",
+              },
+              items: [
+                "docs/storage/development/web-api",
+                "docs/storage/development/command-api",
+              ],
+            },
+          ],
+        },
       ],
       components: {
         Head: "./src/components/Head.astro",
