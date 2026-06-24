@@ -15,9 +15,45 @@ Control the interval of allay healing (unit: gt)
 - Default value: `-1`
 - Categories: `LMS`, `SURVIVAL`
 
-## commandLMSSelf
+## breakingRestriction
 
-View or modify your own /lms settings
+Enable per-player block breaking restriction configured by /lms
+
+- Type: `boolean`
+- Default value: `false`
+- Suggested options: `false`, `true`
+- Categories: `LMS`, `SURVIVAL`, `COMMAND`
+
+## commandCleanGetItemBot
+
+Enable "/cleanGetItemBot" command
+
+- Type: `String`
+- Default value: `false`
+- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
+- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`, `STORAGE`
+
+## commandGetItem
+
+Enable "/getItem <item> <count>" command
+
+- Type: `String`
+- Default value: `false`
+- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
+- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`, `STORAGE`
+
+## commandGetStorageData
+
+Enable "/getStorageData" and "/getStorageData <id>" command
+
+- Type: `String`
+- Default value: `false`
+- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
+- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`, `STORAGE`
+
+## commandLMSBot
+
+View or modify bot's /lms settings
 
 - Type: `String`
 - Default value: `true`
@@ -33,23 +69,32 @@ View or modify other players' /lms settings
 - Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
 - Categories: `LMS`, `SURVIVAL`, `COMMAND`
 
-## commandLMSBot
+## commandLMSSelf
 
-View or modify bot's /lms settings
+View or modify your own /lms settings
 
 - Type: `String`
 - Default value: `true`
 - Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
 - Categories: `LMS`, `SURVIVAL`, `COMMAND`
 
-## breakingRestriction
+## commandSetPassword
 
-Enable per-player block breaking restriction configured by /lms
+Enable "/setPassword" command
 
-- Type: `boolean`
+- Type: `String`
 - Default value: `false`
-- Suggested options: `false`, `true`
-- Categories: `LMS`, `SURVIVAL`, `COMMAND`
+- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
+- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`
+
+## commandStorageWebsite
+
+Enable "/storageWebsite status", "/storageWebsite start" and "/storageWebsite stop" command
+
+- Type: `String`
+- Default value: `false`
+- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
+- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`, `STORAGE`
 
 ## dispenserBartering
 
@@ -99,6 +144,21 @@ Add a crafting recipe to make enchanted golden apples renewable
 - Suggested options: `false`, `true`
 - Categories: `LMS`, `SURVIVAL`
 
+## entityTeleportCrossDimension
+
+Set how entity motion is handled during cross-dimension teleportation
+
+When set to origin, keeps vanilla behavior
+
+When set to 1.21.9+, uses the 1.21.9-pre1+ behavior
+
+When set to 1.21.8-, uses the 25w37a-and-earlier behavior
+
+- Type: `String`
+- Default value: `origin`
+- Suggested options: `origin`, `1.21.9+`, `1.21.8-`
+- Categories: `LMS`, `SURVIVAL`, `CREATIVE`
+
 ## explosionProofBuddingAmethyst
 
 Set the blast resistance of budding amethyst to be the same as bedrock
@@ -126,6 +186,58 @@ Set the blast resistance of vault to be the same as beacon
 - Suggested options: `false`, `true`
 - Categories: `LMS`, `SURVIVAL`
 
+## getItemBotPrefix
+
+Set the naming prefix for auto item-fetch bots
+
+Bot name format is <prefix><index>
+
+Example: if prefix is "bot*getitem*", names are "bot_getitem_1", "bot_getitem_2", ...
+
+- Type: `String`
+- Default value: `bot_getitem_`
+- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
+
+## getItemCooldownSeconds
+
+Set per-player cooldown between getItem requests (seconds, 0 = disabled)
+
+- Type: `int`
+- Default value: `0`
+- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
+
+## getItemDelayMs
+
+Set the wait time between each container-fetch call in getItem (milliseconds)
+
+- Type: `int`
+- Default value: `0`
+- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
+
+## getItemMaxBots
+
+Set the maximum number of fake players that getItem may summon per request (0 = unlimited)
+
+- Type: `int`
+- Default value: `0`
+- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
+
+## getItemMaxCount
+
+Set the maximum item count accepted by getItem in a single request (0 = unlimited)
+
+- Type: `int`
+- Default value: `0`
+- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
+
+## getStorageDataCooldownSeconds
+
+Set per-player cooldown between storage data queries (seconds, 0 = disabled)
+
+- Type: `int`
+- Default value: `0`
+- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
+
 ## globalSlimeChunk
 
 Treat every chunk as a slime chunk
@@ -144,6 +256,14 @@ Switches the player to spectator mode when their health falls below the configur
 - Suggested options: `false`, `true`, `custom`
 - Categories: `LMS`, `SURVIVAL`, `COMMAND`
 
+## lowHealthSpectatorCooldown
+
+Sets a cooldown before the player can be switched to spectator mode again
+
+- Type: `long`
+- Default value: `200`
+- Categories: `LMS`, `SURVIVAL`
+
 ## lowHealthSpectatorMethod
 
 Defines the method used to switch the player into spectator mode
@@ -151,14 +271,6 @@ Defines the method used to switch the player into spectator mode
 - Type: `enum`
 - Default value: `vanilla`
 - Suggested options: `vanilla`, `mcdreforged`, `carpetOrgAddition`, `kick`
-- Categories: `LMS`, `SURVIVAL`
-
-## lowHealthSpectatorCooldown
-
-Sets a cooldown before the player can be switched to spectator mode again
-
-- Type: `long`
-- Default value: `200`
 - Categories: `LMS`, `SURVIVAL`
 
 ## lowHealthSpectatorThreshold
@@ -303,60 +415,6 @@ Set the maximum number of players stored in the vault's blacklist
 - Default value: `-1`
 - Categories: `LMS`, `SURVIVAL`
 
-## zombifiedPiglinSpawnFix
-
-When spawning zombified piglins in nether gates during random ticks, game will check for its hitbox
-
-- Type: `boolean`
-- Default value: `false`
-- Suggested options: `false`, `true`
-- Categories: `LMS`, `SURVIVAL`, `BUGFIX`
-
-## commandStorageWebsite
-
-Enable "/storageWebsite status", "/storageWebsite start" and "/storageWebsite stop" command
-
-- Type: `String`
-- Default value: `false`
-- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
-- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
-## commandSetPassword
-
-Enable "/setPassword" command
-
-- Type: `String`
-- Default value: `false`
-- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
-- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`
-
-## commandGetItem
-
-Enable "/getItem <item> <count>" command
-
-- Type: `String`
-- Default value: `false`
-- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
-- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
-## commandGetStorageData
-
-Enable "/getStorageData" and "/getStorageData <id>" command
-
-- Type: `String`
-- Default value: `false`
-- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
-- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
-## commandCleanGetItemBot
-
-Enable "/cleanGetItemBot" command
-
-- Type: `String`
-- Default value: `false`
-- Suggested options: `false`, `true`, `ops`, `0`, `1`, `2`, `3`, `4`
-- Categories: `LMS`, `COMMAND`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
 ## websiteGetItem
 
 Enable getItem API for storage website
@@ -364,42 +422,6 @@ Enable getItem API for storage website
 - Type: `boolean`
 - Default value: `false`
 - Suggested options: `false`, `true`
-- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
-## getItemBotPrefix
-
-Set the naming prefix for auto item-fetch bots
-
-Bot name format is <prefix><index>
-
-Example: if prefix is "bot*getitem*", names are "bot_getitem_1", "bot_getitem_2", ...
-
-- Type: `String`
-- Default value: `bot_getitem_`
-- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
-## getItemDelayMs
-
-Set the wait time between each container-fetch call in getItem (milliseconds)
-
-- Type: `int`
-- Default value: `0`
-- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
-## getItemCooldownSeconds
-
-Set per-player cooldown between getItem requests (seconds, 0 = disabled)
-
-- Type: `int`
-- Default value: `0`
-- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
-## getStorageDataCooldownSeconds
-
-Set per-player cooldown between storage data queries (seconds, 0 = disabled)
-
-- Type: `int`
-- Default value: `0`
 - Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
 
 ## websiteLoginCooldownSeconds
@@ -410,33 +432,11 @@ Set per-username cooldown between website login requests (seconds, 0 = disabled)
 - Default value: `0`
 - Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
 
-## getItemMaxCount
+## zombifiedPiglinSpawnFix
 
-Set the maximum item count accepted by getItem in a single request (0 = unlimited)
+When spawning zombified piglins in nether gates during random ticks, game will check for its hitbox
 
-- Type: `int`
-- Default value: `0`
-- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
-## getItemMaxBots
-
-Set the maximum number of fake players that getItem may summon per request (0 = unlimited)
-
-- Type: `int`
-- Default value: `0`
-- Categories: `LMS`, `SURVIVAL`, `CREATIVE`, `STORAGE`
-
-## entityTeleportCrossDimension
-
-Set how entity motion is handled during cross-dimension teleportation
-
-When set to origin, keeps vanilla behavior
-
-When set to 1.21.9+, uses the 1.21.9-pre1+ behavior
-
-When set to 1.21.8-, uses the 25w37a-and-earlier behavior
-
-- Type: `String`
-- Default value: `origin`
-- Suggested options: `origin`, `1.21.9+`, `1.21.8-`
-- Categories: `LMS`, `SURVIVAL`, `CREATIVE`
+- Type: `boolean`
+- Default value: `false`
+- Suggested options: `false`, `true`
+- Categories: `LMS`, `SURVIVAL`, `BUGFIX`
