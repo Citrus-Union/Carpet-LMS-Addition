@@ -40,5 +40,10 @@ node_modules
 *.part
 .pnpm-store
 
+# python
+
+.pycache
+__pycache__
+
 # gemini
 .gemini/
