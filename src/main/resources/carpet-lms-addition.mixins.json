@@ -25,6 +25,7 @@
     "util.FakePlayerSilenceServerGamePacketListenerMixin",
     "util.carpet.EntityPlayerMPFakeOfflineProfileMixin",
     "util.carpet.EntityPlayerMPFakeSilenceMixin",
+    "util.carpet.PlayerCommandMixin",
     "util.command.opplayernocheatextra.OpPlayerNoCheatExtraClearMixin",
     "util.command.opplayernocheatextra.OpPlayerNoCheatExtraDamageMixin",
     "util.command.opplayernocheatextra.OpPlayerNoCheatExtraFillBiomeMixin",
@@ -32,7 +33,7 @@
     "util.command.opplayernocheatextra.OpPlayerNoCheatExtraItemMixin",
     "util.command.opplayernocheatextra.OpPlayerNoCheatExtraPlaceMixin",
     "util.command.opplayernocheatextra.OpPlayerNoCheatExtraSpawnpointMixin",
-    "util.command.playercommanddropall.EntityPlayerActionPackActionMixin",
+    "util.carpet.EntityPlayerActionPackActionMixin",
     "util.command.playercommanddropall.PlayerCommandDropallMixin",
     "util.helper.LowHealthSpectatorMixin"
   ],

@@ -48,6 +48,14 @@ public final class MessageComponent {
         this.prefixed = prefixed;
     }
 
+    public static Component withPrefix(Component component) {
+        return Component.literal(SEND_PREFIX).append(component.copy());
+    }
+
+    private static String messageKey(String key) {
+        return MESSAGE_KEY_PREFIX + key;
+    }
+
     public MessageComponent append(Component component) {
         this.component.append(component.copy());
         return this;
@@ -62,23 +70,31 @@ public final class MessageComponent {
         return this.prefixed ? withPrefix(this.component) : this.component.copy();
     }
 
+    /**
+     * @deprecated Use {@link #send(CommandSourceStack, boolean)} instead
+     */
+    @Deprecated
     public void sendSuccess(CommandSourceStack source) {
         source.sendSuccess(this::component, false);
     }
 
+    /**
+     * @deprecated Use {@link #send(CommandSourceStack, boolean)} instead
+     */
+    @Deprecated
     public void sendFailure(CommandSourceStack source) {
         source.sendFailure(component());
     }
 
+    public void send(CommandSourceStack source, boolean success) {
+        if (success) {
+            sendSuccess(source);
+        } else {
+            sendFailure(source);
+        }
+    }
+
     public void sendSystemMessage(ServerPlayer player) {
         player.sendSystemMessage(component());
-    }
-
-    public static Component withPrefix(Component component) {
-        return Component.literal(SEND_PREFIX).append(component.copy());
-    }
-
-    private static String messageKey(String key) {
-        return MESSAGE_KEY_PREFIX + key;
     }
 }

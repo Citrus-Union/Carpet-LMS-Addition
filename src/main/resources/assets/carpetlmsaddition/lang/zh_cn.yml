@@ -62,6 +62,9 @@ carpetlmsaddition:
         "1": "查看仓储网站当前运行状态\n"
         "2": 使用 /storageWebsite start 或 /storageWebsite stop
         "3": 启动或停止仓储网站服务
+    spectatorPlayerCannotDropItem:
+      "0": 已阻止旁观模式玩家通过 player 命令丢弃物品
+      "1": 可通过 Carpet 规则 spectatorPlayerCannotDropItem 修改
 
 carpet:
   category:
@@ -233,6 +236,11 @@ carpet:
     spongeRecipe:
       name: 可再生海绵
       desc: 添加海绵的制作配方
+    spectatorPlayerCannotDropItem:
+      name: 旁观模式禁止命令丢物品
+      desc: 阻止旁观模式玩家通过 "/player ... drop" 和 "/player ... dropStack" 命令丢弃物品
+      extra:
+        "0": 若启用 playerCommandDropall 规则，还会作用于 "/player ... dropall" 命令
     unbreakableBuddingAmethyst:
       name: 不可破坏紫水晶母岩
       desc: 将紫水晶母岩的硬度设置为与基岩相同

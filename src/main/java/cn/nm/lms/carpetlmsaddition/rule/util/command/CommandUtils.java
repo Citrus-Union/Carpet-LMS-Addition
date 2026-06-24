@@ -27,8 +27,12 @@ import cn.nm.lms.carpetlmsaddition.lib.MessageComponent;
 
 public final class CommandUtils {
     public static void tutor(CommandSourceStack source, String baseName, int count) {
+        multiple(source, baseName + ".tutor", count, true);
+    }
+
+    public static void multiple(CommandSourceStack source, String name, int count, boolean success) {
         IntStream.range(0, count).forEach(index -> {
-            new MessageComponent(baseName + ".tutor." + index).sendSuccess(source);
+            new MessageComponent(name + "." + index).send(source, success);
         });
     }
 

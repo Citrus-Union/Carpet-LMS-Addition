@@ -396,6 +396,17 @@ Add a crafting recipe to make sponges renewable
 - Suggested options: `false`, `true`
 - Categories: `LMS`, `SURVIVAL`
 
+## spectatorPlayerCannotDropItem
+
+Prevent spectator players from dropping items through "/player ... drop" and "/player ... dropStack" commands
+
+If the playerCommandDropall rule is enabled, this also applies to the "/player ... dropall" command
+
+- Type: `boolean`
+- Default value: `false`
+- Suggested options: `false`, `true`
+- Categories: `LMS`, `BUGFIX`
+
 ## unbreakableBuddingAmethyst
 
 Set the hardness of budding amethyst to be the same as bedrock

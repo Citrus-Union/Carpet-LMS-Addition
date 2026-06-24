@@ -62,6 +62,9 @@ carpetlmsaddition:
         "1": "View whether the storage website is running\n"
         "2": Use /storageWebsite start or /storageWebsite stop
         "3": Start or stop the storage website service
+    spectatorPlayerCannotDropItem:
+      "0": Spectator players cannot drop items through player commands
+      "1": This can be changed with the Carpet rule spectatorPlayerCannotDropItem
 
 carpet:
   rule:
@@ -202,6 +205,10 @@ carpet:
       desc: Set the hardness of vault to be the same as beacon
     spongeRecipe:
       desc: Add a crafting recipe to make sponges renewable
+    spectatorPlayerCannotDropItem:
+      desc: Prevent spectator players from dropping items through "/player ... drop" and "/player ... dropStack" commands
+      extra:
+        "0": If the playerCommandDropall rule is enabled, this also applies to the "/player ... dropall" command
     unbreakableBuddingAmethyst:
       desc: Set the hardness of budding amethyst to be the same as bedrock
     vaultMaxBlacklistSize:

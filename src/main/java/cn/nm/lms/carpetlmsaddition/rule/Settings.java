@@ -178,4 +178,7 @@ public final class Settings {
         options = {"origin", "1.21.9+", "1.21.8-"})
     public static String entityTeleportCrossDimension = "origin";
     //#endif
+
+    @Rule(categories = {LMSRuleCategory.LMS, RuleCategory.BUGFIX})
+    public static boolean spectatorPlayerCannotDropItem = false;
 }
