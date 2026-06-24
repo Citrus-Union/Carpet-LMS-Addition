@@ -1,37 +1,30 @@
 import com.github.gradle.node.NodeExtension
 import com.github.gradle.node.pnpm.task.PnpmTask
-import java.nio.file.Path
 
 plugins {
     `maven-publish`
     signing
-    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT" apply false
-    id("net.fabricmc.fabric-loom-remap") version "1.16-SNAPSHOT" apply false
+    alias(libs.plugins.fabric.loom) apply false
+    alias(libs.plugins.fabric.loom.remap) apply false
 
     // https://github.com/ReplayMod/preprocessor
     // https://github.com/Fallen-Breath/preprocessor
-    id("com.replaymod.preprocess") version "c5abb4fb12"
+    alias(libs.plugins.preprocess)
 
-    // https://github.com/Fallen-Breath/yamlang
-    id("me.fallenbreath.yamlang") version "1.5.0" apply false
-    // https://github.com/diffplug/spotless/releases?q=gradle
-    id("com.diffplug.spotless") version "8.6.0"
-    // https://github.com/vanniktech/gradle-maven-publish-plugin
-    id("com.vanniktech.maven.publish") version "0.36.0"
-    // https://github.com/node-gradle/gradle-node-plugin
-    id("com.github.node-gradle.node") version "7.1.0" apply false
+    alias(libs.plugins.yamlang) apply false
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.maven.publish)
+    alias(libs.plugins.node.gradle)
 }
 
 repositories {
     mavenCentral()
 }
 
-apply(plugin = "com.github.node-gradle.node")
-
 extensions.configure<NodeExtension> {
     download.set(true)
-    version.set("24.16.0")
-    pnpmVersion.set("11.4.0")
+    version.set(libs.versions.nodeRuntime)
+    pnpmVersion.set(libs.versions.pnpm)
     nodeProjectDir.set(layout.projectDirectory.dir("storage-website").asFile)
 }
 
@@ -71,15 +64,15 @@ preprocess {
 
 tasks.register("buildAndGather") {
     group = "build"
+    description = "Builds all subprojects and gathers their output jars into the root build/libs directory."
     dependsOn(project.subprojects.map { it.tasks.named("build") })
     doFirst {
         println("Gathering builds")
-        val buildLibs: (Project) -> Path = { p ->
+        val buildLibs: (Project) -> File = { p ->
             p.layout.buildDirectory
                 .dir("libs")
                 .get()
                 .asFile
-                .toPath()
         }
         project.delete(project.fileTree(buildLibs(rootProject)) { include("*") })
         project.subprojects.forEach { subproject ->
@@ -95,33 +88,38 @@ tasks.register("buildAndGather") {
     }
 }
 
-val pnpmBuildStorageWebsite by tasks.registering(PnpmTask::class) {
-    group = "build"
-    description = "Builds the storage website via pnpm."
-    dependsOn(tasks.named("pnpmInstall"))
-    val frontendInputs =
-        project.fileTree(file("storage-website")) {
-            include("src/**")
-            include("package.json", "pnpm-lock.yaml", "index.html", "vite.config.ts")
-            include("tsconfig*.json", "env.d.ts", "eslint.config.ts")
-            exclude("node_modules/**", "dist/**")
-        }
-    inputs.files(frontendInputs)
-    outputs.dir(file("storage-website/dist"))
-    pnpmCommand.set(listOf("build"))
-}
+val pnpmBuildStorageWebsite =
+    tasks.register<PnpmTask>("pnpmBuildStorageWebsite") {
+        group = "build"
+        description = "Builds the storage website via pnpm."
+        dependsOn(tasks.named("pnpmInstall"))
+        val frontendInputs =
+            project.fileTree(file("storage-website")) {
+                include("src/**")
+                include("package.json", "pnpm-lock.yaml", "index.html", "vite.config.ts")
+                include("tsconfig*.json", "env.d.ts", "eslint.config.ts")
+                exclude("node_modules/**", "dist/**")
+            }
+        inputs.files(frontendInputs)
+        outputs.dir(file("storage-website/dist"))
+        pnpmCommand.set(listOf("build"))
+    }
 
-val syncStorageWebsiteDist by tasks.registering(Sync::class) {
-    group = "build"
-    description = "Copies storage website dist files into resources."
-    dependsOn(pnpmBuildStorageWebsite)
-    from(layout.projectDirectory.dir("storage-website/dist"))
-    into(layout.projectDirectory.dir("src/main/resources/websites/storage"))
-}
+val syncStorageWebsiteDist =
+    tasks.register<Sync>("syncStorageWebsiteDist") {
+        group = "build"
+        description = "Copies storage website dist files into resources."
+        dependsOn(pnpmBuildStorageWebsite)
+        from(layout.projectDirectory.dir("storage-website/dist"))
+        into(layout.projectDirectory.dir("src/main/resources/websites/storage"))
+    }
 
-val cleanStorageWebsiteResources by tasks.registering(Delete::class) {
-    delete(layout.projectDirectory.dir("src/main/resources/websites/storage"))
-}
+val cleanStorageWebsiteResources =
+    tasks.register<Delete>("cleanStorageWebsiteResources") {
+        group = "build"
+        description = "Removes generated storage website resources from src/main/resources."
+        delete(layout.projectDirectory.dir("src/main/resources/websites/storage"))
+    }
 
 tasks.named("clean") {
     dependsOn(cleanStorageWebsiteResources)

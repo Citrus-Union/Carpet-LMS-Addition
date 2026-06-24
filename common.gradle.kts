@@ -4,30 +4,28 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 val mcVersion = (project.extra["mcVersion"] as Number).toInt()
 val unobfuscated = mcVersion >= 26_00_00
 
-apply(plugin = if (unobfuscated) "net.fabricmc.fabric-loom" else "net.fabricmc.fabric-loom-remap")
-apply(plugin = "com.replaymod.preprocess")
-apply(plugin = "me.fallenbreath.yamlang")
-apply(plugin = "com.vanniktech.maven.publish")
+pluginManager.apply(if (unobfuscated) "net.fabricmc.fabric-loom" else "net.fabricmc.fabric-loom-remap")
+pluginManager.apply("com.replaymod.preprocess")
+pluginManager.apply("me.fallenbreath.yamlang")
+pluginManager.apply("com.vanniktech.maven.publish")
 
-val minecraftVersion: String by project
-val parchmentVersion: String by project
-val loaderVersion: String by project
-val carpetVersion: String by project
-val conditionalMixinVersion: String by project
-val mixinExtrasVersion: String by project
-val jbcryptVersion: String by project
-val modVersion: String by project
-val modId: String by project
-val modName: String by project
-val modDescription: String by project
-val modSource: String by project
-val modWebsite: String by project
-val minecraftDependency: String by project
-val fabricloaderDependency: String by project
-val mavenGroup: String by project
-val archivesBaseName: String by project
-val modrinthUrl: String by project
-val curseforgeUrl: String by project
+fun gradleProperty(name: String): String = project.findProperty(name).toString()
+
+val minecraftVersion = gradleProperty("minecraftVersion")
+val parchmentVersion = gradleProperty("parchmentVersion")
+val carpetVersion = gradleProperty("carpetVersion")
+val modVersion = gradleProperty("modVersion")
+val modId = gradleProperty("modId")
+val modName = gradleProperty("modName")
+val modDescription = gradleProperty("modDescription")
+val modSource = gradleProperty("modSource")
+val modWebsite = gradleProperty("modWebsite")
+val minecraftDependency = gradleProperty("minecraftDependency")
+val fabricloaderDependency = gradleProperty("fabricloaderDependency")
+val mavenGroup = gradleProperty("mavenGroup")
+val archivesBaseName = gradleProperty("archivesBaseName")
+val modrinthUrl = gradleProperty("modrinthUrl")
+val curseforgeUrl = gradleProperty("curseforgeUrl")
 val issueTrackerUrl: String = "$modSource/issues"
 
 repositories {
@@ -85,17 +83,17 @@ dependencies {
             },
         )
     }
-    autoImplementation("net.fabricmc:fabric-loader:$loaderVersion")
+    autoImplementation(libs.fabric.loader.get())
     autoImplementation("carpet:fabric-carpet:$carpetVersion")
 
     // https://central.sonatype.com/artifact/org.jspecify/jspecify
-    autoCompileOnly("org.jspecify:jspecify:1.0.0")
+    autoCompileOnly(libs.jspecify.get())
     // runtime mods
     autoRuntimeOnly("me.fallenbreath:mixin-auditor:0.2.0-${if (unobfuscated) "u" else "o"}")
 
-    includeDependency(autoImplementation("me.fallenbreath:conditional-mixin-fabric:$conditionalMixinVersion"))
+    includeDependency(autoImplementation(libs.conditional.mixin.get()))
 
-    includeDependency(autoImplementation("org.mindrot:jbcrypt:$jbcryptVersion"))
+    includeDependency(autoImplementation(libs.jbcrypt.get()))
 }
 
 val mixinConfigPath = "carpet-lms-addition.mixins.json"
@@ -112,20 +110,29 @@ val mixinCompatibilityLevel = javaCompatibility
 
 val commonVmArgs = listOf("--sun-misc-unsafe-memory-access=allow", "-Dmixin.debug.export=true")
 loomExtension.runConfigs.configureEach {
-    runDir = if (unobfuscated) "../../run" else "../../run-obsuscated"
-    vmArgs(commonVmArgs)
+    runDirectory.set(
+        file(
+            if (unobfuscated) "../../run" else "../../run-obsuscated",
+        ),
+    )
+    jvmArguments.addAll(commonVmArgs)
 }
 loomExtension.runs {
     val auditVmArgs = "-DmixinAuditor.audit=true"
-    register("serverMixinAudit") {
+    create("serverMixinAudit") {
         server()
-        vmArgs.add(auditVmArgs)
+        jvmArguments.add(auditVmArgs)
     }
-    register("clientMixinAudit") {
+    create("clientMixinAudit") {
         client()
-        vmArgs.add(auditVmArgs)
+        jvmArguments.add(auditVmArgs)
     }
 }
+
+tasks.matching { it.name.startsWith("run") }.configureEach {
+    dependsOn(rootProject.subprojects.map { subproject -> subproject.tasks.matching { it.name == "downloadAssets" } })
+}
+
 loomExtension.accessWidenerPath.set(file("carpet-lms-addition.accesswidener"))
 
 var modVersionSuffix = ""
@@ -203,7 +210,7 @@ val targetSourceSetsSetter =
     yamlangExtension.javaClass.methods.firstOrNull {
         it.name == "setTargetSourceSets" && it.parameterCount == 1
     } ?: error("yamlang extension does not expose setTargetSourceSets")
-val targetParamType = targetSourceSetsSetter.parameterTypes[0]
+val targetParamType: Class<*> = targetSourceSetsSetter.parameterTypes[0]
 val targetSourceSetsValue: Any =
     when {
         targetParamType.isAssignableFrom(Set::class.java) -> setOf(mainSourceSet)
@@ -217,7 +224,7 @@ val inputDirSetter =
     yamlangExtension.javaClass.methods.firstOrNull {
         it.name == "setInputDir" && it.parameterCount == 1
     } ?: error("yamlang extension does not expose setInputDir")
-val inputParamType = inputDirSetter.parameterTypes[0]
+val inputParamType: Class<*> = inputDirSetter.parameterTypes[0]
 val inputDirValue: Any = if (inputParamType == File::class.java) file(langDir) else langDir
 inputDirSetter.invoke(yamlangExtension, inputDirValue)
 

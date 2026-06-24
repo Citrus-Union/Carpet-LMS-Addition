@@ -1,16 +1,34 @@
 [versions]
-
-# https://www.npmjs.com/package/prettier
+fabricLoom = "1.17-SNAPSHOT"
+preprocess = "c5abb4fb12"
+yamlang = "1.5.0"
+spotless = "8.7.0"
+mavenPublish = "0.37.0"
+nodeGradle = "7.1.0"
+nodeRuntime = "24.18.0"
+pnpm = "11.9.0"
+loader = "0.19.3"
+conditionalMixin = "0.6.4"
+jbcrypt = "0.4"
 prettier = "3.8.4"
-# https://www.npmjs.com/package/prettier-plugin-toml
 prettierPlugin-toml = "2.0.6"
-# https://www.npmjs.com/package/@prettier/plugin-xml
 prettierPlugin-xml = "3.4.2"
-# https://www.npmjs.com/package/prettier-plugin-astro
 prettierPlugin-astro = "0.14.1"
-
-# https://download.eclipse.org/eclipse/updates
 eclipse = "R-4.40-202606010713"
-
-# https://github.com/pinterest/ktlint
 ktlint = "1.8.0"
+jspecify = "1.0.0"
+
+[libraries]
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "loader" }
+conditional-mixin = { module = "me.fallenbreath:conditional-mixin-fabric", version.ref = "conditionalMixin" }
+jbcrypt = { module = "org.mindrot:jbcrypt", version.ref = "jbcrypt" }
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+
+[plugins]
+fabric-loom = { id = "net.fabricmc.fabric-loom", version.ref = "fabricLoom" }
+fabric-loom-remap = { id = "net.fabricmc.fabric-loom-remap", version.ref = "fabricLoom" }
+preprocess = { id = "com.replaymod.preprocess", version.ref = "preprocess" }
+yamlang = { id = "me.fallenbreath.yamlang", version.ref = "yamlang" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+node-gradle = { id = "com.github.node-gradle.node", version.ref = "nodeGradle" }
