@@ -1,0 +1,10 @@
+accessWidener v2 official
+accessible field net/minecraft/server/level/DistanceManager playersPerChunk Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;
+accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity items Lnet/minecraft/core/NonNullList;
+accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTimeRemaining I
+accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTotalTime I
+accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity cookingTimer I
+accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity cookingTotalTime I
+accessible method net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity getBurnDuration (Lnet/minecraft/world/level/block/entity/FuelValues;Lnet/minecraft/world/item/ItemStack;)I
+accessible method net/minecraft/world/entity/Entity reapplyPosition ()V
+accessible method net/minecraft/world/entity/Entity clearMovementThisTick ()V

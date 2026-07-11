@@ -40,8 +40,9 @@ preprocess {
     val mc1218 = createNode("1.21.8", 1_21_08, "")
     val mc12110 = createNode("1.21.10", 1_21_10, "")
     val mc12111 = createNode("1.21.11", 1_21_11, "")
-    val mc260101 = createNode("26.1.2", 26_01_01, "")
+    val mc260102 = createNode("26.1.2", 26_01_02, "")
     val mc260200 = createNode("26.2", 26_02_00, "")
+    val mc260300 = createNode("26.3", 26_03_00, "")
 
     mc1211.link(mc1213, file("mappings/mapping-1.21.1-1.21.3.txt"))
     mc1213.link(mc1214, file("mappings/mapping-1.21.3-1.21.4.txt"))
@@ -49,8 +50,9 @@ preprocess {
     mc1215.link(mc1218)
     mc1218.link(mc12110)
     mc12110.link(mc12111, file("mappings/mapping-1.21.10-1.21.11.txt"))
-    mc12111.link(mc260101, file("mappings/mapping-1.21.11-26.1.2.txt"))
-    mc260101.link(mc260200, file("mappings/mapping-26.1.2-26.2.txt"))
+    mc12111.link(mc260102, file("mappings/mapping-1.21.11-26.1.2.txt"))
+    mc260102.link(mc260200, file("mappings/mapping-26.1.2-26.2.txt"))
+    mc260200.link(mc260300, file("mappings/mapping-26.2-26.3.txt"))
 
     // See https://github.com/Fallen-Breath/fabric-mod-template/blob/1d72d77a1c5ce0bf060c2501270298a12adab679/build.gradle#L55-L63
     for (node in getNodes()) {
