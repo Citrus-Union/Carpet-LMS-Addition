@@ -19,7 +19,7 @@ package cn.nm.lms.carpetlmsaddition.mixin.util.command.opplayernocheatextra;
 import java.util.function.Predicate;
 
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.commands.ItemCommands;
+import net.minecraft.server.commands.item.ItemCommands;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

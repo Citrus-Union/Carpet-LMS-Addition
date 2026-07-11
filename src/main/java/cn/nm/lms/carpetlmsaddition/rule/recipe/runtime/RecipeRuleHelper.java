@@ -16,6 +16,7 @@
  */
 package cn.nm.lms.carpetlmsaddition.rule.recipe.runtime;
 
+// spotless:off
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,6 +28,20 @@ import carpet.CarpetServer;
 
 import cn.nm.lms.carpetlmsaddition.Mod;
 import cn.nm.lms.carpetlmsaddition.lib.Utils;
+
+//#if MC>=260300
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderOwner;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeMap;
+//#endif
+// spotless:on
 
 public final class RecipeRuleHelper {
     private static boolean startupReloadPending;
@@ -42,6 +57,12 @@ public final class RecipeRuleHelper {
     public static Collection<RecipeHolder<?>> getRecipes() {
         return LmsRecipeManager.getCustomRecipes();
     }
+
+    //#if MC>=260300
+    public static RecipeMap mergeWithManagedRecipes(RecipeMap original) {
+        return RecipeMap.create(new ManagedRecipeLookup(mergeWithManagedRecipes(original.values())));
+    }
+    //#endif
 
     public static Collection<RecipeHolder<?>> mergeWithManagedRecipes(Iterable<RecipeHolder<?>> existingRecipes) {
         Map<Object, RecipeHolder<?>> merged = new LinkedHashMap<>();
@@ -78,4 +99,44 @@ public final class RecipeRuleHelper {
             }));
         return true;
     }
+
+    //#if MC>=260300
+    private static final class ManagedRecipeLookup implements HolderLookup<Recipe<?>> {
+        private final Map<ResourceKey<Recipe<?>>, Holder.Reference<Recipe<?>>> recipes;
+
+        private ManagedRecipeLookup(Iterable<RecipeHolder<?>> recipes) {
+            this.recipes = new LinkedHashMap<>();
+            for (RecipeHolder<?> recipeHolder : recipes) {
+                Recipe<?> recipe = recipeHolder.value();
+                this.recipes.put(recipeHolder.id(), new ManagedRecipeReference(this, recipeHolder.id(), recipe));
+            }
+        }
+
+        @Override
+        public Optional<Holder.Reference<Recipe<?>>> get(ResourceKey<Recipe<?>> key) {
+            return Optional.ofNullable(recipes.get(key));
+        }
+
+        @Override
+        public Optional<net.minecraft.core.HolderSet.Named<Recipe<?>>> get(TagKey<Recipe<?>> tagKey) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Stream<Holder.Reference<Recipe<?>>> listElements() {
+            return recipes.values().stream();
+        }
+
+        @Override
+        public Stream<net.minecraft.core.HolderSet.Named<Recipe<?>>> listTags() {
+            return Stream.empty();
+        }
+    }
+
+    private static final class ManagedRecipeReference extends Holder.Reference<Recipe<?>> {
+        private ManagedRecipeReference(HolderOwner<Recipe<?>> owner, ResourceKey<Recipe<?>> key, Recipe<?> recipe) {
+            super(Type.STAND_ALONE, owner, key, recipe);
+        }
+    }
+    //#endif
 }
